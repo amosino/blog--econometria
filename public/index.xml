@@ -45,6 +45,15 @@ if(&amp;lt;condicion&amp;gt;) { ## bloque de código } if(&amp;lt;condicion&amp;
     </item>
     
     <item>
+      <title>Limpieza y análisis de bases de datos</title>
+      <link>/2020/07/23/bases-datos/</link>
+      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/07/23/bases-datos/</guid>
+      <description>La mayor parte de los resultados de las encuestas son presentados en partes, y el vaciado de las respuestas no siempre nos permite hacer un análisis preciso de la información. Por esta razón, resulta indispensable hacer un análisis exploratorio de la base de datos para identificar respuestas incoherentes o eliminar variables o datos que no sirvan para los propósitos del investigador. En esta sección utilizamos una base de datos (ficticia) que simula la información obtenida de varios hospitales de Estados Unidos sobre sus pacientes con cáncer.</description>
+    </item>
+    
+    <item>
       <title>About</title>
       <link>/about/</link>
       <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
