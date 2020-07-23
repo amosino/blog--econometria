@@ -2,6 +2,8 @@
 title: Estructuras de Control
 author: Alejandro Mosiño
 date: '2020-07-23'
+description: |
+  En esta entrada conoceremos los fundamentos de programación en R. Para esto, conoceremos las principales estructuras de control: condicionales y ciclos. Este post es una adaptación del post sobre el tema en el blog de Mauricio Anderson (https://mauricioanderson.com/curso-r-estructuras-control/) y de los tutoriales de programación en DataMentor (https://www.datamentor.io/r-programming/).
 slug: Estructuras Control
 categories:
   - Data Managment
@@ -13,3 +15,221 @@ tags:
   - R
   - Programming
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Las estructuras de control pueden dividirse en _estructuras de control condicional_ y _estructuras de control repetitivo_. Las estructuras de control más utilizadas son:
+
+- _if / else_, _elseif_.
+- _for_.
+- _while_.
+- _break_.
+- _next_.
+- _repeat_.
+
+Veremos cada una de ellas con algún ejemplo.
+
+## if / else
+
+La combinación `if` / `else` permite decidir si ejecutar o no un fragmento de código en función de una condición. La sintaxis es:
+
+```
+if(<condicion>) {
+  ## bloque de código
+}
+
+if(<condicion>) {
+  ## bloque de código 1
+} else {
+  ## bloque de código 2
+}
+
+if(<condition1>) {
+  ## bloque de código 1
+} else if(<condicion2>) {
+  ## bloque de código 2
+} else {
+  ## bloque de código 3
+}
+```
+**Ejemplos**
+
+```{r}
+x <- 5
+if(x > 0){
+  print("Número Positivo")
+}
+```
+
+```{r}
+x <- -5
+if(x >= 0){
+  print("Número no negativo")
+} else {
+  print("Número negativo")
+}
+```
+
+```{r}
+x <- 0
+if(x > 0){
+  print("Número positivo")
+} else if(x < 0){
+  print("Número negativo")
+} else
+  print("Cero")
+```
+
+## ifelse
+
+El comando `ifelse` puede resultar más conveniente que la combinación `if` / `else`. Aunque tiene la misma lógica, la sintaxis es más simple:
+
+```
+ifelse(<condicion>, <verdadero>, <falso>)
+```
+
+De acuerdo al problema al que nos enfrentemos, podemos encadenar varios `elseif` en una misma línea.
+
+**Ejemplos**
+
+```{r}
+x <- -5
+ifelse(x >= 0, "Número no negativo", "Número negativo")
+```
+
+```{r}
+x <- 0
+ifelse(x > 0, "Número positivo", ifelse(x<0, "Negativo", "Cero"))
+```
+
+## for
+
+El comando `for` no solo es el más utilizado en R, sino que es el más utilizado en prácticamente cualquier lenguaje de programación. Este ejecuta un ciclo una cantidad fija de veces. La sintaxis es:
+
+```
+for(<variable> in <objeto iterable>) {
+  ## bloque de código
+}
+```
+
+**Ejemplos**
+
+```{r}
+# Mostrar los elementos de una secuencia
+for(i in 1:5){
+  print(i)
+}
+```
+
+```{r}
+# Mostrar los elementos de un vector
+x <- 1:10*2
+for(i in 1:length(x)){
+  print(x[i])
+}
+```
+
+```{r}
+# Sumar los elementos de un vector
+x <- 1:10*2
+y <- 0
+for(i in 1:length(x)){
+  y <- y + x[i]
+}
+print(y)
+```
+
+```{r}
+# Recorrer los elementos de una secuencia no numérica
+x <- c("a", "b", "c", "d")
+for(i in x){
+  print(i)
+}
+```
+
+## while
+
+El comando `while` ejecuta un ciclo mientras una condición sea verdadera. La sintaxis es similar a la de `for`:
+
+```
+for(<condicion>) {
+  ## bloque de código
+}
+```
+
+**Ejemplo**
+
+```{r}
+x <- 0
+while(x<10){
+  print(paste("El valor de x es:", x))
+  x <- x+1
+}
+```
+
+
+## brake / next
+
+Los comandos `brake` y `next` se utilizan dentro de los ciclos `for`, `while`y `repeat`. El primero se utiliza para detener las iteraciones y el segundo para saltarse alguna iteración sin terminar el ciclo, respectivamente. La sintaxis de `brake` es:
+
+```
+if (<condicion>) {
+  break
+}
+```
+
+Y la sintaxis de `next` es:
+
+```
+if (<condicion>) {
+  next
+}
+```
+
+**Ejemplos**
+
+```{r}
+x <- 1:5
+for (i in x) {
+  if (i == 3){
+    break
+}
+  print(i)
+}
+```
+
+```{r}
+x <- 1:5
+for (i in x) {
+  if (i == 3){
+    next
+}
+  print(i)
+}
+```
+
+## repeat
+
+El comando `repeat` ejecuta un ciclo indefinidamente. La única forma de terminarlo es utilizando la función `braken`. La sintaxis es:
+
+```
+repeat(<condicion>) {
+  ## bloque de código
+}
+```
+
+**Ejemplo**
+
+```{r}
+x <- 1
+repeat{
+  print(x)
+  x = x+1
+  if (x == 6){
+    break
+}
+}
+```
+
