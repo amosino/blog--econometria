@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on A Hugo website</title>
+    <link>/post/</link>
+    <description>Recent content in Posts on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 23 Jul 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Introducción a R</title>
+      <link>/2020/07/23/introduccion-r/</link>
+      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/07/23/introduccion-r/</guid>
+      <description>R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. Entre otras características dispone de: 1) almacenamiento y manipulación efectiva de datos, 2) operadores para cálculo sobre variables indexadas, en particular matrices, 3) una amplia, coherente e integrada colección de herramientas para análisis de datos, 4) posibilidades gráficas para análisis de datos que funcionan directamente sobre pantalla o impresora, y 5) un lenguaje de programación bien desarrollado, simple y efectivo, que incluye condicionales, ciclos, funciones recursivas y posibilidad de entradas y salidas.</description>
+    </item>
+    
+  </channel>
+</rss>
