@@ -1,6 +1,6 @@
 baseurl = "/"
-languageCode = "en-us"
-title = "A Hugo website"
+languageCode = "es-mx"
+title = "Econometría & Co."
 theme = "anatole"
 googleAnalytics = ""
 disqusShortname = ""
@@ -14,13 +14,13 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     url = "/about/"
 [[menu.main]]
     name = "GitHub"
-    url = "https://github.com/rstudio/blogdown"
-[[menu.main]]
-    name = "Twitter"
-    url = "https://twitter.com/rstudio"
+    url = "https://github.com/amosino/courses--econometria"
+#[[menu.main]]
+#    name = "Twitter"
+#    url = "https://twitter.com/rstudio"
 
 [params]
-    description = "A website built through Hugo and blogdown."
+    description = "Un blog sobre econometría, manejo de datos, programación y más."
 
     # options for highlight.js (version, additional languages, and theme)
     highlightjsVersion = "9.12.0"
