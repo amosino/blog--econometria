@@ -1,4 +1,4 @@
-baseURL = "http://blog.amosino.net"
+baseURL = "/"
 languageCode = "es-mx"
 DefaultContentLanguage = "es-mx"
 title = "Econometría & Co."
