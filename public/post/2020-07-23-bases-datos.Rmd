@@ -1,0 +1,290 @@
+---
+title: Limpieza y análisis de bases de datos
+author: Alejandro Mosiño
+date: '2020-07-23'
+description: 'En este post realizaremos 1) un análisis exploratorio de la información y 2) una limpieza de la base de datos tal que sea posible hacer con la mayor precisión posible análisis estadísticos.'
+slug: Bases Datos
+categories:
+  - Data Managment
+  - Econometrics
+tags:
+  - Data Management
+  - Econometrics
+  - R
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+La mayor parte de los resultados de las encuestas son presentados en partes, y el vaciado de las respuestas no siempre nos permite hacer un análisis preciso de la información. Por esta razón, resulta indispensable hacer un análisis exploratorio de la base de datos para identificar respuestas incoherentes o eliminar variables o datos que no sirvan para los propósitos del investigador. En esta sección utilizamos una base de datos (ficticia) que simula la información obtenida de varios hospitales de Estados Unidos sobre sus pacientes con cáncer. El objetivo es: 1) realizar un análisis exploratorio de la información y 2) limpiar la base de datos tal que sea posible hacer análisis estadísticos más profundos.
+
+Durante toda la sección estaremos utilizando los paquetes `tidyverse` y `Hmisc` de R, los cuales contienen comandos que simplifican la exploración y limpieza de la base de datos.
+
+```{r}
+# Instalar paquetes si es necesario
+# install.packages("tidyverse")
+# install.packages("Hmisc")
+
+# Leer paquetes
+library(tidyverse)
+library(Hmisc)
+```
+
+
+## Limpieza de la base de datos y valores ausentes
+
+Comenzamos leyendo la base de datos. Esta consta de 24 variables y 120 observaciones que simulan información sobre pacientes con cáncer. El archivo está en formato de valores separados por comas, _.csv_. Puedes descargar el archivo al disco duro de tu computadora o bien puedes leer el archivo desde su ubicación en línea. El comando de lectura puede ser el preinstalado en R: `read.cvs`, o bien el comando contenido en el paquete `tidyverse`: `read_csv`. Aquí utilizaremos la segunda opción, pero asegúrate de comprender las diferencias entre ambos comandos utilizando el símbolo de ayuda (por ejemplo: `?read_csv`).
+
+
+```{r}
+db <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_P1.csv")
+db
+```
+
+Como primer paso, conviene hacer un análisis descriptivo de la base de datos. Esto nos permitirá no solo conocer la distribución de la muestra, si no que también nos permite detectar valores sospechosos. Para obtener los estadísticos básicos de la muestra, tenemos dos opciones. Una es utilizar la función `summary()`, la cual viene preinstalada en R. La otra opción es el comando `describe()`, el cual es parte del paquete `Hmisc`. Aquí preferimos la segunda opción, ya que esta nos da tablas de frecuencias para las variables discretas (que tengan menos de 20 valores), más detalle sobre los cuantiles para las variables continuas, conteos y proporciones para las variables binarias, y conteo de datos faltantes (`NA`).
+
+```{r}
+describe(db)
+```
+
+A simple vista podemos detectar algunos valores sospechosos. Por ejemplo:
+
+```{r}
+describe(db[,c("age", "sex", "test1")])
+```
+
+Otra de las ventajas que tiene el comando `describe()`, es que este se puede graficar con el comando `plot()`. Este comando aplicado a `describe()` resulta en gráficas de puntos para las variables categóricas (o discretas) e histogramas para las variables continuas. Además, las gráficas incluyen un indicador de color para mostrar el número de `NA` que contiene cada variable.
+
+```{r}
+plot(describe(db))
+```
+
+Normalmente, las gráficas tienden a revelar más información sobre los valores sospechosos que las tablas de datos. Sin embargo, ambas revelan la misma información. En nuestro caso:
+
+* La variable `edad` tiene un valor máximo de 357.89001.
+* La varible `sex` muestra una categoría "12.2".
+* Algunas variables, como `test1`, `test2`, `lungcapacity`, entre otras tienen valores de -99 (el cual, usualmente, corresponde a "no sabe" o "ausente").
+* Algunas variables, como `co2`, y `lungcapacity` tienen valores de -98 (el cual, usualmente, corresponde a "no quiso contestar").
+* `wbc` parece ser una variable numérica, pero, debido a que tiene valores "not assesed", R la interpreta como si se tratase de una cadena de caracteres.
+
+Para que la base de datos sea utilizable, podemos reemplazar todos estos valores sospechosos por `NA`. Por supuesto que también es posible reemplazar los valores sopechosos con sus valores verdaderos, pero esto normalmente no es posible porque esta es información a la que normalmente no tenemos acceso. La siguiente secuencia de comandos haría el trabajo:
+
+```{r}
+db$age[db$age<18|db$age>120] <- NA
+db$sex[db$sex == "12.2"] <- NA
+db[db==-99] <- NA
+db[db==-98] <- NA
+db[db=="not assesed"] <- NA
+```
+
+Volvemos a utilizar los comandos `describe()` y `plot()` para ver cómo ha cambiado la gráfica descriptiva. Mucho mejor, ¿no?
+
+```{r, preview=TRUE}
+plot(describe(db))
+
+```
+
+## Otros comandos útiles
+
+Otros comandos que pueden ayudarnos a limpiar la base de datos son: `filter()`, `select()`, `arrange()`, `mutate()` y `summarize()`, los cuales son parte del paquete `tidyverse`. El uso de estos comandos tiene algunas ventajas. Especificamente, estas funciones simplifican el código, ya que solo hay que nombrar la base de datos _una vez_ y proporcionar las variables como argumentos. Además, las variables no tienen que escribirse entre comillas.
+
+### `filter()`
+
+El comando `filter()` nos permite elegir una submuestra usando operadores lógicos. Estos operadores pueden ser:
+
+* `==`: Igualdad.
+* `!=`: Desigualdad.
+* `>`, `>=`: Mayor que o mayor o igual que.
+* `<`, `<=`: Menor que o menor o igual que.
+* `&`: Y.
+* `|`: O.
+* %in%: En.
+* `is.na`: es igual a `NA`.
+* `near()`: Igualdad para un valor con decimales. Puede modificarse la tolerancia.
+
+Un ejemplo de uso para el comando `filter()` es elegir todas las personas de género femenino con un grado de dolor mayor o igual a 9: 
+
+```{r}
+
+dfhp <- filter(db, sex=="female", pain>=9)
+```
+
+¿Cómo encontrarías este subgrupo de pacientes sin utilizar `filter()`?
+
+
+### `select()`
+
+El comando `select()` se utiliza para mantener solo las variables que nos interesan. Por ejemplo, si deseamos mantener solo las variables `hospid`, `docid`, `age` y `cancerstage`:
+
+```{r}
+db_small <- select(db, hospid, docid, age, cancerstage)
+db_small
+
+```
+
+También podemos seleccionar un grupo de variables con nombres similares. Esto se hace con las funciones:
+
+* `starts_with(x)`: Comienza con.
+* `ends_with(x)`: Termina con.
+* `contains(x)`: Contiene.
+* `matches(re)`: Encuentra la expresión regulares `re`.
+* `num_range(prefijo, rango)`: Encuentra todos los nombres de variables que contengan `prefijo` y un elemento de `rango`.
+
+Por ejemplo: seleccionar todas las variables que comiencen con `hosp` y obtener las variables `test1` y `test2` usando `num_range()`. 
+
+```{r}
+
+# Obtener las variables que comiencen con hosp
+dbhosp <- select(db, starts_with("hosp"))
+names(dbhosp)
+
+# Obtener las variables test1 y tes2
+dbhosp <- select(db, num_range("test", 1:2))
+names(dbhosp)
+```
+
+
+### `arrange()`
+
+El comando `arrange()` nos permite ordenar las filas de una base de datos de acuerdo a los criterios especificados por el usuario. El comando `arrange()` ordena automáticamente en orden ascendente, pero se puede ordenar el orden descendente si utilizamos el argumento `desc`. Por ejemplo, podemos ordenar nuestra base de datos primero hombres, luego mujeres y luego por edades, primero lo más jóvenes:
+
+```{r}
+arrange(db, desc(sex), age)
+```
+
+### `mutate()`
+
+El comando `mutate()` nos permite transformar muchas variables en un solo paso sin tener que espcificar una y otra vez el nombre de la base de datos a la que pertenecen. Algunas de las transformaciones que pueden hacerse en R son:
+
+* `log()`: Logaritmo.
+* `cut()`: Corta una variable continua en intervalos.
+* `scale()`: Estandariza una variable (resta la media y divide entre su desviación estándar.
+* `lag()` y `lead()`: Rezaga o adelanta una variable.
+* `cumsum()`: Suma acumulada.
+* `rowMeans()` y `rowSums()`: Promedios y sumas de varias columnas.
+* `recode()`: Recodifica valores.
+
+Como ejemplo, supongamos que deseamos crear una variable de edad, `agecat`, por intervalos de 10 años y una variable binaria, `highpain`, que indique las personas que tienen más dolor que el promedio:
+
+```{r}
+
+db <- mutate(db, agecat=cut(age, breaks=c(30,40,50,60,70,120)), highpain=pain>mean(pain))
+table(db$agecat, db$highpain)
+```
+
+## Unir y combinar bases de datos
+
+En ocasiones las bases de datos están divididas en varias partes. Cada parte puede contener las mismas variables para nuevos individuos, o cada parte puede contener nuevas variables para los mismos individuos. En el primer caso, lo que tenemos que hacer es unir las diferentes partes de las bases de datos, y en el segundo lo que tenemos que hacer es combinarlas.
+
+###  Unir bases de datos
+
+Considera una segunda parte de la base de datos que hemos considerado hasta ahora. Tómate el tiempo para analizarla. Nota que esta parte contiene prácticamente las mismas variables que la base de datos original, pero contiene nuevos individuos. Las diferencias entre las dos bases de datos resultan de las manipulaciones que hemos hecho arriba a la base de datos original.
+
+```{r}
+db2 <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_P2.csv")
+db2
+```
+
+El objetivo es unir las bases de datos. Para esto podemos utilizar el comando preinstalado `rbind()`, o bien el comando `bind_rowns()` que es parte del paquete `tidyverse`. Existen algunas diferencias entre ambos métodos. Por ejemplo, si en una de las bases de datos que vamos a unir existen columnas que en la otra no `rbind()` resultará en un error, mientras que `bind_rows()` creará las nuevas columnas y rellenará los datos faltantes con `NA`. Otra diferencia es que si la misma columna en ambas bases de datos contiene datos de diferentes tipos (por ejemplo, en una base de datos son caracteres y en la otra son datos numéricos), `rbind()` convertirá los datos de la base de datos unificada en datos del mismo tipo siguiendo el orden: datos lógicos, datos numéricos enteros, datos numéricos con decimales, y, finalmente, caracteres; en cambio `bind_rows()` resultará en un error. Aquí utilizamos el comando `bind_rows()`, pero explora cómo hacer la unión de las bases usando `rbind()`.
+
+
+```{r}
+db_union <- bind_rows(db, db2, .id="source")
+db_union
+```
+
+Nota que en la unión hemos utilizado el argumento `.id="source"`. Este creará una nueva columna al inicio de la base de datos que nos indica el origen de cada fila. En este caso, un valor de 1 indica que esa observación proviene de la primer base de datos (`db`) y un valor de 2 de la segunda base de datos (`db2`).
+
+### Combinar bases de datos
+
+Ahora supongamos que una tercera base de datos contiene nuevas variables, pero (virtualmente) los mismos individuos. En este caso, las bases de datos pueden combinarse si existe alguna o algunas variales que identifiquen a los individuos.
+
+```{r}
+db3 <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_D1.csv")
+db3
+```
+
+Al igual que en la sección anterior, existen al menos dos métodos para combinar las bases de datos en R. Una de ellas es utilizar el comando preinstalado `merge()` o bien el comando `dplyr()` del paquete `tidyverse`. En realidad no existen diferencias importantes entre ambas opciones, aunque `merge()` tiende a ser un poco más lento computacionalmente que `dplyr()`. Este último tiene tres diferentes versiones:
+
+* `inner_join(x,y)`: regresa todas las filas de la base de datos `x` que coinciden con las filas de la base de datos `y`.
+ * `left_join(x,y)`: regresa todas las filas de la base de datos `x`. Las filas de `x` que no coincidan con las filas de la base de datos `y` se remplazan con `NA`. Las filas de la base de datos `y` que no coincidan con las de la base `x` no se consideran.
+* `full_join(x,y)`: regresa todas las filas de la base de datos `x` y todas las filas de la base de datos `y`. Las filas de `x` que no coincidan con las filas de la base de datos `y` y las filas de `y` que no coincidan con la base de datos `x` se remplazan con `NA`.
+
+Tómate el tiempo para explorar las tres posibilidades. Aquí utilizamos `full_join()` para mostrar el uso de este comando. Nota que R elige la variable `docid` para combinar las bases de datos de manera automática. Sin embargo, también es posible utilizar el argumento `by` para elegir la variable para combinar las bases de forma "manual".
+
+```{r}
+db_full <- full_join(db_union, db3)
+db_full
+```
+
+## Otros problemas con las bases de datos
+
+Para terminar, veremos algunos otros problemas que podríamos enfrentar cuando analizamos bases de datos. Por ejemplo, quizás sea necesario reestructurar la base de datos de tal forma que esta pueda utilizarse para realizar un análisis estadístico o econométrico. También suele ser muy frecuente encontrar múltiples variables en la misma celda, o bien el valor de alguna variable separado en varias celdas. El objetivo de esta sección es tratar estos casos.
+
+### `gather()`
+
+Considera la siguiente base de datos (ficticia), que contiene el número de egresados por año en diferentes departamentos universitarios:
+
+```{r}
+db_dept <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/DeptsData.csv")
+db_dept
+```
+
+Supongamos que nuestro interés es saber si el índice de egreso ha crecido a través del tiempo. Nota que el año debería ser la variable explicativa en nuestro análisis. Sin embargo, la base de datos la incluye como nombre de las variables. Para casos como este, el comando `gather()` nos permite restructurar la base de datos de tal forma que:
+
+* Una de las columnas de la base reestructurada se forme a partir de los nombres actuales de las variables. El nombre de esta columna se elige con el argumento `key`.
+* Los valores de las columnas originales se apilen en una sola columna. El nombre de esta columna se elige con el argumento `value`.
+
+El comando `gather()` apila todas las columnas de la base de datos de manera automática. Sin embargo, existen algunas columnas que no cambian con los valores en la nueva columna con el nombre `key`; estas no deberían apilarse. Este es el caso, por ejemplo, de la actual variable `id`, el nombre de los departamentos no cambia con el año analizado. Para especificar cuáles variables cambian con `key` podemos ya sea espcificar cuáles son las columnas que deben apilarse, o bien especificar cuáles columnas no deben apilarse utilizando el símbolo `-`.
+
+```{r}
+db_deptap <- gather(db_dept, key="year", value="grad", -id)
+db_deptap
+```
+
+¿Qué hubiera pasado si no usamos el argumento `-id`?
+
+### `spread()`
+
+Ahora considera la siguiente base de datos, que contiene información sobre diferentes tipos de gusanos clasificados por edad, tamaño y peso. Estas características, sin embargo, están apiladas en la misma columna:
+
+```{r}
+db_worms <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/WormsData.csv")
+db_worms
+```
+
+Supongamos que nuestro interés es analizar la relación que existe entre la edad, el peso y el tamaño del gusano. En este caso, necesitamos que cada una de estas características constituya una columna independiente. Esta es la función del comando `spread()`. Los argumentos del comando `spread()` son nuevamente `key`y `value`. En este caso, `key` es la columna que será convertida en el _nombre de las variables_, y `value` es la columna de valores que será organizada en las nuevas columnas.
+
+```{r}
+worms_spread <- spread(db_worms, key=feature, value=measure)
+worms_spread
+```
+
+### `separate()` y `unite()`
+
+Finalmente, considera la siguiente base de datos (automáticamente cargada con el paquete `tidyverse`):
+
+```{r}
+db_table <- table5
+db_table
+```
+
+La tabla de datos que hemos cargado tiene al menos dos defectos. Primero, la variable `rate` en realidad contiene dos valores: número de casos y población. Segundo, las columnas `century` y `year` constituyen el año. El primer problema se resuelve con el comando `separate()`, el segundo con el comando `unite()`.
+
+Como su nombre lo indica, el comando `separate()` divide una columna en varias. Sus argumentos son: 1) `col`, el nombre de la columna a dividir, 2) `into`, el nombre de las nuevas columnas, 3) `sep`, el caracter que indica dónde separar una columna y 4) `remove`, que indica si las columnas concatenadas serán eliminada o no de la base de datos (pre establecido en `TRUE`.)
+
+```{r}
+table_final <- separate(db_table, col=rate, into=c("cases", "population"), sep="/")
+table_final
+```
+
+El comando `unite()` literalmente une dos o más columnas. Sus argumentos son: 1) `col`, el nombre de la nueva columna, 2) la lista de columnas a unir, 3) `sep`, el caracter que indica cómo concatenar las columnas (pre establecido en "_".)
+
+```{r}
+table_final <- unite(table_final, col=year, century, year, sep="")
+table_final
+```
+
+
