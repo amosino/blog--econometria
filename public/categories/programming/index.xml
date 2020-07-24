@@ -12,12 +12,22 @@
     
     
     <item>
+      <title>Introducción a R</title>
+      <link>/post/introduccion-r/</link>
+      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/introduccion-r/</guid>
+      <description>R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. Entre otras características dispone de: 1) almacenamiento y manipulación efectiva de datos, 2) operadores para cálculo sobre variables indexadas, en particular matrices, 3) una amplia, coherente e integrada colección de herramientas para análisis de datos, 4) posibilidades gráficas para análisis de datos que funcionan directamente sobre pantalla o impresora, y 5) un lenguaje de programación bien desarrollado, simple y efectivo, que incluye condicionales, ciclos, funciones recursivas y posibilidad de entradas y salidas.</description>
+    </item>
+    
+    <item>
       <title>Estructuras de Control</title>
       <link>/post/estructuras-control/</link>
       <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/estructuras-control/</guid>
-      <description>Las estructuras de control pueden dividirse en estructuras de control condicional y estructuras de control repetitivo.</description>
+      <description>En esta entrada conoceremos los fundamentos de programación en R. Para esto, conoceremos las principales estructuras de control: condicionales y ciclos. Este post es una adaptación del post sobre el tema en el blog de Mauricio Anderson (https://mauricioanderson.com/curso-r-estructuras-control/) y de los tutoriales de programación en DataMentor (https://www.datamentor.io/r-programming/
+Las estructuras de control pueden dividirse en estructuras de control condicional y estructuras de control repetitivo. Las estructuras de control más utilizadas son:</description>
     </item>
     
     <item>
@@ -26,16 +36,9 @@
       <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/funciones/</guid>
-      <description>En general, una función en R tiene la siguiente estructura:</description>
-    </item>
-    
-    <item>
-      <title>Introducción a R</title>
-      <link>/post/introduccion-r/</link>
-      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/post/introduccion-r/</guid>
-      <description>R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos.</description>
+      <description>Una función es un conjunto de líneas de código organizadas para realizar una tarea particular. Existen muchas funciones incorporadas a R; sin embargo, el usuario puede incorporar sus propias funciones. En este post veremos la estructura de una función definida por el usuario y algunos ejemplos.
+En general, una función en R tiene la siguiente estructura:
+# nombre_funcion &amp;lt;- function(argumentos){ # Secuencia de comandos que utilizan los argumentos como entradas # Resultado # } Las partes que de una función son:</description>
     </item>
     
   </channel>
