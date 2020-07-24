@@ -13,7 +13,6 @@ tags:
   - R
 weight: 4
 ---
-En este post realizaremos 1) un análisis exploratorio de la información y 2) una limpieza de la base de datos tal que sea posible hacer con la mayor precisión posible análisis estadísticos.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

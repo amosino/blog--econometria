@@ -13,7 +13,6 @@ tags:
   - R
 weight: 2
 ---
-En esta entrada conoceremos los fundamentos de programación en R. Para esto, conoceremos las principales estructuras de control: condicionales y ciclos. Este post es una adaptación del post sobre el tema en el blog de Mauricio Anderson (https://mauricioanderson.com/curso-r-estructuras-control/) y de los tutoriales de programación en DataMentor (https://www.datamentor.io/r-programming/
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
