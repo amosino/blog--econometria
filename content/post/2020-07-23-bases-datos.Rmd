@@ -2,7 +2,7 @@
 title: Limpieza y análisis de bases de datos
 author: Alejandro Mosiño
 date: '2020-07-23'
-Description: 'En este post realizaremos 1) un análisis exploratorio de la información y 2) una limpieza de la base de datos tal que sea posible hacer con la mayor precisión posible análisis estadísticos.'
+summary: 'En este post realizaremos 1) un análisis exploratorio de la información y 2) una limpieza de la base de datos tal que sea posible hacer con la mayor precisión posible análisis estadísticos.'
 slug: Bases Datos
 categories:
   - Data Managment
@@ -39,7 +39,7 @@ Comenzamos leyendo la base de datos. Esta consta de 24 variables y 120 observaci
 
 
 ```{r}
-db <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_P1.csv")
+db <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/CancerData_P1.csv")
 db
 ```
 
@@ -183,7 +183,7 @@ En ocasiones las bases de datos están divididas en varias partes. Cada parte pu
 Considera una segunda parte de la base de datos que hemos considerado hasta ahora. Tómate el tiempo para analizarla. Nota que esta parte contiene prácticamente las mismas variables que la base de datos original, pero contiene nuevos individuos. Las diferencias entre las dos bases de datos resultan de las manipulaciones que hemos hecho arriba a la base de datos original.
 
 ```{r}
-db2 <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_P2.csv")
+db2 <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/CancerData_P2.csv")
 db2
 ```
 
@@ -202,7 +202,7 @@ Nota que en la unión hemos utilizado el argumento `.id="source"`. Este creará 
 Ahora supongamos que una tercera base de datos contiene nuevas variables, pero (virtualmente) los mismos individuos. En este caso, las bases de datos pueden combinarse si existe alguna o algunas variales que identifiquen a los individuos.
 
 ```{r}
-db3 <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_D1.csv")
+db3 <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/CancerData_D1.csv")
 db3
 ```
 
@@ -228,7 +228,7 @@ Para terminar, veremos algunos otros problemas que podríamos enfrentar cuando a
 Considera la siguiente base de datos (ficticia), que contiene el número de egresados por año en diferentes departamentos universitarios:
 
 ```{r}
-db_dept <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/DeptsData.csv")
+db_dept <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/DeptsData.csv")
 db_dept
 ```
 
@@ -251,7 +251,7 @@ db_deptap
 Ahora considera la siguiente base de datos, que contiene información sobre diferentes tipos de gusanos clasificados por edad, tamaño y peso. Estas características, sin embargo, están apiladas en la misma columna:
 
 ```{r}
-db_worms <- read_csv("https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/WormsData.csv")
+db_worms <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/WormsData.csv")
 db_worms
 ```
 

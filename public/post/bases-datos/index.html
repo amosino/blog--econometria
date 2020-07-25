@@ -127,7 +127,7 @@ library(tidyverse)</code></pre>
 <div id="limpieza-de-la-base-de-datos-y-valores-ausentes" class="section level2">
 <h2>Limpieza de la base de datos y valores ausentes</h2>
 <p>Comenzamos leyendo la base de datos. Esta consta de 24 variables y 120 observaciones que simulan información sobre pacientes con cáncer. El archivo está en formato de valores separados por comas, <em>.csv</em>. Puedes descargar el archivo al disco duro de tu computadora o bien puedes leer el archivo desde su ubicación en línea. El comando de lectura puede ser el preinstalado en R: <code>read.cvs</code>, o bien el comando contenido en el paquete <code>tidyverse</code>: <code>read_csv</code>. Aquí utilizaremos la segunda opción, pero asegúrate de comprender las diferencias entre ambos comandos utilizando el símbolo de ayuda (por ejemplo: <code>?read_csv</code>).</p>
-<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_P1.csv&quot;)</code></pre>
+<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/CancerData_P1.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
 ##   .default = col_double(),
@@ -592,7 +592,7 @@ table(db$agecat, db$highpain)</code></pre>
 <div id="unir-bases-de-datos" class="section level3">
 <h3>Unir bases de datos</h3>
 <p>Considera una segunda parte de la base de datos que hemos considerado hasta ahora. Tómate el tiempo para analizarla. Nota que esta parte contiene prácticamente las mismas variables que la base de datos original, pero contiene nuevos individuos. Las diferencias entre las dos bases de datos resultan de las manipulaciones que hemos hecho arriba a la base de datos original.</p>
-<pre class="r"><code>db2 &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_P2.csv&quot;)</code></pre>
+<pre class="r"><code>db2 &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/CancerData_P2.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
 ##   .default = col_double(),
@@ -650,7 +650,7 @@ db_union</code></pre>
 <div id="combinar-bases-de-datos" class="section level3">
 <h3>Combinar bases de datos</h3>
 <p>Ahora supongamos que una tercera base de datos contiene nuevas variables, pero (virtualmente) los mismos individuos. En este caso, las bases de datos pueden combinarse si existe alguna o algunas variales que identifiquen a los individuos.</p>
-<pre class="r"><code>db3 &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_D1.csv&quot;)</code></pre>
+<pre class="r"><code>db3 &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/CancerData_D1.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
 ##   docid = col_character(),
@@ -711,7 +711,7 @@ db_union</code></pre>
 <div id="gather" class="section level3">
 <h3><code>gather()</code></h3>
 <p>Considera la siguiente base de datos (ficticia), que contiene el número de egresados por año en diferentes departamentos universitarios:</p>
-<pre class="r"><code>db_dept &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/DeptsData.csv&quot;)</code></pre>
+<pre class="r"><code>db_dept &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/DeptsData.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
 ##   id = col_character(),
@@ -751,7 +751,7 @@ db_deptap</code></pre>
 <div id="spread" class="section level3">
 <h3><code>spread()</code></h3>
 <p>Ahora considera la siguiente base de datos, que contiene información sobre diferentes tipos de gusanos clasificados por edad, tamaño y peso. Estas características, sin embargo, están apiladas en la misma columna:</p>
-<pre class="r"><code>db_worms &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/WormsData.csv&quot;)</code></pre>
+<pre class="r"><code>db_worms &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/WormsData.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
 ##   worm = col_double(),
