@@ -14,10 +14,28 @@
     <item>
       <title>Introducción a R</title>
       <link>/post/introduccion-r/</link>
-      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/introduccion-r/</guid>
       <description>R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. En este post daremos una muy breve introducción a R: tipos de variables, operaciones numéricas, clases de datos, entre otros.</description>
+    </item>
+    
+    <item>
+      <title>Limpieza y análisis de bases de datos</title>
+      <link>/post/bases-datos/</link>
+      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/bases-datos/</guid>
+      <description>En este post realizaremos 1) un análisis exploratorio de la información y 2) una limpieza de la base de datos tal que sea posible hacer con la mayor precisión posible análisis estadísticos.</description>
+    </item>
+    
+    <item>
+      <title>Limpieza y análisis de bases de datos</title>
+      <link>/post/bases-datos/</link>
+      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/bases-datos/</guid>
+      <description>En este post realizaremos 1) un análisis exploratorio de la información y 2) una limpieza de la base de datos tal que sea posible hacer con la mayor precisión posible análisis estadísticos.</description>
     </item>
     
   </channel>
