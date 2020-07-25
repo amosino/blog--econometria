@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Econometría &amp; Co.</title>
+    <link>/</link>
+    <description>Recent content on Econometría &amp; Co.</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>es-mx</language>
+    <lastBuildDate>Mon, 20 Jul 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Introducción a R</title>
+      <link>/post/introduccion-r/</link>
+      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/introduccion-r/</guid>
+      <description>R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. En este post daremos una muy breve introducción a R: tipos de variables, operaciones numéricas, clases de datos, entre otros.</description>
+    </item>
+    
+    <item>
+      <title>Sobre este sitio</title>
+      <link>/about/</link>
+      <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>Este sitio sirve como complemento a los diferentes cursos de econometría que imparto en la Universidad de Guanajuato. Aquí encontrarás temas de econometría, microeconometría y macroeconometría, así como elementos de programación, manejo de datos entre otros.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/archives/</link>
+      <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/archives/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
