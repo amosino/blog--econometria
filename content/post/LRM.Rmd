@@ -1,0 +1,14 @@
+---
+title: El modelo de regresión lineal
+author: Alejandro Mosiño
+date: '2020-07-25'
+summary: 'Una de las herramientas principales en econometría es el modelo de regresión lineal. A diferencia de un análisis de correlación, cuyo objetivo es medir el grado de asociación entre dos variables, el modelo de regresión lineal nos permite aproximar el valor promedio de una variable con base en los valores fijos de otras. En este post veremos cómo se estima y cómo se analiza un modelo de regresión linea utilizando R.'
+  
+slug: mrl
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 5
+---

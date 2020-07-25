@@ -30,6 +30,15 @@
     </item>
     
     <item>
+      <title>El modelo de regresión lineal</title>
+      <link>/post/mrl/</link>
+      <pubDate>Sat, 25 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/mrl/</guid>
+      <description>Una de las herramientas principales en econometría es el modelo de regresión lineal. A diferencia de un análisis de correlación, cuyo objetivo es medir el grado de asociación entre dos variables, el modelo de regresión lineal nos permite aproximar el valor promedio de una variable con base en los valores fijos de otras. En este post veremos cómo se estima y cómo se analiza un modelo de regresión linea utilizando R.</description>
+    </item>
+    
+    <item>
       <title>Funciones definidas por el usuario</title>
       <link>/post/funciones/</link>
       <pubDate>Wed, 22 Jul 2020 00:00:00 +0000</pubDate>
@@ -48,12 +57,12 @@
     </item>
     
     <item>
-      <title>Limpieza y análisis de bases de datos</title>
-      <link>/post/bases-datos/</link>
-      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      <title>El modelo de regresión lineal</title>
+      <link>/post/mrl/</link>
+      <pubDate>Sat, 25 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/bases-datos/</guid>
-      <description>En este post realizaremos 1) un análisis exploratorio de la información y 2) una limpieza de la base de datos tal que sea posible hacer con la mayor precisión posible análisis estadísticos.</description>
+      <guid>/post/mrl/</guid>
+      <description>Una de las herramientas principales en econometría es el modelo de regresión lineal. A diferencia de un análisis de correlación, cuyo objetivo es medir el grado de asociación entre dos variables, el modelo de regresión lineal nos permite aproximar el valor promedio de una variable con base en los valores fijos de otras. En este post veremos cómo se estima y cómo se analiza un modelo de regresión linea utilizando R.</description>
     </item>
     
     <item>

@@ -6,24 +6,15 @@
     <description>Recent content in Tags on Econometría &amp; Co.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es-mx</language>
-    <lastBuildDate>Thu, 23 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 25 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Data Management</title>
-      <link>/tags/data-management/</link>
-      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/data-management/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Econometrics</title>
       <link>/tags/econometrics/</link>
-      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 25 Jul 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/econometrics/</guid>
       <description></description>
@@ -32,9 +23,18 @@
     <item>
       <title>R</title>
       <link>/tags/r/</link>
-      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 25 Jul 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Data Management</title>
+      <link>/tags/data-management/</link>
+      <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/data-management/</guid>
       <description></description>
     </item>
     

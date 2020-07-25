@@ -456,10 +456,10 @@ library(tidyverse)</code></pre>
 <p>Otra de las ventajas que tiene el comando <code>describe()</code>, es que este se puede graficar con el comando <code>plot()</code>. Este comando aplicado a <code>describe()</code> resulta en gráficas de puntos para las variables categóricas (o discretas) e histogramas para las variables continuas. Además, las gráficas incluyen un indicador de color para mostrar el número de <code>NA</code> que contiene cada variable.</p>
 <pre class="r"><code>plot(describe(db))</code></pre>
 <pre><code>## $Categorical</code></pre>
-<p><img src="/post/2020-07-25-.es-mx_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/post/Bases-Datos_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <pre><code>## 
 ## $Continuous</code></pre>
-<p><img src="/post/2020-07-25-.es-mx_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<p><img src="/post/Bases-Datos_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
 <p>Normalmente, las gráficas tienden a revelar más información sobre los valores sospechosos que las tablas de datos. Sin embargo, ambas revelan la misma información. En nuestro caso:</p>
 <ul>
 <li>La variable <code>edad</code> tiene un valor máximo de 357.89001.</li>
@@ -477,10 +477,10 @@ db[db==&quot;not assesed&quot;] &lt;- NA</code></pre>
 <p>Volvemos a utilizar los comandos <code>describe()</code> y <code>plot()</code> para ver cómo ha cambiado la gráfica descriptiva. Mucho mejor, ¿no?</p>
 <pre class="r"><code>plot(describe(db))</code></pre>
 <pre><code>## $Categorical</code></pre>
-<p><img src="/post/2020-07-25-.es-mx_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="/post/Bases-Datos_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre><code>## 
 ## $Continuous</code></pre>
-<p><img src="/post/2020-07-25-.es-mx_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<p><img src="/post/Bases-Datos_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
 </div>
 <div id="otros-comandos-útiles" class="section level2">
 <h2>Otros comandos útiles</h2>
