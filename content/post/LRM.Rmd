@@ -21,5 +21,25 @@ knitr::opts_chunk$set(echo = TRUE)
 En general, el modelo de regresión lineal toma la forma:
 
 $$
-y_i = \beta_1 + \beta_2 x_2 + \beta_3 x_3 + \dots + u_i
+y_i = \beta_1 + \beta_2 x_2 + \beta_3 x_3 + \dots + \beta_k x_k + u_i
 $$
+
+La variable \(y_i\) es la dependiente y es la variable que deseamos aproximar. Las variables \(x_1, x_2,\dots, x_k \) son las explicativas (o independientes). El término \(u_i\) es un error, o ruido. Este implica que los coeficientes \(\beta_1, \beta_2 \dots, \beta_k\) sean desconocidos, por lo que tienen que estimarse.
+
+En este post estaremos utilizando los siguientes paquetes de R:
+
+```{r}
+# Instalar paquetes si es necesario
+# install.packages("tidyverse")
+
+# Leer paquetes
+library(tidyverse)
+```
+
+
+Para ver cómo se estiman los coeficientes en el modelo de regresión lineal, consideremos una muestra del _Medical Expenditure Panel Survey 2004_ de los Estados Unidos.
+
+```{r}
+db <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/CancerData_P1.csv")
+db
+```
