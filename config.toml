@@ -40,7 +40,7 @@ use = "katex"  # options: "katex", "mathjax". default is "katex".
 [[params.socialIcons]]
 icon = "fa-github"
 title = "GitHub"
-url = "https://github.com/amosino/courses-econometria"
+url = "https://github.com/amosino/courses--econometria"
 
 [[params.socialIcons]]
 #icon = "fa-instagram"
