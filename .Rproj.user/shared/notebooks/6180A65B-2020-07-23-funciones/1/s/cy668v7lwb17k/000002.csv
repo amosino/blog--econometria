@@ -1,0 +1,8 @@
+"0","crear_histograma <- function(datos, nombre=""Histograma"") {"
+"0","  media <- mean(datos)"
+"0","  desv_est <- sd(datos)"
+"0","  "
+"0","  hist(datos, main = nombre, xlab = ""Datos"", ylab = ""Frecuencia"", col = ""blue"")"
+"0","  abline(v = media, col = ""red"")"
+"0","  abline(v = media + (desv_est * c(1, -1)), col = ""green"")"
+"0","}"

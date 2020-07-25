@@ -1,0 +1,11 @@
+"0","db3 <- read_csv(""https://raw.githubusercontent.com/amosino/course--econometria_salud/master/econometria_salud--datos/CancerData_D1.csv"")"
+"2","Parsed with column specification:
+cols(
+  docid = [31mcol_character()[39m,
+  experience = [32mcol_double()[39m,
+  school = [31mcol_character()[39m,
+  lawsuits = [32mcol_double()[39m,
+  medicaid = [32mcol_double()[39m
+)
+"
+"0","db3"
