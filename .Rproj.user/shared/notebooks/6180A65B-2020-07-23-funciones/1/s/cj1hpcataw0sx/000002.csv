@@ -1,3 +1,0 @@
-"0","set.seed(12345)"
-"0","datos <- rnorm(n = 1500, mean = 15, sd = .75)"
-"0","crear_histograma(datos)"
