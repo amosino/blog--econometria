@@ -15,6 +15,7 @@ tags:
   - R
 weight: 1
 ---
+>Actualizado el `r format(Sys.Date(), >"%Y-%m-%d")`.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -260,3 +261,9 @@ leaflet(df) %>%
 
 
 Dado que este mapa es interactivo, puedes acercar o alejar el mapa según lo desees.
+
+>## Video
+
+>```{r, eval=TRUE, echo=FALSE}
+>blogdown::shortcode("youtube", "CjTLN-FXiFA")
+>```
