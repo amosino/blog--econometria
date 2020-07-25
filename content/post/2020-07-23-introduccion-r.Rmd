@@ -261,9 +261,3 @@ leaflet(df) %>%
 
 
 Dado que este mapa es interactivo, puedes acercar o alejar el mapa según lo desees.
-
->## Video
-
->```{r, eval=TRUE, echo=FALSE}
->blogdown::shortcode("youtube", "CjTLN-FXiFA")
->```
