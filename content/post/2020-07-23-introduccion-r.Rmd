@@ -15,7 +15,6 @@ tags:
   - R
 weight: 1
 ---
->Actualizado el `r format(Sys.Date(), >"%Y-%m-%d")`.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
