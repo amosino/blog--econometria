@@ -260,3 +260,5 @@ leaflet(df) %>%
 
 
 Dado que este mapa es interactivo, puedes acercar o alejar el mapa según lo desees.
+
+*Última actualización: `r format(Sys.Date(), "%d-%m-%Y")`.*

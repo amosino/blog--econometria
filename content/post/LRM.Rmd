@@ -113,3 +113,5 @@ covb2b3 <- vcm[2,3]    # Covarianza de b2 y b3
 seb2 <- sqrt(varb2)    # Error estándar de b2
 seb3 <- sqrt(varb3)    # Error estándar de b3
 ````
+
+*Última actualización: `r format(Sys.Date(), "%d-%m-%Y")`.*

@@ -130,3 +130,5 @@ for (i in 2:5){
   promedios[i-1] <- fmedia_recortada(scores[,i])
 }
 ```
+
+*Última actualización: `r format(Sys.Date(), "%d-%m-%Y")`.*
