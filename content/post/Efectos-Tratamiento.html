@@ -1,0 +1,247 @@
+---
+title: Efectos de Tratamiento
+author: Alejandro Mosiño
+date: '2020-07-26'
+summary: 'Cuando evaluamos una política pública, nos hacemos preguntas tales como: ¿cuál es el efecto de los apoyos gubernamentales para emprender nuevos negocios? ¿Cuál es el efecto de las medidas gubernamentales para combatir la informalidad? ¿Cuál es el impacto de las becas en el rendimiento académico? ¿Influye el tamaño de la clase en el desempeño de los alumnos y, en caso afirmativo, en qué medida? En este post veremos cómo responder a este tipo de preguntas utilizando el conocido modelo de los efectos de tratamiento.'
+  
+slug: efectos-tratamiento
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 6
+math: true
+---
+
+
+
+<p>El modelo de los efectos de tratamiento, también conocido como modelo de resultados potenciales,
+modelo de Neyman-Rubin o modelo contrafactual, nos permite inferir la relación causal entre dos variables, <span class="math inline">\(T\)</span> y <span class="math inline">\(y\)</span>. En el modelo, <span class="math inline">\(T\)</span> es la variable de tratamiento, y <span class="math inline">\(y\)</span> la variable de respuesta (la variable endógena).</p>
+<p>Una complicación del modelo de Neyman-Rubin es que <span class="math inline">\(y\)</span> tiene, al menos, dos resultados potenciales, uno de los cuales es observable y el otro no. Los resultados no observables se conocen como <em>contrafactuales</em>; esto es, aquellos que representan el resultado de una situación que no ha ocurrido, o, en otras palabras, contraria a la situación observada. Por ejemplo, consideremos el caso de un trasplante al corazón. Aquí el tratamiento es el trasplante mismo, y los resultados (desenlaces) posibles son que el individuo que lo recibe sane o muera. Imaginemos que el individuo recibe el trasplante y vive. Para poder medir el efecto causal del tratamiento, es decir para saber si el individuo vive como resultado del trasplante, necesitaríamos saber qué hubiera pasado si este mismo individuo, en el mismo periodo de tiempo, no recibe el tratamiento y, como consecuencia, muere. Este último resultado es el contrafactual.</p>
+<p>En este post estaremos utilizando los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;tidyverse&quot;)
+# install.packages(&quot;Hmisc&quot;)
+
+# Leer paquetes
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ──────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.1     ✓ dplyr   1.0.0
+## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ─────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(Hmisc)</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## Loading required package: survival</code></pre>
+<pre><code>## Loading required package: Formula</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Hmisc&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     src, summarize</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     format.pval, units</code></pre>
+<div id="formalización-del-modelo" class="section level2">
+<h2>Formalización del modelo</h2>
+<p>Para formalizar el modelo de de los efectos de tratamiento, supongamos que, aunque el tratamiento podría ser en diferentes intensidades y, al mismo tiempo, los resultados podrían ser múltiples, <span class="math inline">\(T\)</span> es una variable binaria, de tal forma que:</p>
+<p><span class="math display">\[
+T_i =
+\begin{cases}
+0, &amp; \text{si } i \ \text{no recibe tratamiento} \\
+1, &amp; \text{si } i \ \text{recibe tratamiento} \\
+\end{cases}
+\]</span>
+donde <span class="math inline">\(i=1,2,\dots,n\)</span> indica la unidad <span class="math inline">\(i\)</span>-ésima. El grupo de unidades tratadas se conoce como <em>grupo de tratamiento</em>, y el grupo de unidades no tratadas se conoce como <em>grupo de control</em>}*. En nuestro ejemplo de arriba, la variable <span class="math inline">\(T\)</span> tomará el valor de <span class="math inline">\(1\)</span> si la persona <span class="math inline">\(i\)</span> recibe un trasplante de corazón y <span class="math inline">\(0\)</span> en caso contrario. Además, para cada unidad <span class="math inline">\(i\)</span>, la variable de respuesta, <span class="math inline">\(y_i\)</span>, puede tomar dos resultados potenciales:</p>
+<p><span class="math display">\[
+y_i =
+\begin{cases}
+y_{i}^{0}, &amp; \text{si } i \ \text{no recibe tratamiento} \\
+y_{i}^{1}, &amp; \text{si } i \ \text{recibe tratamiento}, \\
+\end{cases}
+\]</span>
+donde <span class="math inline">\(y_{i}^{0}\)</span> en nuestro ejemplo sería una persona que no recibe el trasplante y muere, y <span class="math inline">\(y_{i}^{1}\)</span> sería una persona que recibe el tratamiento y sana. Otra forma de relacionar la variable de respuesta con los resultados potenciales es mediante la fórmula:
+<span class="math display">\[
+y_i = y_{i}^{1} T_i + y_{i}^{0}(1-T_i) = y_{i}^{0} + (y_{i}^{1}-y_{i}^{0})T_i.
+\]</span></p>
+<p>En esta última ecuación, el elemento <span class="math inline">\((y_{i}^{1}-y_{i}^{0})\)</span> se conoce como el <em>efecto de tratamiento</em>}* para la unidad <span class="math inline">\(i\)</span> (es decir, el efecto del trasplante en nuestro ejemplo), que denotaremos como <span class="math inline">\(\tau_i\)</span>. Específicamente:</p>
+<p><span class="math display">\[
+\tau_i = y_{i}^{1} - y_{i}^{0},
+\]</span>
+de tal forma que:
+<span class="math display">\[
+y_i =  y_{i}^{0} + \tau_i  T_i.
+\]</span></p>
+<p>Como hemos dicho, uno de los principales problemas del modelo de Neyman-Rubin es que, aunque existen dos resultados potenciales para cada unidad <span class="math inline">\(i\)</span>, solo uno de ellos es observable. Este es el <em>problema fundamental de la inferencia causal</em>. En particular, cuando <span class="math inline">\(T_{i}=0\)</span>, <span class="math inline">\(y_{i}^{0}\)</span> es observable y <span class="math inline">\(y_{i}^{1}\)</span> no. En cambio, cuando <span class="math inline">\(T_{i}=1\)</span>, <span class="math inline">\(y_{i}^{1}\)</span> es observable y <span class="math inline">\(y_{i}^{0}\)</span> no. Los resultados no observables son los contrafactuales. Por ejemplo, ¿qué pasa si a una persona con trasplante y sana no se le aplica el tratamiento? Y ¿qué pasa si a una persona sin trasplante y muerta se le aplica el tratamiento?</p>
+<p>Debido al problema fundamental de la inferencia causal, el cual desde el punto de vista práctico implica que no podemos calcular <span class="math inline">\(\tau_i\)</span> para cada unidad <span class="math inline">\(i\)</span>, resulta más conveniente hacer una estimación del efecto causal analizando las propiedades estadísticas del efecto de tratamiento. La medida más utilizada para esto es el <em>efecto de tratamiento promedio</em>, el cual denotaremos por <span class="math inline">\(\tau_{\text{ATE}}\)</span> y está definido como:</p>
+<p><span class="math display">\[
+\tau_{\text{ATE}} = \mathbb{E}(y_{i} | T_i = 1) - \mathbb{E}(y_{i} | T_i = 0), 
+\]</span></p>
+<p>Lo anterior implica que el <span class="math inline">\(\tau_{\text{ATE}}\)</span> no es más que la diferencia entre el efecto promedio sobre el grupo de tratamiento y el efecto promedio sobre el grupo de control. Desde el punto de vista funcional, un estimador del <span class="math inline">\(\tau_{\text{ATE}}\)</span>, que llamaremos <span class="math inline">\(\hat{\tau}_{\text{ATE}}\)</span> es:</p>
+<p><span class="math display">\[
+\hat{\tau}_{\text{ATE}} = \frac{1}{n_T} \sum_{i \in T} y_i -  \frac{1}{n_C} \sum_{i \in C} y_i,
+\]</span>
+donde <span class="math inline">\(n_T\)</span> y <span class="math inline">\(n_C\)</span> se refieren al número de unidades en el grupo de tratamiento y en el grupo de control, respectivamente.</p>
+<p>Otro indicador que se acostumbra estimar en la práctica es el <em>efecto de tratamiento sobre los tratados</em>, el cual no es más que el efecto de tratamiento promedio condicional a que se ha recibido el tratamiento. Este lo denotaremos como <span class="math inline">\(\tau_{\text{ATET}}\)</span> y se calcula como:</p>
+<p><span class="math display">\[
+\tau_{\text{ATET}} = E(y_{i}^{1}| T_i =1 ) - E(y_{i}^{0}|\ T_i = 1).
+\]</span>
+Nota que el primer término en el <span class="math inline">\(\tau_{\text{ATET}}\)</span> es plenamente identificable a partir de las observaciones. Esto es porque <span class="math inline">\(E(y_{i}^{1} | T_i = 1)\)</span> no es más que el resultado promedio para el grupo de tratamiento dado que recibieron el tratamiento. El segundo término, en cambio, es un caso contrafactual que representa el resultado promedio para el grupo de control dado que recibieron el tratamiento. Naturalmente este caso no es observable. Sin embargo, puede demostrarse que si las personas tratadas se han elegido de manera aleatoria (de tal forma que <span class="math inline">\(y_i^0\)</span> y <span class="math inline">\(y_i^1\)</span> son independientes de <span class="math inline">\(T_i\)</span>) el segundo término del <span class="math inline">\(\tau_{\text{ATET}}\)</span> puede estimarse con su análogo: <span class="math inline">\(E(y_{i}^{0} | T_i = 0)\)</span>, de tal forma que:</p>
+<p><span class="math display">\[
+\tau_{\text{ATET}} = E(y_{i}^{1}) - E(y_{i}^{0}) = \tau_{\text{ATE}}.
+\]</span></p>
+<p>Naturalmente, encontrar casos en los que la selección de las unidades en los grupos de tratamiento y de control sea completamente aleatoria es muy complicado. Intentemos imaginar, por ejemplo, si la selección de personas quienes reciben un trasplante de corazón es completamente aleatoria, o si resulta aleatorio que una persona participe en alguna campaña de salud. Por lo general, estas personas se <em>autoseleccionan</em>, lo que genera cierto sesgo en la estimación del <span class="math inline">\(\tau_{\text{ATE}}\)</span> y del <span class="math inline">\(\tau_{\text{ATET}}\)</span>.</p>
+</div>
+<div id="ejemplo-proyecto-star" class="section level2">
+<h2>Ejemplo: Proyecto STAR</h2>
+<p>Un ejemplo muy interesante de experimento aleatorio es el <em>Proyecto STAR</em>, el cual se llevó a cabo en Tennessee, Estados Unidos, entre 1985 y 1989. En este experimento, una muestra de niños desde kindergarten hasta tercer año de educación primaria se asignaron aleatoriamente en clases de diferentes tipos: 1) clases pequeñas con 13-17 alumnos, 2) clases regulares con 22-25 alumnos, y 3) clases regulares que cuentan con un profesor asistente, además del profesor titular. El objetivo del estudio fue medir el desempeño de los alumnos en cada uno de los tres tipos de clases. Este es, claramente, un tipo de análisis en el que podemos medir el efecto del tratamiento, donde el tratamiento puede definirse como la asignación de un alumno a un grupo pequeño y el resultado es el desempeño del estudiante, medido este como un promedio de sus calificaciones en matemáticas, ciencias e idioma extranjero.</p>
+<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/STARData.csv&quot;)</code></pre>
+<pre><code>## Warning: Missing column names filled in: &#39;X1&#39; [1]</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>De esta base de datos tomemos solamente el puntaje total (<code>totalscore</code>), la cual, como hemos dicho, es la variable que nos indica el rendimiento escolar de los niños y la asignación del alumno a un grupo regular o uno reducido (<code>small</code>). Esta no es más que una variable <em>dummy</em> que vale <span class="math inline">\(1\)</span> si el niño fue asignado a un grupo pequeño y <span class="math inline">\(0\)</span> de otra forma; esta es la variable de tratamiento. Si el tratamiento tiene éxito, esperamos que el puntaje promedio sea mayor cuando <span class="math inline">\(T=1\)</span>.</p>
+<pre class="r"><code>vars &lt;- c(&quot;totalscore&quot;,&quot;small&quot;)
+db_regular &lt;- db[which(db$small==0),vars]
+db_small &lt;- db[which(db$small==1),vars]</code></pre>
+<p>Como primer paso, hacemos un resumem estadístico de la variable <code>totalscore</code> para cada una de las submuestras. Estas submuestras pueden calcularse como sigue:</p>
+<pre class="r"><code>db_regular &lt;- db[which(db$small==0),vars]
+db_small &lt;- db[which(db$small==1),vars]</code></pre>
+<p>El comando <code>describe()</code> nos ayuda a ver con detalle la variable de interés:</p>
+<pre class="r"><code>describe(db_regular)</code></pre>
+<pre><code>## db_regular 
+## 
+##  2  Variables      4048  Observations
+## --------------------------------------------------------------------------------
+## totalscore 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10 
+##     4048        0      365        1    918.2    79.71    815.0    834.0 
+##      .25      .50      .75      .90      .95 
+##    868.0    911.5    959.0   1010.0   1050.0 
+## 
+## lowest :  635  680  711  719  727, highest: 1203 1206 1229 1231 1253
+## --------------------------------------------------------------------------------
+## small 
+##        n  missing distinct     Info     Mean      Gmd 
+##     4048        0        1        0        0        0 
+##                
+## Value         0
+## Frequency  4048
+## Proportion    1
+## --------------------------------------------------------------------------------</code></pre>
+<pre class="r"><code>describe(db_small)</code></pre>
+<pre><code>## db_small 
+## 
+##  2  Variables      1738  Observations
+## --------------------------------------------------------------------------------
+## totalscore 
+##        n  missing distinct     Info     Mean      Gmd      .05      .10 
+##     1738        0      330        1    931.9    85.46    820.0    839.0 
+##      .25      .50      .75      .90      .95 
+##    878.0    924.0    980.8   1034.0   1073.0 
+## 
+## lowest :  747  756  763  764  768, highest: 1181 1191 1203 1206 1253
+## --------------------------------------------------------------------------------
+## small 
+##        n  missing distinct     Info     Mean      Gmd 
+##     1738        0        1        0        1        0 
+##                
+## Value         1
+## Frequency  1738
+## Proportion    1
+## --------------------------------------------------------------------------------</code></pre>
+<p>Para este ejemplo, <span class="math inline">\(\mathbb{E}(y_i^0)\)</span> en el modelo de los efectos de tratamiento no es más que la calificación promedio para los niños en clases regulares y <span class="math inline">\(\mathbb{E}(y_i^1)\)</span> la calificación promedio para los niños en clases reducidas. Dado que la asignación de niños en los grupos ha sido aleatoria, tenemos entonces que:</p>
+<p><span class="math display">\[
+\tau_{\text{ATE}} = \tau_{\text{ATET}}, 
+\]</span>
+y que:
+<span class="math display">\[
+\mathbb{E}(y_{i}^{1}) - \mathbb{E}(y_{i}^{0})  = 931.942 - 918.201 =  13.74055 \ \text{puntos.}
+\]</span>
+Es decir, el rendimiento en las clases pequeñas es más alto que en las clases numerosas. La diferencia promedio es de 13.74 puntos.</p>
+<p>Entonces, en el caso en que las unidades del grupo de tratamiento y del grupo de control han sido seleccionadas aleatoriamente, lo único que nos interesa es estimar el efecto de tratamiento promedio. Como veremos, sin embargo, las cosas se ponen mucho más interesantes cuando existen otras variables que podrían ayudar a explicar mejor la relación causal entre <span class="math inline">\(y_i\)</span> y <span class="math inline">\(T_i\)</span>. Estas variables, conocidas como , serán analizadas en la siguiente sección.</p>
+</div>
+<div id="el-modelo-de-regresión-lineal" class="section level2">
+<h2>El modelo de regresión lineal</h2>
+<p>Para ver el papel que juega el modelo de regresión lineal en el cálculo de los efectos de de tratamiento, consideremos el modelo:</p>
+<p><span class="math display">\[
+totalscore_i = \beta_1+ \beta_2 small_i + u_i,
+\]</span>
+donde <span class="math inline">\(totalscore_i\)</span> nos indica el rendimiento escolar del niño i-ésimo, y <span class="math inline">\(small_i\)</span> es una variable dummy —de tratamiento— tal que:</p>
+<p><span class="math display">\[
+small_i = \begin{cases} 1, &amp; \ \text{si} \ i \ \text{es asignado a un grupo pequeño} \\ 
+0, &amp; \ \text{de otra forma}.  \end{cases}
+\]</span>
+Este modelo puede estimarse por el método de los mínimos cuadrados ordinarios (MCO). El resultado puede expresarse como:</p>
+<p><span class="math display">\[
+    \widehat{totalscore}_i = \begin{cases} b_1 + b_2, &amp; \ \text{si} \ i \ \text{es asignado a un grupo pequeño} \\ 
+        b_1, &amp; \ \text{de otra forma}, \end{cases}
+\]</span>
+donde <span class="math inline">\(b_1\)</span> y <span class="math inline">\(b_2\)</span> son los coeficientes estimados y <span class="math inline">\(\widehat{totalscore}_i\)</span> el valor esperado estimado de la variable <span class="math inline">\(totalscore\)</span>. Si existe una diferencia entre el promedio de niños en grupos pequeños y niños en grupos regulares, el valor del coeficiente <span class="math inline">\(b_2\)</span> tendría que ser (estadísticamente) diferente de cero. De hecho, en caso de que el tratamiento tenga éxito, esperamos que el coeficiente <span class="math inline">\(b_2\)</span> sea positivo. La estimación puede hacerse fácilmente utilizando la función <code>lm()</code>:</p>
+<pre class="r"><code>treat.m1 &lt;- lm(totalscore~small, data=db)
+summary(treat.m1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = totalscore ~ small, data = db)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -283.20  -50.94   -7.20   42.80  334.80 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  918.201      1.155  795.00  &lt; 2e-16 ***
+## small         13.741      2.107    6.52 7.61e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 73.48 on 5784 degrees of freedom
+## Multiple R-squared:  0.007297,   Adjusted R-squared:  0.007125 
+## F-statistic: 42.51 on 1 and 5784 DF,  p-value: 7.609e-11</code></pre>
+<p>Primero, observamos que tanto la constante como el coeficiente de la variable de tratamiento son (estadísticamente) diferentes de cero. Segundo, el valor de los coeficientes estimados resultan muy familiares: el valor estimado de la constante no es más que <span class="math inline">\(\mathbb{E}(y_i^0)\)</span> de la sección anterior, es decir al promedio de calificaciones para los niños en el grupo de control; el coeficiente de <span class="math inline">\(small_i\)</span> no es más que el valor promedio del efecto de tratamiento, <span class="math inline">\(\tau_{\text{ATE}}\)</span>. Esto demuestra que el cálculo de los efectos de tratamiento pueden realizarse como en la sección anterior o bien por medio de una regresión lineal.</p>
+<p>Sin embargo, el modelo de regresión cobra un papel protagónico en el cálculo del <span class="math inline">\(\tau_{\text{ATE}}\)</span> si suponemos que los resultados potenciales están determinados por otras variables, <span class="math inline">\(\mathbf{x}_i\)</span>, además de la variable de tratamiento. Esto resulta en el efecto de tratamiento <em>condicional</em> a <span class="math inline">\(\mathbf{x}_i\)</span>, el cual se calcula como:</p>
+<p><span class="math display">\[
+\tau_{\text{ATE}}(\mathbf{x}_i) = \mathbb{E}(y_{i}^{1} - y_{i}^{0}|\mathbf{x}_i),
+\]</span>
+y el efecto de tratamiento sobre los tratados se calcula como:</p>
+<p><span class="math display">\[
+\tau_{\text{ATET}}(\mathbf{x}_i) = \mathbb{E}(y_{i}^{1} | \mathbf{x}_i, T_i = 1) - \mathbb{E}(y_{i}^{0}|\mathbf{x}_i, T_i = 1).
+\]</span>
+Este, al igual que en el caso no condicionado, es igual al <span class="math inline">\(\tau_{\text{ATE}}(\mathbf{x}_i)\)</span> cuando la selección de las unidades en cada grupo es completamente aleatorio.</p>
+<p>Para ejemplificar, supongamos que el modelo es ahora:</p>
+<p><span class="math display">\[
+totalscore_i = \beta_1+ \beta_2 small_i + \beta_3 tchexper_i + u_i,
+\]</span>
+En este caso, el resultado potencial, <span class="math inline">\(totalscore\)</span>, depende no solo de la variable de tratamiento sino de la variable <span class="math inline">\(tchexper\)</span>, la cual nos indica el número de años de experiencia docente del profesor del grupo. Esperamos que, entre mas experiencia tenga el profesor, mejor será el puntaje de los niños. Esto implica que el signo del coeficiente de esta variable de control debería ser positivo.</p>
+<pre class="r"><code>treat.m2 &lt;- lm(totalscore~small+tchexper, data=db)
+summary(treat.m2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = totalscore ~ small + tchexper, data = db)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -273.84  -51.38   -7.43   42.55  341.22 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  904.442      1.952 463.306  &lt; 2e-16 ***
+## small         14.307      2.099   6.817 1.02e-11 ***
+## tchexper       1.467      0.167   8.784  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 73.08 on 5763 degrees of freedom
+##   (20 observations deleted due to missingness)
+## Multiple R-squared:  0.02032,    Adjusted R-squared:  0.01998 
+## F-statistic: 59.77 on 2 and 5763 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Como vemos, el signo del coeficiente estimado de la variable <span class="math inline">\(expermaestro\)</span> es, efectivamente, positivo y estadísticamente significativo. Su valor indica que cada año adicional de experiencia del profesor de la clase eleva el puntaje promedio de sus alumnos en 1.467 puntos. Los resultados también muestran que el puntaje promedio para el grupo de control es de 904.442 puntos, y que el efecto de tratamiento es de 14.307 puntos. Esto implica que el puntaje promedio del grupo de tratamiento es de (904.442+14.307) 918.7484 puntos.</p>
+<p>Por supuesto, la especificación que aquí hemos usado para modelar los efectos de tratamiento es demasiado simple. Existen otras variables que podrían utilizarse para explicar los resultados potenciales. Estas pueden entrar de forma independiente o interactuando entre ellas. Adicionalmente, no hemos considerado algunos otros problemas asociados al análisis de los efectos de tratamiento. ¿Qué pasaría, por ejemplo, si los alumnos en el experimento de Tennessee se hubieran asignado en los diferentes tipos de clase en función de su desempeño? Esta situación nos conduciría a modificar nuestro modelo, de tal forma que tomemos en cuenta un problema que, en econometría, se conoce como de <em>endogeneidad</em>. Esto será analizado en otro post.</p>
+<p><em>Última actualización: 26-07-2020.</em></p>
+</div>

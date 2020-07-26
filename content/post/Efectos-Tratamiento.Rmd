@@ -1,0 +1,202 @@
+---
+title: Efectos de Tratamiento
+author: Alejandro Mosiño
+date: '2020-07-26'
+summary: 'Cuando evaluamos una política pública, nos hacemos preguntas tales como: ¿cuál es el efecto de los apoyos gubernamentales para emprender nuevos negocios? ¿Cuál es el efecto de las medidas gubernamentales para combatir la informalidad? ¿Cuál es el impacto de las becas en el rendimiento académico? ¿Influye el tamaño de la clase en el desempeño de los alumnos y, en caso afirmativo, en qué medida? En este post veremos cómo responder a este tipo de preguntas utilizando el conocido modelo de los efectos de tratamiento.'
+  
+slug: efectos-tratamiento
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 6
+math: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+El modelo de los efectos de tratamiento, también conocido como modelo de resultados potenciales, 
+modelo de Neyman-Rubin o modelo contrafactual, nos permite inferir la relación causal entre dos variables, $T$ y $y$. En el modelo, $T$ es la variable de tratamiento, y $y$ la variable de respuesta (la variable endógena).
+
+Una complicación del modelo de Neyman-Rubin es que $y$ tiene, al menos, dos resultados potenciales, uno de los cuales es observable y el otro no. Los resultados no observables se conocen como *contrafactuales*; esto es, aquellos que representan el resultado de una situación que no ha ocurrido, o, en otras palabras, contraria a la situación observada. Por ejemplo, consideremos el caso de un trasplante al corazón. Aquí el tratamiento es el trasplante mismo, y los resultados (desenlaces) posibles son que el individuo que lo recibe sane o muera. Imaginemos que el individuo recibe el trasplante y vive. Para poder medir el efecto causal del tratamiento, es decir para saber si el individuo vive como resultado del trasplante, necesitaríamos saber qué hubiera pasado si este mismo individuo, en el mismo periodo de tiempo, no recibe el tratamiento y, como consecuencia, muere. Este último resultado es el contrafactual.
+
+En este post estaremos utilizando los siguientes paquetes de R:
+
+```{r}
+# Instalar paquetes si es necesario
+# install.packages("tidyverse")
+# install.packages("Hmisc")
+
+# Leer paquetes
+library(tidyverse)
+library(Hmisc)
+```
+
+## Formalización del modelo
+
+Para formalizar el modelo de de los efectos de tratamiento, supongamos que,  aunque el tratamiento podría ser en diferentes intensidades y, al mismo tiempo, los resultados podrían ser múltiples, $T$ es una variable binaria, de tal forma que:
+
+\[
+T_i =
+\begin{cases}
+0, & \text{si } i \ \text{no recibe tratamiento} \\
+1, & \text{si } i \ \text{recibe tratamiento} \\
+\end{cases}
+\]
+donde $i=1,2,\dots,n$ indica la unidad $i$-ésima. El grupo de unidades tratadas se conoce como *grupo de tratamiento*, y el grupo de unidades no tratadas se conoce como *grupo de control*}*. En nuestro ejemplo de arriba, la variable $T$ tomará el valor de $1$ si la persona $i$ recibe un trasplante de corazón y $0$ en caso contrario. Además, para cada unidad $i$, la variable de respuesta, $y_i$, puede tomar dos resultados potenciales:
+
+\[
+y_i =
+\begin{cases}
+y_{i}^{0}, & \text{si } i \ \text{no recibe tratamiento} \\
+y_{i}^{1}, & \text{si } i \ \text{recibe tratamiento}, \\
+\end{cases}
+\]
+donde $y_{i}^{0}$ en nuestro ejemplo sería una persona que no recibe el trasplante y muere, y $y_{i}^{1}$ sería una persona que recibe el tratamiento y sana. Otra forma de relacionar la variable de respuesta con los resultados potenciales es mediante la fórmula:
+\[
+y_i = y_{i}^{1} T_i + y_{i}^{0}(1-T_i) = y_{i}^{0} + (y_{i}^{1}-y_{i}^{0})T_i.
+\]
+ 
+
+En esta última ecuación, el elemento $(y_{i}^{1}-y_{i}^{0})$ se conoce como el *efecto de tratamiento*}* para la unidad $i$ (es decir, el efecto del trasplante en nuestro ejemplo), que denotaremos como $\tau_i$. Específicamente:
+
+\[
+\tau_i = y_{i}^{1} - y_{i}^{0},
+\]
+de tal forma que:
+\[
+y_i =  y_{i}^{0} + \tau_i  T_i.
+\]
+
+Como hemos dicho, uno de los principales problemas del modelo de Neyman-Rubin es que, aunque existen dos resultados potenciales para cada unidad $i$, solo uno de ellos es observable. Este es el *problema fundamental de la inferencia causal*. En particular, cuando $T_{i}=0$, $y_{i}^{0}$ es observable y $y_{i}^{1}$ no. En cambio, cuando $T_{i}=1$, $y_{i}^{1}$ es observable y $y_{i}^{0}$ no. Los resultados no observables son los contrafactuales. Por ejemplo, ¿qué pasa si a una persona con trasplante y sana no se le aplica el tratamiento? Y ¿qué pasa si a una persona sin trasplante y muerta se le aplica el tratamiento? 
+
+Debido al problema fundamental de la inferencia causal, el cual desde el punto de vista práctico implica que no podemos calcular $\tau_i$ para cada unidad $i$, resulta más conveniente hacer una estimación del efecto causal analizando las propiedades estadísticas del efecto de tratamiento. La medida más utilizada para esto es el *efecto de tratamiento promedio*, el cual denotaremos por $\tau_{\text{ATE}}$ y está definido como:
+
+\[
+\tau_{\text{ATE}} = \mathbb{E}(y_{i} | T_i = 1) - \mathbb{E}(y_{i} | T_i = 0), 
+\]
+
+Lo anterior implica que el $\tau_{\text{ATE}}$ no es más que la diferencia entre el efecto promedio sobre el grupo de tratamiento y el efecto promedio sobre el grupo de control. Desde el punto de vista funcional, un estimador del $\tau_{\text{ATE}}$, que llamaremos $\hat{\tau}_{\text{ATE}}$ es:
+
+\[
+\hat{\tau}_{\text{ATE}} = \frac{1}{n_T} \sum_{i \in T} y_i -  \frac{1}{n_C} \sum_{i \in C} y_i,
+\]
+donde $n_T$ y $n_C$ se refieren al número de unidades en el grupo de tratamiento y en el grupo de control, respectivamente.
+
+Otro indicador que se acostumbra estimar en la práctica es el *efecto de tratamiento sobre los tratados*, el cual no es más que el efecto de tratamiento promedio condicional a que se ha recibido el tratamiento. Este lo denotaremos como $\tau_{\text{ATET}}$ y se calcula como:
+
+\[
+\tau_{\text{ATET}} = E(y_{i}^{1}| T_i =1 ) - E(y_{i}^{0}|\ T_i = 1).
+\]
+Nota que el primer término en el $\tau_{\text{ATET}}$ es plenamente identificable a partir de las observaciones. Esto es porque $E(y_{i}^{1} | T_i = 1)$ no es más que el resultado promedio para el grupo de tratamiento dado que recibieron el tratamiento. El segundo término, en cambio, es un caso contrafactual que representa el resultado promedio para el grupo de control dado que recibieron el tratamiento. Naturalmente este caso no es observable. Sin embargo, puede demostrarse que si las personas tratadas se han elegido de manera aleatoria (de tal forma que $y_i^0$ y $y_i^1$ son independientes de $T_i$) el segundo término del $\tau_{\text{ATET}}$  puede estimarse con su análogo:  $E(y_{i}^{0} | T_i = 0)$, de tal forma que:
+
+\[
+\tau_{\text{ATET}} = E(y_{i}^{1}) - E(y_{i}^{0}) = \tau_{\text{ATE}}.
+\]
+
+Naturalmente, encontrar casos en los que la selección de las unidades en los grupos de tratamiento y de control sea completamente aleatoria es muy complicado. Intentemos imaginar, por ejemplo, si la selección de personas quienes reciben un trasplante de corazón es completamente aleatoria, o si resulta aleatorio que una persona participe en alguna campaña de salud. Por lo general, estas personas se *autoseleccionan*, lo que genera cierto sesgo en la estimación del $\tau_{\text{ATE}}$ y del $\tau_{\text{ATET}}$.
+
+## Ejemplo: Proyecto STAR
+
+Un ejemplo muy interesante de experimento aleatorio es el *Proyecto STAR*, el cual se llevó a cabo en Tennessee, Estados Unidos, entre 1985 y 1989. En este experimento, una muestra de niños desde kindergarten hasta tercer año de educación primaria se asignaron aleatoriamente en clases de diferentes tipos: 1) clases pequeñas con 13-17 alumnos, 2) clases regulares con 22-25 alumnos, y 3) clases regulares que cuentan con un profesor asistente, además del profesor titular. El objetivo del estudio fue medir el desempeño de los alumnos en cada uno de los tres tipos de clases. Este es, claramente, un tipo de análisis en el que podemos medir el efecto del tratamiento, donde el tratamiento puede definirse como la asignación de un alumno a un grupo pequeño y el resultado es el desempeño del estudiante, medido este como un promedio de sus calificaciones en matemáticas, ciencias e idioma extranjero.
+
+```{r}
+db <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/STARData.csv")
+```
+
+De esta base de datos tomemos solamente el puntaje total (`totalscore`), la cual, como hemos dicho, es la variable que nos indica el rendimiento escolar de los niños y la asignación del alumno a un grupo regular o uno reducido (`small`). Esta no es más que una variable *dummy* que vale $1$ si el niño fue asignado a un grupo pequeño y $0$ de otra forma; esta es la variable de tratamiento. Si el tratamiento tiene éxito, esperamos que el puntaje promedio sea mayor cuando $T=1$.
+
+```{r}
+vars <- c("totalscore","small")
+db_regular <- db[which(db$small==0),vars]
+db_small <- db[which(db$small==1),vars]
+```
+
+Como primer paso, hacemos un resumem estadístico de la variable `totalscore` para cada una de las submuestras. Estas submuestras pueden calcularse como sigue:
+
+```{r}
+db_regular <- db[which(db$small==0),vars]
+db_small <- db[which(db$small==1),vars]
+```
+
+El comando `describe()` nos ayuda a ver con detalle la variable de interés:
+
+```{r}
+describe(db_regular)
+describe(db_small)
+```
+
+Para este ejemplo, $\mathbb{E}(y_i^0)$ en el modelo de los efectos de tratamiento no es más que la calificación promedio para los niños en clases regulares y $\mathbb{E}(y_i^1)$ la calificación promedio para los niños en clases reducidas. Dado que la asignación de niños en los grupos ha sido aleatoria, tenemos entonces que:
+
+\[
+\tau_{\text{ATE}} = \tau_{\text{ATET}}, 
+\]
+y que:
+\[
+\mathbb{E}(y_{i}^{1}) - \mathbb{E}(y_{i}^{0})  = 931.942 - 918.201 =  13.74055 \ \text{puntos.}
+\]
+Es decir, el rendimiento en las clases pequeñas es más alto que en las clases numerosas. La diferencia promedio es de 13.74 puntos.
+
+Entonces, en el caso en que las unidades del grupo de tratamiento y del grupo de control han sido seleccionadas aleatoriamente, lo único que nos interesa es estimar el efecto de tratamiento promedio. Como veremos, sin embargo, las cosas se ponen mucho más interesantes cuando existen otras variables que podrían ayudar a explicar mejor la relación causal entre $y_i$ y $T_i$. Estas variables, conocidas como \textbf{variables de control}, serán analizadas en la siguiente sección.
+
+## El modelo de regresión lineal
+
+Para ver el papel que juega el modelo de regresión lineal en el cálculo de los efectos de de tratamiento, consideremos el modelo: 
+
+\[
+totalscore_i = \beta_1+ \beta_2 small_i + u_i,
+\]
+donde $totalscore_i$ nos indica el rendimiento escolar del niño i-ésimo, y $small_i$ es una variable dummy ---de tratamiento--- tal que:
+
+\[
+small_i = \begin{cases} 1, & \ \text{si} \ i \ \text{es asignado a un grupo pequeño} \\ 
+0, & \ \text{de otra forma}.  \end{cases}
+\]
+Este modelo puede estimarse por el método de los mínimos cuadrados ordinarios (MCO). El resultado puede expresarse como:
+
+\[
+	\widehat{totalscore}_i = \begin{cases} b_1 + b_2, & \ \text{si} \ i \ \text{es asignado a un grupo pequeño} \\ 
+		b_1, & \ \text{de otra forma}, \end{cases}
+\]
+donde $b_1$ y $b_2$ son los coeficientes estimados y $\widehat{totalscore}_i$ el valor esperado estimado de la variable $totalscore$. Si existe una diferencia entre el promedio de niños en grupos pequeños y niños en grupos regulares, el valor del coeficiente $b_2$ tendría que ser (estadísticamente) diferente de cero. De hecho, en caso de que el tratamiento tenga éxito, esperamos que el coeficiente $b_2$ sea positivo. La estimación puede hacerse fácilmente utilizando la función `lm()`:
+
+```{r}
+treat.m1 <- lm(totalscore~small, data=db)
+summary(treat.m1)
+```
+
+Primero, observamos que tanto la constante como el coeficiente de la variable de tratamiento son (estadísticamente) diferentes de cero. Segundo, el valor de los coeficientes estimados resultan muy familiares: el valor estimado de la constante no es más que $\mathbb{E}(y_i^0)$ de la sección anterior, es decir al promedio de calificaciones para los niños en el grupo de control; el coeficiente de $small_i$ no es más que el valor promedio del efecto de tratamiento, $\tau_{\text{ATE}}$. Esto demuestra que el cálculo de los efectos de tratamiento pueden realizarse como en la sección anterior o bien por medio de una regresión lineal.
+
+Sin embargo, el modelo de regresión cobra un papel protagónico en el cálculo del $\tau_{\text{ATE}}$ si suponemos que los resultados potenciales están determinados por otras variables, $\mathbf{x}_i$, además de la variable de tratamiento. Esto resulta en el efecto de tratamiento *condicional* a $\mathbf{x}_i$, el cual se calcula como:
+
+\[
+\tau_{\text{ATE}}(\mathbf{x}_i) = \mathbb{E}(y_{i}^{1} - y_{i}^{0}|\mathbf{x}_i),
+\]
+y el efecto de tratamiento sobre los tratados se calcula como:
+
+\[
+\tau_{\text{ATET}}(\mathbf{x}_i) = \mathbb{E}(y_{i}^{1} | \mathbf{x}_i, T_i = 1) - \mathbb{E}(y_{i}^{0}|\mathbf{x}_i, T_i = 1).
+\]
+Este, al igual que en el caso no condicionado, es igual al $\tau_{\text{ATE}}(\mathbf{x}_i)$ cuando la selección de las unidades en cada grupo es completamente aleatorio.
+
+Para ejemplificar, supongamos que el modelo es ahora:
+
+\[
+totalscore_i = \beta_1+ \beta_2 small_i + \beta_3 tchexper_i + u_i,
+\]
+En este caso, el resultado potencial, $totalscore$, depende no solo de la variable de tratamiento sino de la variable $tchexper$, la cual nos indica el número de años de experiencia docente del profesor del grupo. Esperamos que, entre mas experiencia tenga el profesor, mejor será el puntaje de los niños. Esto implica que el signo del coeficiente de esta variable de control debería ser positivo.
+
+```{r}
+treat.m2 <- lm(totalscore~small+tchexper, data=db)
+summary(treat.m2)
+```
+
+Como vemos, el signo del coeficiente estimado de la variable $expermaestro$ es, efectivamente, positivo y estadísticamente significativo. Su valor indica que cada año adicional de experiencia del profesor de la clase eleva el puntaje promedio de sus alumnos en 1.467 puntos. Los resultados también muestran que el puntaje promedio para el grupo de control es de 904.442 puntos, y que el efecto de tratamiento es de 14.307 puntos. Esto implica que el puntaje promedio del grupo de tratamiento es de (904.442+14.307) 918.7484 puntos.
+
+Por supuesto, la especificación que aquí hemos usado para modelar los efectos de tratamiento es demasiado simple. Existen otras variables que podrían utilizarse para explicar los resultados potenciales. Estas pueden entrar de forma independiente o interactuando entre ellas. Adicionalmente, no hemos considerado algunos otros problemas asociados al análisis de los efectos de tratamiento. ¿Qué pasaría, por ejemplo, si los alumnos en el experimento de Tennessee se hubieran asignado en los diferentes tipos de clase en función de su desempeño? Esta situación nos conduciría a modificar nuestro modelo, de tal forma que tomemos en cuenta un problema que, en econometría, se conoce como de *endogeneidad*. Esto será analizado en otro post.
+
+*Última actualización: `r format(Sys.Date(), "%d-%m-%Y")`.*

@@ -6,7 +6,7 @@
     <description>Recent content in Econometrics on Econometría &amp; Co.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es-mx</language>
-    <lastBuildDate>Sat, 25 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 26 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/econometrics/index.xml" rel="self" type="application/rss+xml" />
     
@@ -54,6 +54,15 @@
       
       <guid>/post/mrl/</guid>
       <description>Una de las herramientas principales en econometría es el modelo de regresión lineal. A diferencia de un análisis de correlación, cuyo objetivo es medir el grado de asociación entre dos variables, el modelo de regresión lineal nos permite aproximar el valor promedio de una variable con base en los valores fijos de otras. En este post veremos cómo se estima y cómo se analiza un modelo de regresión linea utilizando R.</description>
+    </item>
+    
+    <item>
+      <title>Efectos de Tratamiento</title>
+      <link>/post/efectos-tratamiento/</link>
+      <pubDate>Sun, 26 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/efectos-tratamiento/</guid>
+      <description>Cuando evaluamos una política pública, nos hacemos preguntas tales como: ¿cuál es el efecto de los apoyos gubernamentales para emprender nuevos negocios? ¿Cuál es el efecto de las medidas gubernamentales para combatir la informalidad? ¿Cuál es el impacto de las becas en el rendimiento académico? ¿Influye el tamaño de la clase en el desempeño de los alumnos y, en caso afirmativo, en qué medida? En este post veremos cómo responder a este tipo de preguntas utilizando el conocido modelo de los efectos de tratamiento.</description>
     </item>
     
   </channel>

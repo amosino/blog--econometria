@@ -40,7 +40,7 @@ library(effects)
 Ahora, estamos listos para ver un ejemplo. Consideremos una muestra del _Medical Expenditure Panel Survey 2004_ de los Estados Unidos. Tómate un tiempo para analizar la base de datos, así como para realizar un análisis de estadística descriptiva.
 
 ```{r}
-db <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/MEPSsample.csv")
+db <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/MEPSData.csv")
 ```
 
 Deseamos modelar la dependencia que existe entre los gastos totales en salud (`exp_tot`), los cuales juegan el papel de la variable dependiente, en función de la edad de la persona (`age`) y del ingreso familiar en logaritmos (`lninc`). La función que nos permite estimar un modelo de regresión lineal usando mínimos cuadrados ordinarios es `lm`. Esta función tiene varios argumentos, pero los más importantes son `formula`, que representa al modelo en sí, y `data`, que es el objeto que contiene la base de datos. Otro argumento que en ocasiones podría ser importante es `subset`, el cual nos permite considerar solo un subconjunto de la muestra. En nuestro caso, no consideraremos a las personas cuyos gastos en salud hayan sido cero.
