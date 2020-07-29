@@ -211,7 +211,7 @@ z &lt;- runif(nobs, min=0, max=1)
 u &lt;- rnorm(nobs,0,1)
 y1 &lt;- 0 + 1*x + 5*z + u
 y2 &lt;- 0 + 10*x^2 + 2*z + u
-y3 &lt;- exp(-1+ 1*x + 3*z + u)
+y3 &lt;- exp(-1 + 1*x + 3*z + u)
 
 ### Run regressions
 
@@ -227,7 +227,7 @@ plot(mod1, which=1, col=c(&quot;blue&quot;))</code></pre>
 <p><img src="/post/Misspecification_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
 <pre class="r"><code>plot(mod3, which=1, col=c(&quot;blue&quot;))</code></pre>
 <p><img src="/post/Misspecification_files/figure-html/unnamed-chunk-6-3.png" width="672" />
-Como puede observarse, cuando el modelo está bien especificado, efectivamente tenemos residuales que oscilan alrededor de cero y cuyo comportamiento es errático, es decir impronosticable. Sin embargo, cuando el modelo está mal especificado, el comportamiento de los errores puede predecirse. Por ejemplo, vemos que los residuales del segundo modelo tienen un comportamiento en forma de U.En el tercer modelo, se aprecia que los residuales tienen una tendecia decreciente.</p>
+Como puede observarse, cuando el modelo está bien especificado, efectivamente tenemos residuales que oscilan alrededor de cero y cuyo comportamiento es errático, es decir impronosticable. Sin embargo, cuando el modelo está mal especificado, el comportamiento de los errores puede predecirse. Por ejemplo, vemos que los residuales del segundo modelo tienen un comportamiento en forma de U. En el tercer modelo, se aprecia que los residuales tienen una tendecia decreciente.</p>
 </div>
 <div id="prueba-de-especificación" class="section level2">
 <h2>Prueba de especificación</h2>
@@ -250,19 +250,19 @@ y_i= \delta_1 + \delta_2 x_{i2} + \delta_3 \widehat{y}_i^2 + \delta_4 \widehat{y
 ##  RESET test
 ## 
 ## data:  mod1
-## RESET = 0.67584, df1 = 2, df2 = 9995, p-value = 0.5088</code></pre>
+## RESET = 0.0012509, df1 = 2, df2 = 9995, p-value = 0.9987</code></pre>
 <pre class="r"><code>resettest(mod2, power=2:3, type=&quot;fitted&quot;)</code></pre>
 <pre><code>## 
 ##  RESET test
 ## 
 ## data:  mod2
-## RESET = 2104.6, df1 = 2, df2 = 9995, p-value &lt; 2.2e-16</code></pre>
+## RESET = 2112, df1 = 2, df2 = 9995, p-value &lt; 2.2e-16</code></pre>
 <pre class="r"><code>resettest(mod3, power=2:3, type=&quot;fitted&quot;)</code></pre>
 <pre><code>## 
 ##  RESET test
 ## 
 ## data:  mod3
-## RESET = 283.82, df1 = 2, df2 = 9995, p-value &lt; 2.2e-16</code></pre>
+## RESET = 235.97, df1 = 2, df2 = 9995, p-value &lt; 2.2e-16</code></pre>
 <p>Observa los valores p de la prueba RESET. Cuando el valor p&lt;10%, rechazamos <span class="math inline">\(H_0\)</span>, lo cual sería un indicativo de una especificación incorrecta del modelo analizado.</p>
 <p><em>Última actualización: 29-07-2020.</em></p>
 </div>

@@ -170,7 +170,7 @@ z <- runif(nobs, min=0, max=1)
 u <- rnorm(nobs,0,1)
 y1 <- 0 + 1*x + 5*z + u
 y2 <- 0 + 10*x^2 + 2*z + u
-y3 <- exp(-1+ 1*x + 3*z + u)
+y3 <- exp(-1 + 1*x + 3*z + u)
 
 ### Run regressions
 
@@ -185,7 +185,7 @@ plot(mod2, which=1, col=c("blue"))
 plot(mod3, which=1, col=c("blue"))
 
 ```
-Como puede observarse, cuando el modelo está bien especificado, efectivamente tenemos residuales que oscilan alrededor de cero y cuyo comportamiento es errático, es decir impronosticable. Sin embargo, cuando el modelo está mal especificado, el comportamiento de los errores puede predecirse. Por ejemplo, vemos que los residuales del segundo modelo tienen un comportamiento en forma de U.En el tercer modelo, se aprecia que los residuales tienen una tendecia decreciente.
+Como puede observarse, cuando el modelo está bien especificado, efectivamente tenemos residuales que oscilan alrededor de cero y cuyo comportamiento es errático, es decir impronosticable. Sin embargo, cuando el modelo está mal especificado, el comportamiento de los errores puede predecirse. Por ejemplo, vemos que los residuales del segundo modelo tienen un comportamiento en forma de U. En el tercer modelo, se aprecia que los residuales tienen una tendecia decreciente.
 
 ## Prueba de especificación
 
