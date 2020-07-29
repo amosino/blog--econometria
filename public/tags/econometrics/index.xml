@@ -6,7 +6,7 @@
     <description>Recent content in Econometrics on Econometría &amp; Co.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es-mx</language>
-    <lastBuildDate>Sun, 26 Jul 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 29 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/econometrics/index.xml" rel="self" type="application/rss+xml" />
     
@@ -63,6 +63,15 @@
       
       <guid>/post/efectos-tratamiento/</guid>
       <description>Cuando evaluamos una política pública, nos hacemos preguntas tales como: ¿cuál es el efecto de los apoyos gubernamentales para emprender nuevos negocios? ¿Cuál es el efecto de las medidas gubernamentales para combatir la informalidad? ¿Cuál es el impacto de las becas en el rendimiento académico? ¿Influye el tamaño de la clase en el desempeño de los alumnos y, en caso afirmativo, en qué medida? En este post veremos cómo responder a este tipo de preguntas utilizando el conocido modelo de los efectos de tratamiento.</description>
+    </item>
+    
+    <item>
+      <title>Consecuencias de una especificación errónea</title>
+      <link>/post/misspecification/</link>
+      <pubDate>Wed, 29 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/misspecification/</guid>
+      <description>En este post realizamos algunos ejercicios de simulación para mostrar los efectos de una especificación incorrecta del modelo. Una simulación Monte Carlo revela que si el modelo está mal especificado obtendremos estimadores inconsistentes. Además, mostramos que los residuales de los modelos mal especificado no tienen el comportamiento esperado.</description>
     </item>
     
   </channel>

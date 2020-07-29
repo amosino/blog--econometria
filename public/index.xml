@@ -66,6 +66,15 @@
     </item>
     
     <item>
+      <title>Consecuencias de una especificación errónea</title>
+      <link>/post/misspecification/</link>
+      <pubDate>Wed, 29 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/misspecification/</guid>
+      <description>En este post realizamos algunos ejercicios de simulación para mostrar los efectos de una especificación incorrecta del modelo. Una simulación Monte Carlo revela que si el modelo está mal especificado obtendremos estimadores inconsistentes. Además, mostramos que los residuales de los modelos mal especificado no tienen el comportamiento esperado.</description>
+    </item>
+    
+    <item>
       <title>Sobre este sitio</title>
       <link>/about/</link>
       <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>
