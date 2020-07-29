@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es-mx" data-theme="light"><head>
+    <title> Alejandro Mosiño | Consecuencias de una especificación errónea </title>
+    <meta charset="utf-8"><meta name="generator" content="Hugo 0.67.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="description" content="Un blog sobre Econometría, Manejo de datos, Programación y más.">
+    
+    <link rel="stylesheet" href="/css/style.min.67cd718c0a3c8009c771494d381fb7128246a454bd0518fed97cb65d257db948.css" integrity="sha256-Z81xjAo8gAnHcUlNOB&#43;3EoJGpFS9BRj&#43;2Xy2XSV9uUg=" crossorigin="anonymous" type="text/css"><link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    
+    <link rel="shortcut icon" href="/favicons/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="canonical" href="/post/misspecification/">
+    
+    
+    <script type="text/javascript" src="/js/anatole-header.min.c275265a259296f3dd50e8236a77fcbcadb1dbb9597d3045c675dcc2c7c58a93.js" integrity="sha256-wnUmWiWSlvPdUOgjanf8vK2x27lZfTBFxnXcwsfFipM=" crossorigin="anonymous"></script>
+    <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/site-feature-image.png"/>
+
+<meta name="twitter:title" content="Consecuencias de una especificación errónea"/>
+<meta name="twitter:description" content="En este post realizamos algunos ejercicios de simulación para mostrar los efectos de una especificación incorrecta del modelo. Una simulación Monte Carlo revela que si el modelo está mal especificado obtendremos estimadores inconsistentes. Además, mostramos que los residuales de los modelos mal especificado no tienen el comportamiento esperado."/>
+
+</head><body><div class="sidebar animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src="/images/profile.jpg" alt="profile picture">
+        <h3 title=""><a href="/">Econometría &amp; Co.</a></h3>
+        <div class="description">
+          <p>Un blog sobre Econometría, Manejo de datos, Programación y más.</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links">
+        
+        <li>
+        <a href="https://github.com/amosino/courses--econometria" rel="me" aria-label="GitHub">
+          <i class="fa fa-2x fa-github" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+        <li>
+        <a href="" rel="me" aria-label="">
+          <i class="fa fa-2x " aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+        <li>
+        <a href="mailto:Alejandro.Mosino@gmail.com" rel="me" aria-label="e-mail">
+          <i class="fa fa-2x fa-envelope" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+    </ul>
+    <div class="footer">
+        <div class="by_farbox">&copy; Alejandro Mosiño 2020 </div>
+      </div>
+    </div>
+</div><div class="main">
+            <div class="page-top animated fadeInDown">
+    <ul class="nav">
+        
+        
+        
+        <li><a  href="/" title="">Home</a></li>
+        
+        
+        <li><a  href="/about/" title="">About</a></li>
+        
+    </ul>
+    <div class="themeswitcher">
+        <a class="theme-switch" title="Switch Theme">
+            <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+
+            <div class="autopagerize_page_element">
+                <div class="content">
+<div class="post animated fadeInDown">
+    <div class="post-content">
+
+      <div class="post-title">
+        <h3>Consecuencias de una especificación errónea
+        </h3>
+        
+        <div class="info">
+          <i class="fa fa-sun-o"></i><span class="date">Wed, Jul 29, 2020</span>
+          <i class="fa fa-clock-o"></i><span class="reading-time">5-minute read</span>
+        </div>
+        
+        </div>
+
+    
+
+
+<p>Consideraremos algunos ejemplos que nos permitirán demostrar las consecuencias de una especificación incorrecta en el contexto del modelo de regresión lineal.</p>
+<p>En este post estaremos utilizando los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;margins&quot;)
+# install.packages(ggplot2)
+# install.packages(dplyr)
+# install.packages(lmtest)
+
+# Leer paquetes
+library(margins)</code></pre>
+<pre><code>## Warning: package &#39;margins&#39; was built under R version 4.0.2</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(lmtest)</code></pre>
+<pre><code>## Warning: package &#39;lmtest&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<div id="simulación-monte-carlo" class="section level2">
+<h2>Simulación Monte Carlo</h2>
+<p>Supongamos que el modelo correcto es:</p>
+<p><span class="math display">\[
+y_i = \beta_1 + \beta_2 x_i + \beta_3 x_i^2 + \beta_4 z_i + \beta_5 z_i^2 + u_i.
+\]</span>
+Sin embargo, sin darnos cuenta de nuestro error, estimamos el modelo:
+<span class="math display">\[
+y_i = \beta_1 + \beta_2 x_i + \beta_3 z_i + u_i.
+\]</span>
+¿Cuáles son las consecuencias?</p>
+<p>Para responder a esta pregunta, haremos una simulación Monte Carlo suponiendo que el proceso generador de datos es:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\beta_1&amp;=1000 \\
+\beta_2&amp;=-2\\
+\beta_3&amp;=0.3 \\
+\beta_4&amp;=-2\\
+\beta_5&amp;=0.3\\
+x &amp;= 2 + 6* \mathcal{U}(0,1)\\
+z &amp;= 2 + 6* \mathcal{B}(2,4)\\
+u &amp;= 3* \mathcal{N}(0,1),\\
+\end{aligned}
+\]</span>
+donde <span class="math inline">\(\mathcal{U}\)</span>, <span class="math inline">\(\mathcal{B}\)</span> y <span class="math inline">\(\mathcal{N}\)</span> se refiere a las distribuciones uniforme, beta y normal, respectivamente.</p>
+<p>El siguiente código hace todos los cálculos necesarios. Hemos elegido crear <span class="math inline">\(n=10000\)</span> valores artificiales para las variables involucradas y repetir el experimento 500 veces.</p>
+<pre class="r"><code>### Initialize parameters
+
+nobs &lt;- 10000
+sims &lt;- 500                    
+AMEx.t = matrix(0,nrow=sims,ncol=1)
+AMEz.t = matrix(0,nrow=sims,ncol=1)
+AMEx.e = matrix(0,nrow=sims,ncol=1)
+AMEz.e = matrix(0,nrow=sims,ncol=1)
+AMEx.st = matrix(0,nrow=sims,ncol=1)
+AMEx.se = matrix(0,nrow=sims,ncol=1)
+beta_1=1000
+beta_2=-2
+beta_3=0.3
+beta_4=-2
+beta_5=0.3
+
+### Run simulations
+
+indx &lt;-1
+while(indx &lt; sims){
+  x &lt;- 2 + 6*runif(nobs, min=0, max=1)
+  z &lt;- 2 + 6*rbeta(nobs, shape1=2,shape2=4)
+  u &lt;- 3*rnorm(nobs,0,1)
+  y &lt;- beta_1 + beta_2*x + beta_3*x^2 + beta_4*z + beta_5*z^2 + u
+  
+### MCO estimations
+  
+mod.t &lt;- lm(y~x+I(x^2)+z+I(z^2))
+mod.e &lt;- lm(y~x+z)
+  
+AMEx.t[indx]&lt;-summary(margins(mod.t))[1,2]
+AMEz.t[indx]&lt;-summary(margins(mod.t))[2,2]
+AMEx.e[indx]&lt;-summary(margins(mod.e))[1,2]
+AMEz.e[indx]&lt;-summary(margins(mod.e))[2,2]
+AMEx.st[indx] &lt;- as.double(summary(margins(mod.t, at=list(x=6), variables=&quot;x&quot;))[3])
+AMEx.se[indx] &lt;- as.double(summary(margins(mod.e, at=list(x=6), variables=&quot;x&quot;))[3])
+  indx &lt;- indx + 1
+}</code></pre>
+<p>Para visualizar los resultados, comparamos la distribución del efecto marginal promedio con especificación correcta y con especificación incorrecta. En esta, podemos ver que el efecto marginal promedio de <span class="math inline">\(x\)</span> sobre <span class="math inline">\(y\)</span> es consistente aun cuando el modelo no está bien especificado. Esto se debe a que la distribición de <span class="math inline">\(x\)</span> que hemos elegido es simétrica.</p>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/post/Misspecification_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Ahora bien, el hecho de que el efecto marginal promedio sea consistente, eso no quiere decir que lo sea cuando evaluamos en valores específicos de <span class="math inline">\(x\)</span>. Por ejemplo, la siguiente gráfica muestra la distribución del efecto marginal promedio cuando evaluamos en <span class="math inline">\(x=6\)</span>. Como resulta claro de esta gráfica, la distribución de efecto marginal promedio deja de ser consistente.</p>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/post/Misspecification_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Finalmente, visualizamos el efecto marginal promedio de <span class="math inline">\(z\)</span> sobre <span class="math inline">\(y\)</span>. En este caso, dado que la distribución de <span class="math inline">\(z\)</span> está (por construcción) sesgada, vemos que la estimación del efecto marginal no es consistente.</p>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/post/Misspecification_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>La moraleja es que, a menos que la distribición que siguen los datos sea simétrica, una especificación incorrecta del modelo (aun en casos tan simples como dejar fuera a un elemento cuadrático) conducirá a estimaciones inconsistentes.</p>
+</div>
+<div id="residuales-de-un-modelo-mal-especificado" class="section level2">
+<h2>Residuales de un modelo mal especificado</h2>
+<p>Cuando un modelo está bien especificado, los residuales de la regresión no tienen un comportamiento identificable. Más bien, tienen un comportamiento que es errático e impredecible y oscilan alrededor de cero. Para ver qué pasa cuando el modelo está mal especificado, generaremos datos artificiales y correremos tres modelos, dos de ellos mal especificados.</p>
+<pre class="r"><code>### Define variables
+
+nobs &lt;- 10000
+x &lt;- runif(nobs, min=0, max=1)
+z &lt;- runif(nobs, min=0, max=1)
+u &lt;- rnorm(nobs,0,1)
+y1 &lt;- 0 + 1*x + 5*z + u
+y2 &lt;- 0 + 10*x^2 + 2*z + u
+y3 &lt;- exp(-1+ 1*x + 3*z + u)
+
+### Run regressions
+
+mod1 &lt;- lm(y1~x+z) # Modelo bien especificado
+mod2 &lt;- lm(y2~x+z) # Modelo mal especificado
+mod3 &lt;- lm(y3~x+z) # Modelo mal especificado
+
+### Residual plots
+
+plot(mod1, which=1, col=c(&quot;blue&quot;))</code></pre>
+<p><img src="/post/Misspecification_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>plot(mod2, which=1, col=c(&quot;blue&quot;))</code></pre>
+<p><img src="/post/Misspecification_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>plot(mod3, which=1, col=c(&quot;blue&quot;))</code></pre>
+<p><img src="/post/Misspecification_files/figure-html/unnamed-chunk-6-3.png" width="672" />
+Como puede observarse, cuando el modelo está bien especificado, efectivamente tenemos residuales que oscilan alrededor de cero y cuyo comportamiento es errático, es decir impronosticable. Sin embargo, cuando el modelo está mal especificado, el comportamiento de los errores puede predecirse. Por ejemplo, vemos que los residuales del segundo modelo tienen un comportamiento en forma de U.En el tercer modelo, se aprecia que los residuales tienen una tendecia decreciente.</p>
+</div>
+<div id="prueba-de-especificación" class="section level2">
+<h2>Prueba de especificación</h2>
+<p>Una de las pruebas de especificación más conocidas es la prueba RESET de Ramsey. Supongamos que el modelo al cual deseamos aplicar la prueba es:</p>
+<p><span class="math display">\[
+y_i = \beta_1 + \beta_2 x_{i2} +u_i
+\]</span>
+Para realizar la prueba seguimos los siguientes pasos:</p>
+<ol style="list-style-type: decimal">
+<li>Correr el modelo por MCO y guardar los valores ajustados, <span class="math inline">\(\widehat{y}_i\)</span>.</li>
+<li>Correr por MCO el siguiente modelo:
+<span class="math display">\[
+y_i= \delta_1 + \delta_2 x_{i2} + \delta_3 \widehat{y}_i^2 + \delta_4 \widehat{y}_i^3+u_i
+\]</span></li>
+<li>Realizamos una prueba F para verificar la significatividad conjunta de <span class="math inline">\(\widehat{y}_i^2\)</span> y <span class="math inline">\(\widehat{y}_i^3\)</span> (y los demás términos polinómicos que agreguemos). Si la hipótesis <span class="math inline">\(H_0: \delta_3=\delta_4=0\)</span> no se rechaza, entonces el modelo de base está bien especificado.</li>
+</ol>
+<p>Apliquemos la prueba RESET a los tres modelos analizados en la sección anterior.</p>
+<pre class="r"><code>resettest(mod1, power=2:3, type=&quot;fitted&quot;)</code></pre>
+<pre><code>## 
+##  RESET test
+## 
+## data:  mod1
+## RESET = 0.67584, df1 = 2, df2 = 9995, p-value = 0.5088</code></pre>
+<pre class="r"><code>resettest(mod2, power=2:3, type=&quot;fitted&quot;)</code></pre>
+<pre><code>## 
+##  RESET test
+## 
+## data:  mod2
+## RESET = 2104.6, df1 = 2, df2 = 9995, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>resettest(mod3, power=2:3, type=&quot;fitted&quot;)</code></pre>
+<pre><code>## 
+##  RESET test
+## 
+## data:  mod3
+## RESET = 283.82, df1 = 2, df2 = 9995, p-value &lt; 2.2e-16</code></pre>
+<p>Observa los valores p de la prueba RESET. Cuando el valor p&lt;10%, rechazamos <span class="math inline">\(H_0\)</span>, lo cual sería un indicativo de una especificación incorrecta del modelo analizado.</p>
+<p><em>Última actualización: 29-07-2020.</em></p>
+</div>
+
+    </div>
+    <div class="post-footer">
+      <div class="info">
+        
+<span class="separator"><a class="category" href="/categories/econometrics/">Econometrics</a></span>
+
+        
+    <span class="separator"><a class="tag" href="/tags/econometrics/">Econometrics</a><a class="tag" href="/tags/r/">R</a></span>
+
+      </div>
+    </div>
+
+    
+           
+    
+</div>
+
+
+                </div>
+            </div>
+        </div>
+</body>
+
+
+
+<script type="text/javascript" src="/js/jquery.min.86b1e8f819ee2d9099a783e50b49dff24282545fc40773861f9126b921532e4c.js" integrity="sha256-hrHo&#43;BnuLZCZp4PlC0nf8kKCVF/EB3OGH5EmuSFTLkw=" crossorigin="anonymous"></script>
+
+
+
+
+<script type="text/javascript" src="/js/bundle.min.0f9c74cb78f13d1f15f33daff4037c70354f98acfbb97a6f61708966675c3cae.js" integrity="sha256-D5x0y3jxPR8V8z2v9AN8cDVPmKz7uXpvYXCJZmdcPK4=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/js/medium-zoom.min.92f21c856129f84aeb719459b3e6ac621a3032fd7b180a18c04e1d12083f8aba.js" integrity="sha256-kvIchWEp&#43;ErrcZRZs&#43;asYhowMv17GAoYwE4dEgg/iro=" crossorigin="anonymous"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/&#43;DiW/UqRcLbRjq" crossorigin="anonymous"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l&#43;B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd&#43;qj&#43;o24G5ZU2zJz" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script></html></body>
+
+</html>

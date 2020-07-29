@@ -110,7 +110,7 @@ Nota que el primer término en el <span class="math inline">\(\tau_{\text{ATET}}
 <pre class="r"><code>vars &lt;- c(&quot;totalscore&quot;,&quot;small&quot;)
 db_regular &lt;- db[which(db$small==0),vars]
 db_small &lt;- db[which(db$small==1),vars]</code></pre>
-<p>Como primer paso, hacemos un resumem estadístico de la variable <code>totalscore</code> para cada una de las submuestras. Estas submuestras pueden calcularse como sigue:</p>
+<p>Como primer paso, hacemos un resumen estadístico de la variable <code>totalscore</code> para cada una de las submuestras. Estas submuestras pueden calcularse como sigue:</p>
 <pre class="r"><code>db_regular &lt;- db[which(db$small==0),vars]
 db_small &lt;- db[which(db$small==1),vars]</code></pre>
 <p>El comando <code>describe()</code> nos ayuda a ver con detalle la variable de interés:</p>
@@ -204,7 +204,7 @@ summary(treat.m1)</code></pre>
 ## Residual standard error: 73.48 on 5784 degrees of freedom
 ## Multiple R-squared:  0.007297,   Adjusted R-squared:  0.007125 
 ## F-statistic: 42.51 on 1 and 5784 DF,  p-value: 7.609e-11</code></pre>
-<p>Primero, observamos que tanto la constante como el coeficiente de la variable de tratamiento son (estadísticamente) diferentes de cero. Segundo, el valor de los coeficientes estimados resultan muy familiares: el valor estimado de la constante no es más que <span class="math inline">\(\mathbb{E}(y_i^0)\)</span> de la sección anterior, es decir al promedio de calificaciones para los niños en el grupo de control; el coeficiente de <span class="math inline">\(small_i\)</span> no es más que el valor promedio del efecto de tratamiento, <span class="math inline">\(\tau_{\text{ATE}}\)</span>. Esto demuestra que el cálculo de los efectos de tratamiento pueden realizarse como en la sección anterior o bien por medio de una regresión lineal.</p>
+<p>Primero, observamos que tanto la constante como el coeficiente de la variable de tratamiento son (estadísticamente) diferentes de cero. Segundo, el valor de los coeficientes estimados resulta muy familiar: el valor estimado de la constante no es más que <span class="math inline">\(\mathbb{E}(y_i^0)\)</span> de la sección anterior, es decir al promedio de calificaciones para los niños en el grupo de control; el coeficiente de <span class="math inline">\(small_i\)</span> no es más que el valor promedio del efecto de tratamiento, <span class="math inline">\(\tau_{\text{ATE}}\)</span>. Esto demuestra que el cálculo de los efectos de tratamiento pueden realizarse como en la sección anterior o bien por medio de una regresión lineal.</p>
 <p>Sin embargo, el modelo de regresión cobra un papel protagónico en el cálculo del <span class="math inline">\(\tau_{\text{ATE}}\)</span> si suponemos que los resultados potenciales están determinados por otras variables, <span class="math inline">\(\mathbf{x}_i\)</span>, además de la variable de tratamiento. Esto resulta en el efecto de tratamiento <em>condicional</em> a <span class="math inline">\(\mathbf{x}_i\)</span>, el cual se calcula como:</p>
 <p><span class="math display">\[
 \tau_{\text{ATE}}(\mathbf{x}_i) = \mathbb{E}(y_{i}^{1} - y_{i}^{0}|\mathbf{x}_i),
@@ -243,5 +243,5 @@ summary(treat.m2)</code></pre>
 ## F-statistic: 59.77 on 2 and 5763 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Como vemos, el signo del coeficiente estimado de la variable <span class="math inline">\(expermaestro\)</span> es, efectivamente, positivo y estadísticamente significativo. Su valor indica que cada año adicional de experiencia del profesor de la clase eleva el puntaje promedio de sus alumnos en 1.467 puntos. Los resultados también muestran que el puntaje promedio para el grupo de control es de 904.442 puntos, y que el efecto de tratamiento es de 14.307 puntos. Esto implica que el puntaje promedio del grupo de tratamiento es de (904.442+14.307) 918.7484 puntos.</p>
 <p>Por supuesto, la especificación que aquí hemos usado para modelar los efectos de tratamiento es demasiado simple. Existen otras variables que podrían utilizarse para explicar los resultados potenciales. Estas pueden entrar de forma independiente o interactuando entre ellas. Adicionalmente, no hemos considerado algunos otros problemas asociados al análisis de los efectos de tratamiento. ¿Qué pasaría, por ejemplo, si los alumnos en el experimento de Tennessee se hubieran asignado en los diferentes tipos de clase en función de su desempeño? Esta situación nos conduciría a modificar nuestro modelo, de tal forma que tomemos en cuenta un problema que, en econometría, se conoce como de <em>endogeneidad</em>. Esto será analizado en otro post.</p>
-<p><em>Última actualización: 26-07-2020.</em></p>
+<p><em>Última actualización: 29-07-2020.</em></p>
 </div>
