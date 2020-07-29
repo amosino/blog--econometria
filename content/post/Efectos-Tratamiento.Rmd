@@ -116,7 +116,7 @@ db_regular <- db[which(db$small==0),vars]
 db_small <- db[which(db$small==1),vars]
 ```
 
-Como primer paso, hacemos un resumem estadístico de la variable `totalscore` para cada una de las submuestras. Estas submuestras pueden calcularse como sigue:
+Como primer paso, hacemos un resumen estadístico de la variable `totalscore` para cada una de las submuestras. Estas submuestras pueden calcularse como sigue:
 
 ```{r}
 db_regular <- db[which(db$small==0),vars]
@@ -169,7 +169,7 @@ treat.m1 <- lm(totalscore~small, data=db)
 summary(treat.m1)
 ```
 
-Primero, observamos que tanto la constante como el coeficiente de la variable de tratamiento son (estadísticamente) diferentes de cero. Segundo, el valor de los coeficientes estimados resultan muy familiares: el valor estimado de la constante no es más que $\mathbb{E}(y_i^0)$ de la sección anterior, es decir al promedio de calificaciones para los niños en el grupo de control; el coeficiente de $small_i$ no es más que el valor promedio del efecto de tratamiento, $\tau_{\text{ATE}}$. Esto demuestra que el cálculo de los efectos de tratamiento pueden realizarse como en la sección anterior o bien por medio de una regresión lineal.
+Primero, observamos que tanto la constante como el coeficiente de la variable de tratamiento son (estadísticamente) diferentes de cero. Segundo, el valor de los coeficientes estimados resulta muy familiar: el valor estimado de la constante no es más que $\mathbb{E}(y_i^0)$ de la sección anterior, es decir al promedio de calificaciones para los niños en el grupo de control; el coeficiente de $small_i$ no es más que el valor promedio del efecto de tratamiento, $\tau_{\text{ATE}}$. Esto demuestra que el cálculo de los efectos de tratamiento pueden realizarse como en la sección anterior o bien por medio de una regresión lineal.
 
 Sin embargo, el modelo de regresión cobra un papel protagónico en el cálculo del $\tau_{\text{ATE}}$ si suponemos que los resultados potenciales están determinados por otras variables, $\mathbf{x}_i$, además de la variable de tratamiento. Esto resulta en el efecto de tratamiento *condicional* a $\mathbf{x}_i$, el cual se calcula como:
 
