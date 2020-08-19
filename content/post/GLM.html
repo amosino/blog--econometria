@@ -1,0 +1,289 @@
+---
+title: Modelos lineales generalizados
+author: Alejandro Mosiño
+date: '2020-08-18'
+summary: 'Como sabemos, el procedimiento de mínimos cuadrados ordinarios resulta en estimadores que son insesgados, eficientes y consistentes, siempre y cuando se cumplan los supuestos del modelo de regresión lineal y, específicamente, los supuestos de Gauss Markov sobre el error. Sin embargo, en la práctica, es muy común que algunos de estos supuestos no se satisfagan. Por ejemplo, cuando la variable dependiente está sesgada o es binaria, un modelo de regresión lineal podría resultar en predicciones incoherentes, así como en residuales heteroscedásticos. Como veremos, una solución a estos problemas es considerar otra clase de modelos más generales que el modelo de regresión lineal. Estos son los modelos lineales generalizados (Nelder - Wedderburn, 1972), los cuales nos permiten ampliar la gama de distribuciones de la variable de respuesta (la variable dependiente) a todas aquellas que pertenezcan a la familia exponencial.'
+slug: glm
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 8
+math: true
+---
+
+
+
+<div id="la-familia-lineal-exponencial" class="section level2">
+<h2>La familia lineal exponencial</h2>
+<p>Comenzamos definiendo al grupo de densidades pertencientes a la familia lineal exponencial. Sea <span class="math inline">\(F_Y(y|\mu)\)</span> una función de distribución con un único parámetro, <span class="math inline">\(\mu\)</span>. Se dice que esta pertenece a la familia exponencial si su función de densidad puede expresarse como:</p>
+<p><span class="math display">\[f_Y(y|\mu)=\exp\left\{a(\mu)+b(y)+c(\mu)y\right\},\]</span>
+donde <span class="math inline">\(\mu = \mathbb{E}(y)\)</span>. Se puede mostrar que para esta parametrización:</p>
+<p><span class="math display">\[ \begin{aligned} 
+\mathbb{E}(y) &amp;= -[c&#39;(\mu)]^{-1}a&#39;(\mu) \\
+\mathbb{V}(y) &amp;= [c&#39;(\mu)]^{-1}
+\end{aligned} \]</span></p>
+<p>Dependiendo de las funciones <span class="math inline">\(a(\cdot)\)</span> y <span class="math inline">\(c(\cdot)\)</span> podemos encontrar diferentes funciones de densidad en esta familia. El término <span class="math inline">\(b(y)\)</span> es un elemento que asegura que la suma de probabilides sume 1. El término <span class="math inline">\(\exp\left\{a(\mu)+c(\mu)y\right\}\)</span> es una función exponencial que es lineal en <span class="math inline">\(y\)</span>. Algunos miembros importantes de esta familia son la distribución normal, la Bernoulli, la exponencial, la Poisson, entre otras.</p>
+</div>
+<div id="modelos-lineales-generalizados" class="section level2">
+<h2>Modelos lineales generalizados</h2>
+<p>Como sabemos, el procedimiento de mínimos cuadrados ordinarios resulta en estimadores que son insesgados, eficientes y consistentes, siempre y cuando se cumplan los supuestos del modelo de regresión lineal y, específicamente, los supuestos de Gauss Markov sobre el error. Sin embargo, en la práctica, es muy común que algunos de estos supuestos no se satisfagan. Por ejemplo, cuando la variable dependiente está sesgada o es binaria, un modelo de regresión lineal podría resultar en predicciones incoherentes, así como en residuales heteroscedásticos. Una solución a estos problemas consiste en considerar otra clase de modelos más generales que el modelo de regresión lineal. Estos son los modelos lineales generalizados (Nelder - Wedderburn, 1972), los cuales nos permiten ampliar la gama de distribuciones de la variable de respuesta (la variable dependiente) a todas aquellas que pertenezcan a la familia exponencial.</p>
+<p>Los modelos lineales generalizados permiten que el valor esperado de la variable dependiente, <span class="math inline">\(y\)</span>, sea igual a una función de <span class="math inline">\(\boldsymbol{\beta} \mathbf{x}\)</span>, donde, como siempre, <span class="math inline">\(\boldsymbol{\beta}\)</span> es el vector de coeficientes a estimar y <span class="math inline">\(\mathbf{x}\)</span> es el vector de variables explicativas. Esta función se conoce como función de conexión. Naturalmente, si la función de conexión es la identidad, el modelo resultante es el de regresión lineal que conocemos.</p>
+<p>Para ser más concretos, consideremos los supuestos que deben satisfacen los modelos lineales generalizados:</p>
+<ol style="list-style-type: decimal">
+<li><p>Existe una función índice, <span class="math inline">\(\boldsymbol{\beta} \mathbf{x}\)</span>, que permite identificar la relación entre un grupo de variables explicativas, <span class="math inline">\(\mathbf{x}\)</span> y una variable dependiente, <span class="math inline">\(y\)</span>. Esta función índice es lineal en sus parámetros, <span class="math inline">\(\boldsymbol{\beta}\)</span>, pero puede ser no lineal en sus variables (por ejemplo, en el caso de variables polinómicas y/o interactivas).</p></li>
+<li><p>Existe una función de conexión, <span class="math inline">\(g(\cdot)\)</span> que indica el tipo de relación que existe entre la función índice y el valor esperado de la variable dependiente:</p></li>
+</ol>
+<p><span class="math display">\[\boldsymbol{\beta} \mathbf{x} = g\left\{\mathbb{E}(y_i | \mathbf{x}\right\}\]</span>
+Nota que:</p>
+<p><span class="math display">\[\mu_i = \mathbb{E}(y_i | \mathbf{x}) = g^{-1}(\boldsymbol{\beta} \mathbf{x})\]</span>
+Por ejemplo, si el valor esperado de <span class="math inline">\(y\)</span> es una función exponencial de <span class="math inline">\(\boldsymbol{\beta} \mathbf{x}\)</span>, entonces la función de conexión es el logaritmo natural.</p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>La varianza de <span class="math inline">\(y_i\)</span>, <span class="math inline">\(\nu_i = \mathbb{V}(y_i)\)</span>, es una función de <span class="math inline">\(\mu_i\)</span>.</p></li>
+<li><p>La variable dependiente, <span class="math inline">\(y\)</span>, proviene de alguna de las distribuciones de la familia exponencial.</p></li>
+</ol>
+<p>Algunas combinaciones posibles para variables dependientes continuas son:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Conexión</th>
+<th>Función de conexión <span class="math inline">\(g(\cdot)\)</span></th>
+<th>Valor esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Identidad</td>
+<td><span class="math inline">\(\boldsymbol{\beta} \mathbf{x} = \mu_i\)</span></td>
+<td><span class="math inline">\(\mu_i = \boldsymbol{\beta} \mathbf{x}\)</span></td>
+</tr>
+<tr class="even">
+<td>Potencia</td>
+<td><span class="math inline">\(\boldsymbol{\beta} \mathbf{x} = \mu_i^{1/\delta}\)</span></td>
+<td><span class="math inline">\(\mu_i = (\boldsymbol{\beta} \mathbf{x})^\delta\)</span></td>
+</tr>
+<tr class="odd">
+<td>Logaritmo</td>
+<td><span class="math inline">\(\boldsymbol{\beta} \mathbf{x} = \ln( \mu_i)\)</span></td>
+<td><span class="math inline">\(\mu_i = \exp(\boldsymbol{\beta} \mathbf{x})\)</span></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th>Distribución</th>
+<th>Varianza</th>
+<th>Potencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gaussiana</td>
+<td><span class="math inline">\(\nu_i \neq f(\mu)\)</span></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>Poisson</td>
+<td><span class="math inline">\(\nu_i \propto \mu\)</span></td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>Gamma</td>
+<td><span class="math inline">\(\nu_i \propto \mu^2\)</span></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>Gaussiana inversa</td>
+<td><span class="math inline">\(\nu_i \propto \mu^3\)</span></td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>Los modelos lineales generalizados se estiman mediante el método de máxima verosimilitud.</p>
+</div>
+<div id="ejemplos-de-estimación-con-modelos-lineales-generalizados" class="section level2">
+<h2>Ejemplos de estimación con modelos lineales generalizados</h2>
+<p>Para los siguientes ejemplos, estaremos utilizando los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;tidyverse&quot;)
+
+# Leer paquetes
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ──────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.1     ✓ dplyr   1.0.0
+## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ─────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<p>Consideremos una muestra del <em>Medical Expenditure Panel Survey 2004</em> de los Estados Unidos. Tómate un tiempo para analizar la base de datos, así como para realizar un análisis de estadística descriptiva.</p>
+<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/MEPSData.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   famidyr = col_character(),
+##   hieuidx = col_character(),
+##   female = col_character(),
+##   race_bl = col_character(),
+##   race_oth = col_character(),
+##   eth_hisp = col_character(),
+##   ed_hs = col_character(),
+##   ed_hsplus = col_character(),
+##   ed_col = col_character(),
+##   reg_midw = col_character(),
+##   reg_south = col_character(),
+##   reg_west = col_character(),
+##   anylim = col_character(),
+##   ins_mcare = col_character(),
+##   ins_mcaid = col_character(),
+##   ins_unins = col_character(),
+##   ins_dent = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>Deseamos modelar la dependencia que existe entre los gastos totales en salud (<code>exp_tot</code>), los cuales juegan el papel de la variable dependiente, en función de la edad de la persona (<code>age</code>) y de su género (<code>female</code>). Esta es una variable dummy que vale <code>Female</code> si la observación es una mujer y <code>Male</code>si es hombre. Aunque R no tiene ningún problema manejando variables dummy cuyas características estén codificadas como texto, podemos recodificar, si así lo deseamos, la variable <code>female</code>, tal que esta valga 1 si la observación es una mujer y 0 si es hombre.</p>
+<pre class="r"><code>db$female &lt;- as.factor(as.numeric(db$female==&quot;Female&quot;))</code></pre>
+<p>Un histograma de la variable dependiente revela que esta está muy sesgada hacia la izquierda, lo que indica que el método de los mínimos cuadrados ordinarios podría no ser el mejor método de estimación.</p>
+<pre class="r"><code>hist(db$exp_tot)</code></pre>
+<p><img src="/post/GLM_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>De hecho, podemos correr una regresión por el método de los MCO y recuperar sus residuales. ¿Te parece que estos cumplen con los supuestos de Gauss-Markov?</p>
+<pre class="r"><code>mod.lrm &lt;- lm(exp_tot~age+female, data=db, subset=(exp_tot&gt;0))
+smod.lrm &lt;- summary(mod.lrm)
+print(smod.lrm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = exp_tot ~ age + female, data = db, subset = (exp_tot &gt; 
+##     0))
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##  -9422  -3676  -1968     62 438341 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1819.043    256.984  -7.078 1.52e-12 ***
+## age           125.064      4.669  26.787  &lt; 2e-16 ***
+## female1       624.556    167.018   3.739 0.000185 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 10370 on 15943 degrees of freedom
+## Multiple R-squared:  0.04373,    Adjusted R-squared:  0.04361 
+## F-statistic: 364.5 on 2 and 15943 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>res2 &lt;- residuals(mod.lrm)^2
+hist(res2)</code></pre>
+<p><img src="/post/GLM_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Ahora, consideremos la estimación de los coeficientes considerando alguna especificación entre los modelos lineales generalizados. Para comenzar utilicemos una función de conexión identidad con varianza gaussiana. Este, por definición, tendría que resultar en los mismos estimadores de MCO:</p>
+<pre class="r"><code>mod1.glm &lt;- glm(exp_tot~age+female, data=db, subset =(exp_tot&gt;0))
+smod1.glm &lt;- summary(mod1.glm)
+print(smod1.glm)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = exp_tot ~ age + female, data = db, subset = (exp_tot &gt; 
+##     0))
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+##  -9422   -3676   -1968      62  438341  
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1819.043    256.984  -7.078 1.52e-12 ***
+## age           125.064      4.669  26.787  &lt; 2e-16 ***
+## female1       624.556    167.018   3.739 0.000185 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 107543722)
+## 
+##     Null deviance: 1.7930e+12  on 15945  degrees of freedom
+## Residual deviance: 1.7146e+12  on 15943  degrees of freedom
+## AIC: 340154
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<p>Ahora, consideremos un modelo con una función de conexión logaritmica y una varianza con distribución gaussiana. Esto es equivalente a un modelo de regresión no lineal con media exponencial, o, lo que es lo mismo, un modelo log-lin.</p>
+<pre class="r"><code>mod2.glm &lt;- glm(exp_tot~age+female, family=gaussian(link=&quot;log&quot;), data=db, subset =(exp_tot&gt;0) )
+smod2.glm &lt;- summary(mod2.glm)
+print(smod2.glm)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = exp_tot ~ age + female, family = gaussian(link = &quot;log&quot;), 
+##     data = db, subset = (exp_tot &gt; 0))
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -10986   -3357   -2093     -94  437920  
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 7.0414126  0.0678460 103.785   &lt;2e-16 ***
+## age         0.0257328  0.0009939  25.890   &lt;2e-16 ***
+## female1     0.0769795  0.0340328   2.262   0.0237 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 107480536)
+## 
+##     Null deviance: 1.7930e+12  on 15945  degrees of freedom
+## Residual deviance: 1.7135e+12  on 15943  degrees of freedom
+## AIC: 340144
+## 
+## Number of Fisher Scoring iterations: 8</code></pre>
+<p>Los resultados muestran que los gastos en salud se incrementan con la edad y son mayores para las mujeres. Dado que la media condicional tiene forma exponencial, los coeficientes pueden interpretarse directamente como cambios porcentuales. Entonces, los gastos en salud se incrementan en un 2.6% con cada año adicional de vida, controlando el resultado por el género. Los resultados de la estimación también muestran que las mujeres gastan 8% más que los hombres [0.08 = exp(0.077)-1], controlando el resultado por la edad.</p>
+<p>Como tercer ejemplo, consideremos un modelo con una función de conexión logaritmica, pero una varianza con distribución gamma. Esto implica que la varianza de los gastos en salud es proporcional al cuadrado de su media.</p>
+<pre class="r"><code>mod3.glm &lt;- glm(exp_tot~age+female, family=Gamma(link=&quot;log&quot;), data=db, subset=(exp_tot&gt;0))
+smod3.glm &lt;- summary(mod3.glm)
+print(smod3.glm)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = exp_tot ~ age + female, family = Gamma(link = &quot;log&quot;), 
+##     data = db, subset = (exp_tot &gt; 0))
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -3.5466  -1.5229  -0.8463  -0.0129  19.3542  
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 6.835698   0.066017 103.544  &lt; 2e-16 ***
+## age         0.027951   0.001199  23.305  &lt; 2e-16 ***
+## female1     0.208600   0.042906   4.862 1.17e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for Gamma family taken to be 7.097201)
+## 
+##     Null deviance: 37405  on 15945  degrees of freedom
+## Residual deviance: 33478  on 15943  degrees of freedom
+## AIC: 292919
+## 
+## Number of Fisher Scoring iterations: 8</code></pre>
+<p>Nuevamente, los resultados muestran que los gastos en salud se incrementan con la edad y son mayores para las mujeres. A diferencia del ejemplo anterior, ambos coeficientes son significativos al 0.1%. Los gastos se incrementan en alrededor del 2.8% con cada año adicional de vida y las mujeres gastan alrededor de 23% más que los hombres. Nota la gran diferencia en el valor de este coeficiente.</p>
+</div>
+<div id="selección-del-modelo" class="section level2">
+<h2>Selección del modelo</h2>
+<p>Para seleccionar entre modelos, podemos utilizar los criterios de información de Akaike y Bayesiano. Esto se hace muy simplemente en R.</p>
+<pre class="r"><code>AIC.m1 &lt;- AIC(mod1.glm, k=2)
+BIC.m1 &lt;- BIC(mod1.glm)
+AIC.m2 &lt;- AIC(mod2.glm, k=2)
+BIC.m2 &lt;- BIC(mod2.glm)
+AIC.m3 &lt;- AIC(mod3.glm, k=2)
+BIC.m3 &lt;- BIC(mod3.glm)
+l.AIC &lt;- c(AIC.m1, AIC.m2, AIC.m3)
+l.BIC &lt;- c(BIC.m1, BIC.m2, BIC.m3)
+IC &lt;- data.frame(&quot;AIC&quot; = l.AIC, &quot;BIC&quot; = l.BIC)
+print(IC)</code></pre>
+<pre><code>##        AIC      BIC
+## 1 340153.7 340184.4
+## 2 340143.8 340174.5
+## 3 292919.2 292949.9</code></pre>
+<p>Estos resultados implican que, claramente, el tercer modelo, al tener valores más pequeños tanto para el AIC como para el BIC, es el mejor.</p>
+<p><em>Última actualización: 19-08-2020.</em></p>
+</div>
