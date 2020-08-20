@@ -84,6 +84,15 @@
     </item>
     
     <item>
+      <title>Transformaciones de Box-Cox</title>
+      <link>/post/box-cox/</link>
+      <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/box-cox/</guid>
+      <description>En esta entrada conoceremos qué es y para qué nos sirven las transformaciones de Box-Cox. Como veremos, estas resultan útiles para modelos en los cuales no se satisfacen todos los supuestos de Gauss-Markov sobre el error.</description>
+    </item>
+    
+    <item>
       <title>Sobre este sitio</title>
       <link>/about/</link>
       <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>

@@ -1,0 +1,218 @@
+---
+title: Transformaciones de Box-Cox
+author: Alejandro Mosiño
+date: '2020-08-20'
+summary: 'En esta entrada conoceremos qué es y para qué nos sirven las transformaciones de Box-Cox. Como veremos, estas resultan útiles para modelos en los cuales no se satisfacen todos los supuestos de Gauss-Markov sobre el error.'
+slug: box-cox
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 9
+math: true
+---
+
+
+
+<p>Para poder aplicar el método de los mínimos cuadrados ordinarios es necesario que se cumplan ciertos supuestos, particularmente los relacionados con los errores: su media debe ser cero, su varianza constante y deben ser independientes entre sí. Además, los errores deben ser independientes de las variables explicativas del modelo y, preferentemente, normales. Sin embargo, existen ocasiones en que estos supuestos no se satisfacen con nuestros datos disponibles. En estos casos, aun podemos aplicar alguna transformación que nos permita utilizar el método de los mínimos cuadrados ordinarios para estimar los coeficientes. Una de estas es la técnica de Box-Cox (1964).</p>
+<p>Las transformaciones de Box-Cox son una familia de transformaciones potenciales usadas en estadística para corregir sesgos en la distribución de errores, para corregir varianzas desiguales y principalmente para corregir la no linealidad en la relación (mejorar correlación entre las variables). Específicamente, para una variable <span class="math inline">\(y&gt;0\)</span>, el conjunto de transformaciones de Box-Cox es:</p>
+<p><span class="math display">\[ y^{(\lambda)}=\frac{y^{\lambda}-1}{\lambda},\]</span>
+donde <span class="math inline">\(y^{(\lambda)}=\ln(y)\)</span> en el límite <span class="math inline">\(\lambda \rightarrow 0\)</span>. Para otros valores de <span class="math inline">\(\lambda\)</span> tenemos, por ejemplo:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Modelo</th>
+<th><span class="math inline">\(\lambda\)</span></th>
+<th><span class="math inline">\(y^{(\lambda)}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Lineal</td>
+<td><span class="math inline">\(1\)</span></td>
+<td><span class="math inline">\(y-1\)</span></td>
+</tr>
+<tr class="even">
+<td>Raiz cuadrada</td>
+<td><span class="math inline">\(0.5\)</span></td>
+<td><span class="math inline">\(2(\sqrt{y}-1)\)</span></td>
+</tr>
+<tr class="odd">
+<td>Logaritmo Natural</td>
+<td><span class="math inline">\(0\)</span></td>
+<td><span class="math inline">\(\ln(y)\)</span></td>
+</tr>
+<tr class="even">
+<td>Inversa</td>
+<td><span class="math inline">\(-1\)</span></td>
+<td><span class="math inline">\(1-\frac{1}{y}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Si elegimos el valor correcto de <span class="math inline">\(\lambda\)</span> obtenemos que la transformación de <span class="math inline">\(y\)</span>, <span class="math inline">\(y^{\lambda}\)</span>, está más cerca de ser simétrica.</p>
+<div id="ejemplo" class="section level2">
+<h2>Ejemplo</h2>
+<p>Para el siguiente ejemplo, utilizaremos los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;tidyverse&quot;)
+# install.packages(&quot;car&quot;)
+# install.packages(&quot;moments&quot;)
+# install.packages(&quot;MASS&quot;)
+
+# Leer paquetes
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ──────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.1     ✓ dplyr   1.0.0
+## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ─────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(car)</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre><code>## 
+## Attaching package: &#39;car&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     recode</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     some</code></pre>
+<pre class="r"><code>library(moments)</code></pre>
+<pre><code>## Warning: package &#39;moments&#39; was built under R version 4.0.2</code></pre>
+<pre class="r"><code>library(MASS)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<p>Consideremos una muestra del <em>Medical Expenditure Panel Survey 2004</em> de los Estados Unidos. Tómate un tiempo para analizar la base de datos, así como para realizar un análisis de estadística descriptiva.</p>
+<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/MEPSData.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   famidyr = col_character(),
+##   hieuidx = col_character(),
+##   female = col_character(),
+##   race_bl = col_character(),
+##   race_oth = col_character(),
+##   eth_hisp = col_character(),
+##   ed_hs = col_character(),
+##   ed_hsplus = col_character(),
+##   ed_col = col_character(),
+##   reg_midw = col_character(),
+##   reg_south = col_character(),
+##   reg_west = col_character(),
+##   anylim = col_character(),
+##   ins_mcare = col_character(),
+##   ins_mcaid = col_character(),
+##   ins_unins = col_character(),
+##   ins_dent = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>Deseamos modelar la dependencia que existe entre los gastos totales en salud (<code>exp_tot</code>), los cuales juegan el papel de la variable dependiente, en función de la edad de la persona (<code>age</code>) y de su género (<code>female</code>). Esta es una variable dummy que vale <code>Female</code> si la observación es una mujer y <code>Male</code> si es hombre. Aunque R no tiene ningún problema manejando variables dummy cuyas características estén codificadas como texto, podemos recodificar, si así lo deseamos, la variable <code>female</code>, tal que esta valga 1 si la observación es una mujer y 0 si es hombre.</p>
+<pre class="r"><code>db$female &lt;- as.factor(as.numeric(db$female==&quot;Female&quot;))</code></pre>
+<p>Estimamos el modelo por el método de los mínimos cuadrados ordinarios.</p>
+<pre class="r"><code>mod.lrm &lt;- lm(exp_tot~age+female, data=db, subset=(exp_tot&gt;0))
+smod.lrm &lt;- summary(mod.lrm)</code></pre>
+<p>Un histograma de los residuales del modelo nos revela que estos están sesgados hacia la izquierda.</p>
+<pre class="r"><code>hist(mod.lrm$residuals)</code></pre>
+<p><img src="/post/box-cox_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+También podemos comparar los cuantiles de los residuales estandarizados contra los de una distribución normal. Estos son tan diferentes que es mu difícil confiar en que la distribución de los residuales es normal.</p>
+<pre class="r"><code>qqPlot(rstandard(mod.lrm))</code></pre>
+<p><img src="/post/box-cox_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre><code>## 18345 16132 
+## 15107 13326</code></pre>
+<p>Finalmente, podemos calcular los coeficientes de asimetría y curtósis de los residuales. Estos, como vemos, están muy lejos de los valores usuales para una distribición normal (aldededor de 0 y 3, respectivamente).</p>
+<pre class="r"><code>skewness(mod.lrm$residuals) </code></pre>
+<pre><code>## [1] 13.50972</code></pre>
+<pre class="r"><code>kurtosis(mod.lrm$residuals) </code></pre>
+<pre><code>## [1] 390.7042</code></pre>
+<p>Busquemos ahora el valor de <span class="math inline">\(\lambda\)</span> que nos ayuda a tener una distribución de los residuales más simétrica. Primero, estimamos la función de máxima verosimilitud del modelo lineal. Una inspección visual de esta función nos indica que la mejor transformación para nuestro modelo es aquella en la cual <span class="math inline">\(\lambda=0\)</span>, es decir, una transformación logarítmica.</p>
+<pre class="r"><code>b &lt;- boxcox(mod.lrm)</code></pre>
+<p><img src="/post/box-cox_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+Lo anterior podemos corroborarlo extrayendo de la transformación de box-cox los valores numéricos de <span class="math inline">\(\lambda\)</span> y de la función de (log) verosimilitud.</p>
+<pre class="r"><code>lambda &lt;- b$x
+lik &lt;- b$y
+bc &lt;- cbind(lambda, lik)
+sorted_bc &lt;- bc[order(-lik),]
+head(sorted_bc, n = 10)</code></pre>
+<pre><code>##            lambda       lik
+##  [1,]  0.06060606 -83600.29
+##  [2,]  0.02020202 -83628.43
+##  [3,]  0.10101010 -83675.75
+##  [4,] -0.02020202 -83761.68
+##  [5,]  0.14141414 -83853.26
+##  [6,] -0.06060606 -84001.51
+##  [7,]  0.18181818 -84131.28
+##  [8,] -0.10101010 -84349.34
+##  [9,]  0.22222222 -84508.22
+## [10,] -0.14141414 -84806.57</code></pre>
+<p>Como vemos, los valores de <span class="math inline">\(\lambda\)</span> que maximizan esta función y que, por lo tanto, hacen que los residuales sean más simétricos son <span class="math inline">\(\lambda=0.06\)</span> y <span class="math inline">\(\lambda=0.02\)</span>. Para simplificar la exposición que sigue, supondremos que <span class="math inline">\(\lambda=0\)</span>.</p>
+</div>
+<div id="modelo-transformado" class="section level2">
+<h2>Modelo transformado</h2>
+<p>Una vez que hemos identificado el valor de <span class="math inline">\(\lambda\)</span>, aplicamos la transformación que corresponda. En nuestro ejemplo, hemos obtenido que un modelo con <span class="math inline">\(\lambda=0\)</span>, el cual implica una transformación logarítmica es adecuado. Reestimamos el modelo una vez aplicada esta transformación.</p>
+<pre class="r"><code>mod.lrm_bc &lt;- lm(log(exp_tot)~age+female, data=db, subset=(exp_tot&gt;0))
+smod.lrm_bc &lt;- summary(mod.lrm_bc)</code></pre>
+<p>Observamos los residuales del modelo estimado en un histograma. Mucho más simétricos, ¿no es así?</p>
+<pre class="r"><code>hist(mod.lrm_bc$residuals)</code></pre>
+<p><img src="/post/box-cox_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+Comparamos los cuantiles de los residuales estandarizados contra los de una distribución normal. Como puedes ver, estos dos son mucho más cercanas unos de los otros.</p>
+<pre class="r"><code>qqPlot(rstandard(mod.lrm_bc))</code></pre>
+<p><img src="/post/box-cox_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre><code>## 18345 11924 
+## 15107  9896</code></pre>
+<p>Finalmente, calculamos los coeficientes de asimetría y curtósis de los residuales. Claramente, estos se acercan mucho más a los valores usuales para una distribición normal.</p>
+<pre class="r"><code>skewness(mod.lrm_bc$residuals) </code></pre>
+<pre><code>## [1] -0.1786823</code></pre>
+<pre class="r"><code>kurtosis(mod.lrm_bc$residuals) </code></pre>
+<pre><code>## [1] 3.110932</code></pre>
+</div>
+<div id="transformaciones-box-cox-y-los-modelos-lineales-generalizados" class="section level2">
+<h2>Transformaciones Box-Cox y los modelos lineales generalizados</h2>
+<p>En el ejemplo anterior, vimos que una transformación logaritmica de la variable dependiente (es decir, la estimación de un modelo log-lin) hace que los residuales del modelo sean más simétricos y, en general, que estos estén más cerca de satisfacer los supuestos de Gauss-Markov. Pero, una vez estimado el modelo transformado, tendríamos que regresar el valor de <span class="math inline">\(y\)</span> a su escala original para su correcta interpretación. Para ser más concretos, el modelo que hemos considerado aquí es:</p>
+<p><span class="math display">\[ \ln(y_i)=\boldsymbol{\beta} \mathbf{x_i} + \varepsilon_i,\]</span>
+por lo que:</p>
+<p><span class="math display">\[\mathbb{E}\{\ln(y_i)|\mathbf{x_i}\} = \boldsymbol{\beta} \mathbf{x_i}\]</span></p>
+<p>Una vez estimado el modelo, nuestro objetivo es recuperar el valor de <span class="math inline">\(\mathbb{E}(y_i|\mathbf{x_i})\)</span>. ¿Cómo hacemos esto? La pregunta parece tener una respuesta trivial, pero nota que:</p>
+<p><span class="math display">\[\mathbb{E}(y_i|\mathbf{x_i}) \neq \exp\{ \boldsymbol{\beta} \mathbf{x_i}\}\]</span>
+¿Por qué? Simplemente porque el <span class="math inline">\(\mathbb{E}(y_i|\mathbf{x_i})\)</span> también depende de la exponencial del error. En particular, es fácil demostrar que:</p>
+<p><span class="math display">\[\mathbb{E}(y_i|\mathbf{x_i}) = \exp\{ \boldsymbol{\beta} \mathbf{x_i}\} \times \mathbb{E}(\exp\{\varepsilon_i \}| \mathbf{x_i}) \]</span>
+Es precisamente el término <span class="math inline">\(\mathbb{E}(\exp\{\varepsilon_i \}| \mathbf{x_i})\)</span> el que no nos deja recuperar el valor de <span class="math inline">\(\mathbb{E}(y_i|\mathbf{x_i})\)</span> luego de una estimación por mínimos cuadrados ordinarios (a pesar de que este puede ser tan pequeño que podemos ignorarlo). ¿Entonces?</p>
+<p>Una opción es considerar un modelo lineal generalizado con una función de conexión logarítimica. A diferencia del modelo que aquí hemos visto, un modelo lineal generalizado nos permite encontrar un estimador de <span class="math inline">\(\ln\{\mathbb{E}(y_i|\mathbf{x_i})\}\)</span>. Entonces, en este caso tendríamos que:</p>
+<p><span class="math display">\[\mathbb{E}(y_i|\mathbf{x_i}) = \exp\{ \boldsymbol{\beta} \mathbf{x_i}\},\]</span>
+que es justamente el valor que estamos buscando. En nuestro ejemplo tenemos:</p>
+<pre class="r"><code>mod.glm &lt;- glm(exp_tot~age+female, family=gaussian(link=&quot;log&quot;), data=db, subset =(exp_tot&gt;0) )
+smod.glm &lt;- summary(mod.glm)
+print(smod.glm)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = exp_tot ~ age + female, family = gaussian(link = &quot;log&quot;), 
+##     data = db, subset = (exp_tot &gt; 0))
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -10986   -3357   -2093     -94  437920  
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 7.0414126  0.0678460 103.785   &lt;2e-16 ***
+## age         0.0257328  0.0009939  25.890   &lt;2e-16 ***
+## female1     0.0769795  0.0340328   2.262   0.0237 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 107480536)
+## 
+##     Null deviance: 1.7930e+12  on 15945  degrees of freedom
+## Residual deviance: 1.7135e+12  on 15943  degrees of freedom
+## AIC: 340144
+## 
+## Number of Fisher Scoring iterations: 8</code></pre>
+<p>La lectura de los coeficientes de este modelo y el de los coeficientes del modelo estimado por mínimos cuadrados ordinarios para el <span class="math inline">\(\ln(y)\)</span> es la misma.</p>
+<p>Una ventaja adicional de los modelos lineales generalizados es que nos permiten tomar en cuenta la heteroscedasticidad en los residuales mediante una elección adecuada de la distribición de la varianza de los residuales. En el ejemplo anterior hemos seleccionado una distribición normal, pero otras distribuciones son posibles.</p>
+<p><em>Última actualización: 20-08-2020.</em></p>
+</div>
