@@ -24,8 +24,8 @@ Las transformaciones de Box-Cox son una familia de transformaciones potenciales 
 $$ y^{(\lambda)}=\frac{y^{\lambda}-1}{\lambda},$$
 donde $y^{(\lambda)}=\ln(y)$ en el límite $\lambda \rightarrow 0$. Para otros valores de $\lambda$ tenemos, por ejemplo:
 
-| Modelo  | $\lambda$ | $y^{(\lambda)}$ |
-| ------------- | ------------- | ------------- |
+| Modelo        | $\lambda$   | $y^{(\lambda)}$ |
+| ------------- |------------:| :-------------: |
 | Lineal             | $1$    | $y-1$           |
 | Raiz cuadrada      | $0.5$  | $2(\sqrt{y}-1)$ |
 | Logaritmo Natural  | $0$    | $\ln(y)$        |
