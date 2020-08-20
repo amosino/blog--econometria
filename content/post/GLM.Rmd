@@ -118,7 +118,7 @@ mod1.glm <- glm(exp_tot~age+female, data=db, subset =(exp_tot>0))
 smod1.glm <- summary(mod1.glm)
 print(smod1.glm)
 ```
-Ahora, consideremos un modelo con una función de conexión logaritmica y una varianza con distribución gaussiana. Esto es equivalente a un modelo de regresión no lineal con media exponencial, o, lo que es lo mismo, un modelo log-lin.
+Ahora, consideremos un modelo con una función de conexión logaritmica y una varianza con distribución gaussiana. Esta interpretación es la misma a la de un modelo de regresión no lineal con media exponencial, o bien a la de un modelo log-lin. De hecho, ¿cuál será la diferencia entre un modelo lineal generalizado con conexión logarítmica a un modelo log-lin?
 
 ```{r}
 mod2.glm <- glm(exp_tot~age+female, family=gaussian(link="log"), data=db, subset =(exp_tot>0) )
@@ -156,6 +156,8 @@ print(IC)
 ```
 
 Estos resultados implican que, claramente, el tercer modelo, al tener valores más pequeños tanto para el AIC como para el BIC, es el mejor.
+
+Por último, diremos que no existe forma simple de elegir la distribución de la varianza en un modelo lineal generalizado. Sin embargo, sí existen formas que nos ayudan a elegir la función de conexión. Una de estas es la transformación de Box-Cox, cuyo análisis dejaremos para más adelante.
 
 
 *Última actualización: `r format(Sys.Date(), "%d-%m-%Y")`.*
