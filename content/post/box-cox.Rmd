@@ -2,7 +2,7 @@
 title: Transformaciones de Box-Cox
 author: Alejandro Mosiño
 date: '2020-08-20'
-summary: 'En esta entrada conoceremos qué es y para qué nos sirven las transformaciones de Box-Cox. Como veremos, estas resultan útiles para modelos en los cuales no se satisfacen todos los supuestos de Gauss-Markov sobre el error.'
+summary: 'En esta entrada conoceremos qué son y para qué nos sirven las transformaciones de Box-Cox. Como veremos, estas resultan útiles para modelos en los cuales no se satisfacen todos los supuestos de Gauss-Markov sobre el error.'
 slug: box-cox
 categories:
   - Econometrics

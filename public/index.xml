@@ -89,7 +89,16 @@
       <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/box-cox/</guid>
-      <description>En esta entrada conoceremos qué es y para qué nos sirven las transformaciones de Box-Cox. Como veremos, estas resultan útiles para modelos en los cuales no se satisfacen todos los supuestos de Gauss-Markov sobre el error.</description>
+      <description>En esta entrada conoceremos qué son y para qué nos sirven las transformaciones de Box-Cox. Como veremos, estas resultan útiles para modelos en los cuales no se satisfacen todos los supuestos de Gauss-Markov sobre el error.</description>
+    </item>
+    
+    <item>
+      <title>Modelos de elección binaria</title>
+      <link>/post/eleccion-binaria/</link>
+      <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/eleccion-binaria/</guid>
+      <description>En esta entrada estudiaremos la versión más simple de modelos con variable de respuesta cualitativa. Estos son los modelos de elección binaria. Por ejemplo, la decisión de una persona de trabajar o no trabajar, ir a la escuela o no o viajar en autobús o en automovil.</description>
     </item>
     
     <item>

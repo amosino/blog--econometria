@@ -1,0 +1,246 @@
+---
+title: Modelos de elección binaria
+author: Alejandro Mosiño
+date: '2020-08-25'
+summary: 'En esta entrada estudiaremos la versión más simple de modelos con variable de respuesta cualitativa. Estos son los modelos de elección binaria. Por ejemplo, la decisión de una persona de trabajar o no trabajar, ir a la escuela o no o viajar en autobús o en automovil.'
+slug: Eleccion-Binaria
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 10
+math: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Para el siguiente ejemplo, estaremos utilizando los siguientes paquetes de R:
+
+```{r}
+# Instalar paquetes si es necesario
+# install.packages("tidyverse")
+# install.packages("mfx")
+# install.packages("caret")
+
+# Leer paquetes
+library(tidyverse)
+library(mfx)
+library(caret)
+```
+
+Consideremos una muestra de la _Encuesta Nacional de Salud y Nutrición 2012_ de México. Tómate un tiempo para analizar la base de datos, así como para realizar un análisis de estadística descriptiva.
+
+```{r}
+db <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/EnsanutData.csv")
+```
+Deseamos modelar la probabilidad de que un individuo presente rezago escolar (`d_asistencia_cr`) en función de la presencia de anemia (`anemia`), su edad (`edad_d`), su género (`d_mujer`), su condición de indigenismo (`d_indigena`) y la cohabitación con ambos padres (`d_vpadres`). Tenemos muchas variables dummy en el modelo. La variable `anemia` toma el valor de 1 si al momento de aplicar la encuesta el individuo presentaba bajos niveles de hemoglobina y 0 de otra forma; la variable `d_mujer` toma el valor de 1 si el individuo es mujer y 0 si es hombre; la variable `d_indigena` vale 1 si el individuo se clasifica a sí mismo como indígena; la variable `d_vpadres` toma el valor de 1 si el individuo vivía con ambos padres al momento de la aplicación de la escuela y 0 de otra forma. La única variable explicativa que toma más de dos valores es la variable `edad_d`, la cual está medida en años. Nota que, a diferencia de los modelos clásicos en econometría en la cual la variable dependiente es continua, aquí la variable dependiente es una variable que solo toma dos valores. En particular:
+
+$$ y_i = \begin{cases} 1 & \text{El individuo i presenta rezago escolar} \\
+0  & \text{De otra forma}  \\
+\end{cases}$$
+
+
+## El modelo
+
+Sea $p$ la probabilidad de que $y_i=1$, es decir, de que la persona i-ésima (seleccionada al azar) presente rezago escolar:
+
+$$\mathbb{P}(y_i=1)=p,$$
+y, naturalmente:
+
+$$\mathbb{P}(y_i=0)=1-p$$
+
+En este caso, es fácil deducir que la función de probabilidad para $y_i$ es (Bernoulli):
+
+$$f(y_i) =p^{y_i}(1-p)^{1-y_i}; \ y_i =0,1,$$
+y que:
+$$\begin{aligned}
+\mathbb{E}(y_i)&=p \\
+\mathbb{V}(y_i)&=1-p
+\end{aligned}$$
+
+El objetivo del modelo es estimar la probabilidad de que un individuo presente rezago escolar. De manera general, el modelo que utilizaremos tiene la forma:
+
+$$ y_i = F(z_i) + u_i, $$
+tal que la probabilidad de que un individuo presente rezago puede estimarse como:
+
+$$\begin{aligned}
+\widehat{y}_i &= \mathbb{E}(y_i|x_i)\\
+&=\widehat{p}_i \\
+&=F(\widehat{z}_i),
+\end{aligned}$$
+donde $z_i$ no es más que una combinación lineal de las variables explicativas:
+
+$$\begin{aligned}
+z_i &= \mathbf{x}\boldsymbol{\beta}\\
+&=\beta_1 + \beta_2 x_{i2} + \dots + \beta_k x_{ik}
+\end{aligned}$$
+
+El problema al que nos enfrentamos en este punto es que no sabemos quién es la función $F(\cdot)$. Aquí veremos tres posibilidades.
+
+## El modelo de probabilidad lineal
+
+La opción más simple para modelar la función $F(\cdot)$ es suponer que esta es lineal. Es decir:
+
+$$\begin{aligned}
+F(z_i)&=z_i\\
+&= \mathbf{x}\boldsymbol{\beta}\\
+&= \beta_1 + \beta_2 x_{i2} + \dots + \beta_k x_{ik}
+\end{aligned}$$
+En este caso, el modelo a estimar se vuelve:
+
+$$ y_i = \beta_1 + \beta_2 x_{i2} + \dots + \beta_k x_{ik} + u_i $$
+Esta especificación es idéntica a la del modelo de regresión lineal. Por lo tanto, _si se cumplen los supuestos de Gauss-Markov sobre el error_, los coeficientes podrían estimarse utilizando el procedimiento de mínimos cuadrados ordinarios. En R, podemos estimar un modelo por el método de los mínimos cuadrados ordinarios ya sea con la función `lm` o con la función `glm`.
+
+```{r}
+m.ols <- lm(d_asistencia_cr~anemia+d_mujer+d_indigena+d_vpadres+edad_d, data=db)
+summary(m.ols)
+```
+Los resultados se intepretan de la manera usual. Por ejemplo, la probabilidad de que un individuo presente rezago se incrementa bajo la presencia de anemia. En particular, la probabilidad de presentar rezago es, en promedio, 6.8% mayor para los individuos con anemia que para los individuos sanos. Tenemos una interpretación similar para las variables `d_indigena` y `d_vpadres`. En el caso del género, las mujeres tienen un 4.89% menos de probabilidades de presentar rezago que los hombres. Finalmente, la probabilidad de rezagarse disminuye con la edad a una tasa de 1.57% por cada año. Todas las variables del modelo son estadísticamente significativas.
+
+Existen al menos dos problemas asociados a la estimación de los coeficientes por mínimos cuadrados ordinarios:
+
+1. Los errores no son continuos, ni normales, ni homoscedásticos. De hecho, es fácil demostrar que la varianza de los errores depende de las variables explicativas del modelo: $\mathbb{V}(u_i) = z_i(1-z_i)$.
+
+2. El efecto marginal (o incremental, en el caso de las dummies) de $x_k$ es constante e igual a $\beta_k$. Matemáticamente, esto permite que el valor de la probabilidad estimada, $\widehat{p}_i$, pueda exceder 1 o ser inferior que $0$. Esto es, por supuesto, totalmente contraintuitivo.
+
+Para el primer problema, tenemos una solución "simple": estimar los coeficientes por el método de los mínimos cuadrados generalizados factibles o bien por el método de máxima verosimilitud. Sin embargo, para el segundo problema la solución es más elaborada. Esto implica buscar una especificación para $F(z_i)$ que nos permita acotar la probabilidad estimada a valores entre 0 y 1. Esto nos conduce al siguiente par de modelos.
+
+## El modelo PROBIT
+
+Recuerda que, si $z$ es una variable aleatoria normal estándar, su función de densidad de probabilidad se calcula como:
+
+$$\phi_z = \frac{1}{\sqrt{2\pi}}\exp\left\{-\frac{1}{2}z^2\right\}$$
+Y su función de densidad acumulada es:
+
+$$\Phi(z)=\mathbb{P}(Z\leq z) = \int_{-\infty}^{z} \frac{1}{\sqrt{2\pi}}\exp\left\{-\frac{1}{2}u^2 du\right\}$$
+
+Al ser esta una función de densidad acumulada, los valores de $\mathbb{P}(Z\leq z)$ están acotados entre 0 y 1. En el modelo PROBIT suponemos que:
+
+$$F(z_i) = \Phi(z_i)$$
+Naturalmente, dado que el modelo resultante deja de ser lineal, sus coeficientes ya no puede estimarse por el método de los mínimos cuadrados ordinarios. En cambio, el modelo se estima por máxima verosimilitud. Además, es importante destacar que el modelo puede interpretarse como un modelo lineal generalizado en el que la función de conexión una función normal estándar y la distribución del error es binomial.
+
+```{r}
+m.probit <- glm(d_asistencia_cr~anemia+d_mujer+d_indigena+d_vpadres+edad_d, family=binomial(link="probit"), 
+                   data=db)
+summary(m.probit)
+```
+
+En este punto, es importante destacar que los valores de los coeficientes estimados nos permiten solo recuperar el valor estimado de $z_i$, $\widehat{z}_i$. Por lo tanto, estos no tienen una interpretación directa. Para poder interpretar los resultados aun tenemos que evaluar los valores de $\widehat{z}_i$ en la función $F(\widehat{z}_i) = \Phi(\widehat{z}_i)=\widehat{p}$. Para hacer esto en R, podemos utilizar la función `predict()`. Esta implica crear una base de datos con los valores que deseamos utilizar para pronosticar utilizando el modelo PROBIT. Por ejemplo, creamos un data frame llamado `means` que contiene la edad promedio de nuestra muestra y todas las variables dummy fijadas en 1. Nota que conservamos los nombres y la estructura de las variables en la base de datos original:
+
+```{r}
+means <- data.frame(anemia=1, d_mujer=1, d_indigena=1, d_vpadres=1, edad_d = mean(db$edad_d))
+```
+
+Ahora usamos la función `predict()`. Esta tiene como primer argumento el modelo estimado. En nuestro ejemplo, el modelo estimado usando una función PROBIT ha sido guardado en un objeto llamado `m.probit`. El segundo argumento, `newdata`, corresponde a la base de datos con los valores que deseamos usar para pronosticar. El argumento `type=response` indica que el pronóstico se hace en función la escala de la variable dependiente; en nuestro caso esto corresponde a probabilidades. El último argumento indica que deseamos que R también calcule el error estándar del pronóstico.
+
+```{r}
+predict(m.probit, newdata=means, type="response", se.fit=TRUE)
+```
+Entonces, la probabilidad de rezagarse para un individuo que presenta anemia, es mujer, es indígena, vive con ambos padres y tiene actualmente 15.53 años (la edad promedio) es de 44.69%.
+
+Otra complicación en la lectura de los resultados es que no podemos calcular de forma simple los efectos marginales de las variables explicativas sobre la variable dependiente. Para un modelo PROBIT, el efecto marginal de la variable $x_k$ sobre $p=1$ se calcula como:
+
+$$\frac{\partial p}{\partial x_k}=\frac{\partial \Phi(z)}{\partial x_k} = \phi(z)\beta_k$$
+Para realizar este cálculo, en R podemos utilizar la función `probitmfx()`. Los argumentos más importantes de esta función son la fórmula del modelo y la base de datos con la cual hacemos la estimación. En el fondo, la función `probitmfx()` vuelve a estimar el modelo utilizando una especificación PROBIT, pero ahora nos devuelve los efectos marginales.
+
+```{r}
+probitmfx(formula=d_asistencia_cr~anemia+d_mujer+d_indigena+d_vpadres+edad_d, data = db)
+```
+Así pues, cada año adicional de vida disminuye, en promedio, la probabilidad de rezagarse en un 1.59% y la probabilidad de rezagarse es, en promedio, 6.38% veces mayor para los individuos con anemia.
+
+## El modelo LOGIT
+
+El modelo LOGIT tiene exactamente la misma lógica que el modelo PROBIT, excepto que ahora la función de densidad acumulada tiene la forma:
+
+$$\Lambda(z)=\mathbb{P}(Z\leq z) = p = \frac{1}{1+e^{-z}}$$
+
+Y, entonces:
+
+$$F(z_i) = \Lambda(z_i)$$
+
+Además, la función de densidad de probabilidad es:
+
+$$\frac{\partial p}{\partial z} = \lambda(z) = \frac{e^{-z}}{(1+e^{-z})^2}$$
+Al igual que en el caso del PROBIT, el modelo LOGIT se estima por máxima verosimilitud. El modelo también puede interpretarse como un modelo lineal generalizado en el que la función de conexión una función logística y la distribución del error es binomial.
+
+```{r}
+m.logit <- glm(d_asistencia_cr~anemia+d_mujer+d_indigena+d_vpadres+edad_d, family=binomial(link="logit"), 
+                   data=db)
+summary(m.logit)
+```
+
+Para poder interpretar los resultados del modelo LOGIT, hacemos uso nuevamente de la función `predict()`. Esta tiene exactamente la misma estructura de antes, solo que ahora hacemos referencia al modelo almacenado en el objeto `m.logit`:
+
+```{r}
+predict(m.logit, newdata=means, type="response", se.fit=TRUE)
+```
+Nota que los resultados son muy parecidos que en el caso del modelo PROBIT: la probabilidad de rezagarse para un individuo que presenta anemia, es mujer, es indígena, vive con ambos padres y tiene actualmente 15.53 años (la edad promedio) es de 44.76%.
+
+Finalmente, calculamos el efecto marginal de las variables explicativas sobre la probabilidad de presentar rezago escolar. Para el caso de un modelo LOGIT tenemos que:
+
+$$\frac{\partial p}{\partial x_k}=\frac{\partial \Phi(z)}{\partial x_k} = \lambda(z)\beta_k$$
+
+Para realizar este cálculo en R utilizar la función `logitmfx()`. Esta se utiliza e interpreta igual que la función `probitmfx()` que vimos en la sección anterior. 
+
+```{r}
+logitmfx(formula=d_asistencia_cr~anemia+d_mujer+d_indigena+d_vpadres+edad_d, data = db)
+```
+Cada año adicional de vida disminuye, en promedio, la probabilidad de rezagarse en 1.59% y la probabilidad de rezagarse es, en promedio, 6.45% veces mayor para los individuos con anemia.
+
+## PROBIT vs LOGIT
+
+Antes vimos que los dos modelos, PROBIT y LOGIT, arrojan resultados similares. Esto no es casualidad. De hecho, dado que la única diferencia entre ambos modelos es la función de densidad, esperamos que las probabilidades y los efectos marginales (o incrementales, en el caso de las dummies) sean virtualmente los mismos. 
+
+¿Entonces, cuál modelo preferimos? En la práctica no existe ninguna razón suficientemente importante para preferir uno u otro modelo, fuera de la tradición. Por ejemplo, en Economía suele prefirse el modelo PROBIT, mientras en el resto de las ciencias sociales y en las ciencias de la salud se acostumbra más el modelo LOGIT. 
+
+Quizás una de las razones que podrían inclinar la balanza en favor del modelo LOGIT es su fácil interpretación. Esto es porque los resultados pueden exprarse fácilmente en términos del cociente de probabilidades, también conocido como cociente de momios o riesgo relativo:
+
+$$\frac{p}{1-p}=\frac{\frac{1}{1+e^{-z}}}{1-\frac{1}{1+e^{-z}}}=e^z = \exp\{\mathbf{x}\boldsymbol{\beta}\}$$
+Por ejemplo, supongamos que en un estudio para verificar la eficacia de la vacuna contra el COVID-19, $y=1$ significa que el paciente sobrevivió y $y=0$ que el paciente murió, y entre las variables explicativas se encuentra alguna medida para la dosis tomada. Un cociente de probabilidades de 2 significa que la probabilidad de sobrevivir es 2 veces más alta que la probabilidad de morir. 
+
+En el caso del modelo de rezago escolar tenemos:
+
+```{r}
+logit.odds <- cbind(Coeficiente=round(coef(m.logit),4), OR=round(exp(coef(m.logit)),4))
+print(logit.odds)
+```
+Entonces, por ejemplo, el cociente de probabilidades es 1.32 para la variable `anemia`. Esto quiere decir que, en promedio, la probabilidad de rezarse es 1.32 veces más grande para los individuos con anemia. De igual forma, la probabilidad de rezagarse es 1.51 veces más grande para los indígenas y 1.11 veces más grande para las personas que viven con ambos padres. En cambio, la probabilidad de rezagarse es 1.25 (1/0.80) veces más grandre para los hombres que para las mujeres. En el caso de la variable edad, tenemos un cociente de probabilidades de 0.93. Entonces, con cada incremento unitario en la variable `edad_d` esperamos ver una caída de alrededor del 7% (0.93-1) en el cociente de probabilidades de presentar rezago.
+
+## Bondad de ajuste
+
+Dado que el modelo de probabilidad lineal se estima e interpreta de la misma forma que un modelo de regresión lineal, los primeros indicadores para la bondad de ajuste son la R cuadrada y la R cuadrada ajustada. En nuestro ejemplo tenemos una R cuadrada ajustada de 1.7%. Este pésimo ajuste es relativamente normal, puesto que nuestra especificación carece de muchas otras variables que podrían ayudar a explicar el rezago escolar.  
+
+```{r}
+summary(m.ols)$adj.r.squared
+```
+
+En el caso de los modelos PROBIT y LOGIT no existe una medida de bondad de ajuste equivalente a la R cuadrada. Existen, sin embargo, varias otras medidas que nos permiten comparar entre diferentes especificaciones del modelo. Una de ellas es el número de casos correctamente predichos. Sea $\widehat{p}_i$ la probabilidad estimada a partir del modelo PROBIT o LOGIT. Si $\widehat{p}_i>0.5$ fijamos $\widehat{y}_i=1$; en caso contrario fijamos $\widehat{y}_i=0$. Un caso es correctamente predicho en tanto $\widehat{y}_i = y_i$. Este cálculo puede hacerse muy fácilmente en R mediante tablas de confusión. 
+
+Consideremos primero el modelo PROBIT. El primer paso es utilizar nuevamente la función `predict()`. A diferencia de nuestros ejemplos anteriores, ahora usamos como argumento la base de datos original para hacer la predicción. Esto es porque queremos calcular la probabilidad de presentar anemia para cada individio de la muestra dadas sus características específicas. Luego usamos la función `confusionMatrix()`. En su versión básica, esta función tiene como argumentos dos vectores: el vector para el cual calculamos la matriz de confusión, $\widehat{y}_i$, y un vector de referencia, $y_i$.
+
+```{r}
+
+probit.probs <- predict(m.probit, newdata=db, type="response")
+
+PROBIT.y <- as.factor(as.numeric(probit.probs>0.5))
+PROBIT.ref <- as.factor(db$d_asistencia_cr)
+probit.cmtx <- confusionMatrix(data = PROBIT.y, reference = PROBIT.ref)
+print(probit.cmtx)
+```
+Los resultados nos indican que, de los individuos en la muestra que no presentaban rezago escolar al momento de la encuesta, 7648 fueron predichos correctamente por el modelo y 24 fueron predichos incorrectamente. De la misma forma, de los individuos en la muestra con rezago escolar al momento de la encuesta, 31 fueron predichos correctamente y 3798 casos fueron predichos incorrectamente. Entonces, el porcentaje de efectividad del modelo es de 66% (7669 casos de los 11501 considerados). 66% es la medida de bondad de ajuste.
+
+El análisis es fundamentalmente el mismo para un modelo LOGIT. De hecho, los resultados, como esperábamos, son virtualmente idénticos.
+
+```{r}
+
+logit.probs <- predict(m.logit, newdata=db, type="response")
+
+LOGIT.y <- as.factor(as.numeric(logit.probs>0.5))
+LOGIT.ref <- as.factor(db$d_asistencia_cr)
+logit.cmtx <- confusionMatrix(data = LOGIT.y, reference = LOGIT.ref)
+print(logit.cmtx)
+```
+*Última actualización: `r format(Sys.Date(), "%d-%m-%Y")`.*
