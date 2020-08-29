@@ -75,7 +75,8 @@ url = "mailto:Alejandro.Mosino@gmail.com"
   url = "/about/"
   
   [[menu.main]]
-  name = "amosino.econgto.org"
+  name = "amosino.net"
   weight = 300
   identifier = "amosino"
-  url = "http://amosino.net"
+  url = "http://amosino.econgto.org"
+  
