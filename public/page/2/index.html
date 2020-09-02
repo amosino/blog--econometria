@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es-mx" data-theme="light"><head>
-    <title> Alejandro Mosiño | Hello R Markdown </title>
+    <title> Alejandro Mosiño </title>
     <meta charset="utf-8"><meta name="generator" content="Hugo 0.67.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="description" content="Un blog sobre Econometría, Manejo de datos, Programación y más.">
     
@@ -10,17 +10,16 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
-    <link rel="canonical" href="/post/2015-07-23-r-rmarkdown/">
+    <link rel="canonical" href="/">
+    <link rel="alternate" type="application/rss+xml" href="/index.xml" title="Econometría & Co." />
     
     
     <script type="text/javascript" src="/js/anatole-header.min.c275265a259296f3dd50e8236a77fcbcadb1dbb9597d3045c675dcc2c7c58a93.js" integrity="sha256-wnUmWiWSlvPdUOgjanf8vK2x27lZfTBFxnXcwsfFipM=" crossorigin="anonymous"></script>
     <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/images/site-feature-image.png"/>
 
-<meta name="twitter:title" content="Hello R Markdown"/>
-<meta name="twitter:description" content="R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu."/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="Un blog sobre Econometría, Manejo de datos, Programación y más."/>
 
 </head><body><div class="sidebar animated fadeInDown">
     <div class="logo-title">
@@ -66,10 +65,13 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
         
         
         
-        <li><a  href="/" title="">Home</a></li>
+        <li><a class="current" href="/" title="">Home</a></li>
         
         
         <li><a  href="/about/" title="">About</a></li>
+        
+        
+        <li><a  href="http://amosino.econgto.org" title="">amosino.net</a></li>
         
     </ul>
     <div class="themeswitcher">
@@ -81,80 +83,74 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
 
             <div class="autopagerize_page_element">
                 <div class="content">
-<div class="post animated fadeInDown">
-    <div class="post-content">
-
-      <div class="post-title">
-        <h3>Hello R Markdown
-        </h3>
-        
-        <div class="info">
-          <i class="fa fa-sun-o"></i><span class="date">Thu, Jul 23, 2015</span>
-          <i class="fa fa-clock-o"></i><span class="reading-time">1-minute read</span>
-        </div>
-        
-        </div>
-
-    
-
-
-<div id="r-markdown" class="section level1">
-<h1>R Markdown</h1>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>You can embed an R code chunk like this:</p>
-<pre class="r"><code>summary(cars)
-##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00
-fit &lt;- lm(dist ~ speed, data = cars)
-fit
-## 
-## Call:
-## lm(formula = dist ~ speed, data = cars)
-## 
-## Coefficients:
-## (Intercept)        speed  
-##     -17.579        3.932</code></pre>
-</div>
-<div id="including-plots" class="section level1">
-<h1>Including Plots</h1>
-<p>You can also embed plots. See Figure <a href="#fig:pie">1</a> for example:</p>
-<pre class="r"><code>par(mar = c(0, 1, 0, 1))
-pie(
-  c(280, 60, 20),
-  c(&#39;Sky&#39;, &#39;Sunny side of pyramid&#39;, &#39;Shady side of pyramid&#39;),
-  col = c(&#39;#0292D8&#39;, &#39;#F7EA39&#39;, &#39;#C4B632&#39;),
-  init.angle = -50, border = NA
-)</code></pre>
-<div class="figure"><span id="fig:pie"></span>
-<img src="/post/2015-07-23-r-rmarkdown_files/figure-html/pie-1.png" alt="A fancy pie chart." width="672" />
-<p class="caption">
-Figure 1: A fancy pie chart.
-</p>
-</div>
-</div>
-
+  
+  
+  <div class="post animated fadeInDown">
+    <div class="post-title">
+      <h3><a href="/post/tobit/">El modelo Tobit</a>
+      </h3>
     </div>
+    <div class="post-content"><div class="p_part"><p>El modelo Tobit, también conocido como modelo de regresión con datos censurados, está diseñado para estimar los coeficientes de un modelo lineal en el que la variable dependiente está censurada, es decir, limitada (por arriba, por debajo o por ambos lados). Si bien existe una población subyacente en la que sí existen observaciones fuera de los límites de censura, la población observada parece no contenerlas. Esto puede deberse, por ejemplo, a la incapacidad para detectarlas y/o seleccionarlas en el muestreo.</p></div>
+  
+  <div class="p_part"><p></p></div></div>
     <div class="post-footer">
-      <div class="info">
-        
-<span class="separator"><a class="category" href="/categories/r/">R</a></span>
-
-        
-    <span class="separator"><a class="tag" href="/tags/r-markdown/">R Markdown</a><a class="tag" href="/tags/plot/">plot</a><a class="tag" href="/tags/regression/">regression</a></span>
-
+      <div class="meta">
+        <div class="info"><i class="fa fa-sun-o"></i><span class="date">Wed, Sep 2, 2020</span>
+          <a class="tag" href="/tags/econometrics/">Econometrics</a><a class="tag" href="/tags/r/">R</a>       
+        </div>
       </div>
     </div>
+  </div>
+  
+<div class="pagination">
+  
 
+<ul class="pagination">
     
-           
+    <li class="page-item">
+        <a href="/" class="page-link" aria-label="First"><span aria-hidden="true">&laquo;&laquo;</span></a>
+    </li>
     
+    <li class="page-item">
+    <a href="/" class="page-link" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+    </li>
+    
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li class="page-item"><a class="page-link" href="/">1</a></li>
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li class="page-item active"><a class="page-link" href="/page/2/">2</a></li>
+    
+    
+    <li class="page-item disabled">
+    <a  class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+    </li>
+    
+    <li class="page-item">
+        <a href="/page/2/" class="page-link" aria-label="Last"><span aria-hidden="true">&raquo;&raquo;</span></a>
+    </li>
+    
+</ul>
+
+
 </div>
-
 
                 </div>
             </div>

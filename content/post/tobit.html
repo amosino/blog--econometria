@@ -1,0 +1,186 @@
+---
+title: El modelo Tobit
+author: Alejandro Mosiño
+date: '2020-09-02'
+summary: 'El modelo Tobit, también conocido como modelo de regresión con datos censurados, está diseñado para estimar los coeficientes de un modelo lineal en el que la variable dependiente está censurada, es decir, limitada (por arriba, por debajo o por ambos lados). Si bien existe una población subyacente en la que sí existen observaciones fuera de los límites de censura, la población observada parece no contenerlas. Esto puede deberse, por ejemplo, a la incapacidad para detectarlas y/o seleccionarlas en el muestreo.'
+slug: tobit
+categories:
+  - Econometrics
+  - Programming
+tags:
+  - Econometrics
+  - R
+weight: 11
+math: true
+---
+
+
+
+<p>En Estadística, la censura es el fenómeno que ocurre cuando el valor de una observación sólo se conoce parcialmente. Por ejemplo, podemos incluir personas de todos los niveles socioeconómicos en un estudio, pero, por razones de confidencialidad, aquellas con muy altos ingresos se reportan (codifican) todas como personas con ingresos superiores a, por ejemplo, $100,000 mensuales. La censura también puede ocurrir cuando hay observaciones fuera del rango de cierto instrumento de medida. Por ejemplo, si se utiliza un termómetro con un valor máximo de 100 grados para medir la temperatura en un experimento, para todas las observaciones que igualen o superen esos 100 grados sólo se sabe que se superó el umbral máximo de temperatura, pero no se sabe en qué medida.</p>
+<p>En general, para un estudio econométrico tenemos datos censurados cuando tenemos información perdida para la variable dependiente, pero no para los regresores. Este fenómeno no debe confundirse con el de truncamiento. Con censura, se sabe que las observaciones censuradas superan cierto umbral (o están en cierto intervalo) y esa información parcial puede usarse a la hora de modelar estadísticamente el fenómeno. Con el truncamiento, las observaciones se descartan enteramente.</p>
+<p>En esta entrada estudiaremos el modelo Tobit (James Tobin, 1958). Este está diseñado para estimar los coeficientes en un modelo con datos censurados. El modelo supone que existe una variable <em>latente</em> (no observable), <span class="math inline">\(y^*\)</span>. Esta depende linealmente de un vector de variables <span class="math inline">\(\mathbf{x}\)</span> y de un término de error, <span class="math inline">\(u_i\)</span>:</p>
+<p><span class="math display">\[\begin{aligned}
+y^*&amp;=\mathbf{x}\boldsymbol{\beta}+\mathbf{u}\\
+u_i &amp;\sim \mathcal{N}(0,\sigma^2) \\
+\end{aligned}\]</span></p>
+<p>La variable <em>observada</em>, <span class="math inline">\(y\)</span>, es tal que:</p>
+<p><span class="math display">\[y=\begin{cases}
+y^* &amp; \ \text{si} \ y^*&gt;0 \\
+- &amp; \ \text{si} \ y^*\leq 0\\
+\end{cases}\]</span>
+donde <span class="math inline">\(-\)</span> significa que esa observación particular se ha perdido (o ha sido recodificada). En la mayor parte de las aplicaciones suele fijarse <span class="math inline">\(y=0\)</span>.</p>
+<div id="datos-censurados-estimación-por-mco" class="section level2">
+<h2>Datos censurados: estimación por MCO</h2>
+<p>En lo que resta de esta entrada, estaremos utilizando los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;ggplot2&quot;)
+# install.packages(&quot;dplyr&quot;)
+# install.packages(&quot;VGAM&quot;)
+
+# Leer paquetes
+library(ggplot2)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(VGAM)</code></pre>
+<pre><code>## Warning: package &#39;VGAM&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: splines</code></pre>
+<p>Para ver cuáles son las consecuencias de estimar un modelo con datos censurados utilizando el método de los mínimos cuadrados ordinarios, consideremos el siguiente experimento.</p>
+<p>Sea el modelo verdadero:</p>
+<p><span class="math display">\[y^*_i = -40+1.2 x_i + u_i,\]</span>
+donde la variable <span class="math inline">\(x_i\)</span> toma valores enteros entre 11 y 60 y <span class="math inline">\(u_i\)</span> es una variable aleatoria normal con media <span class="math inline">\(0\)</span> y varianza <span class="math inline">\(100\)</span>. Una realización de valores para <span class="math inline">\(u_i\)</span> y <span class="math inline">\(y_i^*\)</span> puede calcularse como:</p>
+<pre class="r"><code>#Generación de datos
+set.seed(123)
+x&lt;- seq(11,60,1)
+u&lt;-rnorm(length(x), 0,10)
+y&lt;- -40 + 1.2*x + u
+db &lt;- data.frame(x,y)</code></pre>
+<p>En este caso, la estimación del modelo por MCO se vería como:</p>
+<pre class="r"><code>#Visualización de datos
+ggplot(data = db, aes(x = x, y = y)) +
+geom_point(size = 2) +
+geom_smooth(method = &quot;lm&quot;, se = FALSE) +
+theme_bw() +
+labs(title = &quot;Regresión OLS con los datos no censurados&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/post/tobit_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+En la gráfica, hemos incluido todas los valores de <span class="math inline">\(y_i^*\)</span>, incluidos aquellos que son inferiores a cero. Si se cumplen los supuestos de Gauss-Markov sobre el error, la estimación por MCO resultará en estimadores insesgados, eficientes y consistentes.</p>
+<p>Supogamos ahora que no se observan todos los valores de <span class="math inline">\(y_i^*\)</span>. En particular, imaginemos que los valores inferiores a <span class="math inline">\(0\)</span> no pueden cuantificarse, aunque se sabe que existen. En este caso, la muestra disponible se vería como sigue:</p>
+<pre class="r"><code>ggplot(data = db, aes(x = x, y = y)) +
+geom_point(size = 2) +
+geom_point(data = filter(db, y &lt; 0), size = 2, color = &quot;grey&quot;) +
+geom_hline(yintercept = 0, linetype = &quot;dashed&quot;) +
+theme_bw() +
+labs(title = &quot;Muestra disponible&quot;)</code></pre>
+<p><img src="/post/tobit_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>En el caso anterior, una posibilidad que tienen los investigadores es la de recodificar a todos los valores de <span class="math inline">\(y_i^*\)</span> inferiores a cero (es decir, los valores no observados de <span class="math inline">\(y_i^*\)</span>) como <span class="math inline">\(0\)</span>. En este caso, la variable observada <span class="math inline">\(y_i\)</span> es exactamente como la definida arriba.Si hacemos esto, ¿cuál sería la consecuencia de estimar el modelo por el método de los MCO?</p>
+<pre class="r"><code>db_censurada &lt;- db
+db_censurada$y[db_censurada$y &lt; 0] &lt;- 0
+ggplot(data = db_censurada, aes(x = x, y = y)) +
+  geom_point(size = 2) +
+  geom_point(data = filter(db_censurada, y == 0),
+             size= 2, color = &quot;gray&quot;) +
+  geom_smooth(data = db,method = &quot;lm&quot;, se = FALSE)+
+  geom_smooth(data = db_censurada, method = &quot;lm&quot;, se=FALSE, color = &quot;red&quot;) +
+  geom_hline(yintercept = 0, linetype = &quot;dashed&quot;) +
+  theme_bw() +
+  labs(title = &quot;Regresión OLS con los datos censurados&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;
+## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/post/tobit_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>En la gráfica, la línea azul es la línea de regresión verdadera; es decir, aquella en la cual utilizamos todos los valores de <span class="math inline">\(y_i^*\)</span>. La línea roja es la línea de regresión una vez censurados los datos; es decir, aquella en la cual utilizamos <span class="math inline">\(y_i\)</span> en lugar de <span class="math inline">\(y_i^*\)</span>. Claramente ambas líneas son diferentes (diferente intercepto y diferente pendiente). Esto es un indicativo del sesgo asociado a la estimación por MCO cuando utilizamos datos censurados. Adicionalmente, es claro que, a medida que se aproxima el límite de censura y más observaciones son fijadas al valor establecido, la varianza se reduce, perdiéndose así la condición de homocedasticidad y de independencia.</p>
+<p>¿Entonces?</p>
+</div>
+<div id="el-modelo-tobit-algunos-tecnicismos" class="section level2">
+<h2>El modelo Tobit: algunos tecnicismos</h2>
+<p><em>Nota: el lector no interesado en la parte técnica puede saltarse esta sección</em></p>
+<p>Para poder construir la función de verosimilitud Tobit, definimos primero la función indicatriz:</p>
+<p><span class="math display">\[w_i = \begin{cases}
+1 &amp; \ \text{si} \ y_i&gt;0 \\
+0 &amp; \ \text{si} \ y_i= 0 \\
+\end{cases}\]</span></p>
+<p>En este caso:</p>
+<p><span class="math display">\[f(y_i|\mathbf{x}) = \begin{cases}
+f(y^*_i|\mathbf{x}) &amp; \ \text{si} \ w_i=1 \\
+\mathbb{P}(y_i=0|\mathbf{x}) &amp; \ \text{si} \ w_i= 0 \\
+\end{cases},\]</span></p>
+<p>o bien:</p>
+<p><span class="math display">\[f(y_i|\mathbf{x}) = [f(y^*_i|\mathbf{x})]^{w_i}[\mathbb{P}(y_i=0|\mathbf{x})]^{1-w_i}\]</span>
+Bajo el supuesto de normalidad del término de error, tenemos:</p>
+<p><span class="math display">\[f(y^*_i|\mathbf{x})=\frac{1}{\sqrt{2\pi\sigma^2}}\exp\left[-\frac{1}{2\sigma^2}\left(y_i^*-\mathbf{x}_i\boldsymbol{\beta}\right)^2\right]=\phi\left(\frac{\mathbf{x}_i\boldsymbol{\beta}}{\sigma}\right)\]</span>
+Además, si <span class="math inline">\(w_i=\)</span>, la variable latente, <span class="math inline">\(y_i^*\)</span> debe ser menor o igual que cero:</p>
+<p><span class="math display">\[\begin{aligned}
+\mathbb{P}(y_i=0|\mathbf{x}) &amp;=\mathbb{P}(y_i^*\leq 0)=\mathbb{P}(u_i \leq -\mathbf{x}_i\boldsymbol{\beta})=\Phi\left(\frac{-\mathbf{x}_i\boldsymbol{\beta}}{\sigma}\right) \\
+&amp;1-\Phi\left(\frac{\mathbf{x}_i\boldsymbol{\beta}}{\sigma}\right)\end{aligned}\]</span></p>
+<p>Entonces, la contribución a la verosimilitud de una observación cualquiera (censurada o no) es:</p>
+<p><span class="math display">\[ f(y_i|\mathbf{x}_i)=\left[\phi\left(\frac{\mathbf{x}_i\boldsymbol{\beta}}{\sigma}\right)\right]^{w_i}\left[1-\Phi\left(\frac{\mathbf{x}_i\boldsymbol{\beta}}{\sigma}\right)\right]^{1-w_i}\]</span>
+Por lo tanto, la función de verosimilitud Tobit es:</p>
+<p><span class="math display">\[ L=\prod_{i=1}^{N}\left[\phi\left(\frac{\mathbf{x}_i\boldsymbol{\beta}}{\sigma}\right)\right]^{w_i}\left[1-\Phi\left(\frac{\mathbf{x}_i\boldsymbol{\beta}}{\sigma}\right)\right]^{1-w_i}\]</span>
+El objetivo es estimar el conjunto de coeficientes en el vector <span class="math inline">\(\boldsymbol{\beta}\)</span> más un estimador de <span class="math inline">\(\sigma\)</span>. Nota que no es necesario estimar el umbral para el cual censuramos la variable <span class="math inline">\(y_i^*\)</span>, ya que este umbral está determinado por los datos.</p>
+</div>
+<div id="el-modelo-tobit-ejemplo" class="section level2">
+<h2>El modelo Tobit: ejemplo</h2>
+<p>En R existen varios paquetes que nos permiten estimar los coeficientes de un modelo Tobit. Aquí utilizaremos el paquete <code>VGAM</code> y. En nuestro ejemplo con datos simulados tenemos:</p>
+<pre class="r"><code>modelo_tobit &lt;- vglm(y ~ x, tobit(Lower = 0), data = db)</code></pre>
+<pre><code>## Warning in eval(slot(family, &quot;initialize&quot;)): replacing response values less than
+## &#39;Lower&#39; by &#39;Lower&#39;</code></pre>
+<pre class="r"><code>summary(modelo_tobit)</code></pre>
+<pre><code>## 
+## Call:
+## vglm(formula = y ~ x, family = tobit(Lower = 0), data = db)
+## 
+## Pearson residuals:
+##                 Min      1Q  Median       3Q   Max
+## mu          -1.5217 -0.5428 -0.1056  0.29831 2.293
+## loglink(sd) -0.8366 -0.3247 -0.1517 -0.02119 4.090
+## 
+## Coefficients: 
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept):1 -44.3792     7.1206  -6.232 4.59e-10 ***
+## (Intercept):2   2.1944     0.1389  15.802  &lt; 2e-16 ***
+## x               1.3013     0.1569   8.293  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Names of linear predictors: mu, loglink(sd)
+## 
+## Log-likelihood: -97.397 on 97 degrees of freedom
+## 
+## Number of Fisher scoring iterations: 7 
+## 
+## Warning: Hauck-Donner effect detected in the following estimate(s):
+## &#39;(Intercept):1&#39;</code></pre>
+<p>En la tabla de arriba tenemos:</p>
+<ul>
+<li><p>Los coeficientes estimados, sus errores estándar y el estadístico z (recuerda que hemos supuesto que los errores siguen una distribución normal). No se incluyen los valores p, pero se pueden calcular muy fácilmente. Esto lo haremos más abajo.</p></li>
+<li><p>Los coeficientes se interpretan de la misma forma que los coeficientes de una regresión por MCO. Sin embargo, es importante resaltar que estos miden el efecto de las variables explicativas sobre la variable latente no censurada, <span class="math inline">\(y_i^*\)</span>. Por ejemplo, un incremento en una unidad de <span class="math inline">\(x\)</span> incrementa el valor de <span class="math inline">\(y_i^*\)</span> en 1.30 unidades. (¿Recuerdas que en el proceso generador de datos el coeficiente verdadero es igual 1.2?)</p></li>
+<li><p>El coeficiente etiquetado como “(Intercept):1” es el intercepto estimado del modelo. En nuestro ejemplo este es -44.379. (¿Recuerdas que en el proceso generador de datos el coeficiente verdadero es igual -40?)</p></li>
+<li><p>El coeficiente etiquetado como “(Intercept):2” es un estadístico auxiliar. Si calculamos la exponencial de este valor, obtenemos el análogo de la raiz cuadrada de la varianza de los residuales en una regresión por MCO.</p></li>
+</ul>
+<p>Calculamos ahora los valores p para las pruebas de significancia de los coeficientes estimados:</p>
+<pre class="r"><code>ctable &lt;- coef(summary(modelo_tobit))
+pvals &lt;- 2 * pt(abs(ctable[, &quot;z value&quot;]), df.residual(modelo_tobit), lower.tail = FALSE)
+cbind(ctable, pvals)</code></pre>
+<pre><code>##                 Estimate Std. Error   z value     Pr(&gt;|z|)        pvals
+## (Intercept):1 -44.379202  7.1206426 -6.232472 4.591329e-10 1.188387e-08
+## (Intercept):2   2.194396  0.1388683 15.801995 3.014268e-56 1.404421e-28
+## x               1.301345  0.1569162  8.293250 1.101956e-16 6.365967e-13</code></pre>
+<p>Con esto, podemos ver que los coeficientes del modelo son altamento significativos, puesto que los valores p son inferiores a <span class="math inline">\(\alpha=0.1\%\)</span>.</p>
+</div>
+<div id="qué-tan-conveniente-es-usar-un-modelo-tobit" class="section level2">
+<h2>¿Qué tan conveniente es usar un modelo Tobit?</h2>
+<p>El modelo Tobit presenta algunos inconvenientes que resultan evidentes de nuestra discusión:</p>
+<ul>
+<li><p>El modelo depende crucialmente de los supuestos de normalidad y homoscedasticidad del término de error. De hecho, a diferencia del modelo de regresión lineal (para el cual tenemos estimadores consistentes y se pueden calcular errores estándar robustos), en el modelo Tobit la estimación y la inferencia se invalidan totalmente en presencia de heteroscedasticidad y/o no normalidad.</p></li>
+<li><p>El modelo impone el mismo mecanismo para determinar la probabilidad de censura y el valor de las observaciones no censuradas. En nuestro ejemplo, la variable <span class="math inline">\(x_i\)</span> determina tanto el valor de <span class="math inline">\(y_i^*\)</span> como las razones por las que <span class="math inline">\(y_i^*=0\)</span> o <span class="math inline">\(y_i^*&gt;0\)</span>.</p></li>
+</ul>
+<p>Por estas razones, el modelo Tobit se utiliza muy pocas veces en la práctica.</p>
+<p><em>Última actualización: 02-09-2020.</em></p>
+</div>

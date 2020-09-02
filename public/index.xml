@@ -102,6 +102,15 @@
     </item>
     
     <item>
+      <title>El modelo Tobit</title>
+      <link>/post/tobit/</link>
+      <pubDate>Wed, 02 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/tobit/</guid>
+      <description>El modelo Tobit, también conocido como modelo de regresión con datos censurados, está diseñado para estimar los coeficientes de un modelo lineal en el que la variable dependiente está censurada, es decir, limitada (por arriba, por debajo o por ambos lados). Si bien existe una población subyacente en la que sí existen observaciones fuera de los límites de censura, la población observada parece no contenerlas. Esto puede deberse, por ejemplo, a la incapacidad para detectarlas y/o seleccionarlas en el muestreo.</description>
+    </item>
+    
+    <item>
       <title>Sobre este sitio</title>
       <link>/about/</link>
       <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>

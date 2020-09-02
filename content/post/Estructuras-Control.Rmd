@@ -12,6 +12,7 @@ tags:
   - Programming
   - R
 weight: 2
+math: true
 ---
 
 ```{r setup, include=FALSE}

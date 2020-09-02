@@ -12,6 +12,7 @@ tags:
   - Econometrics
   - R
 weight: 4
+math: true
 ---
 
 ```{r setup, include=FALSE}

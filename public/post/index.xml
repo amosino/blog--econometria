@@ -6,7 +6,7 @@
     <description>Recent content in Posts on Econometría &amp; Co.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es-mx</language>
-    <lastBuildDate>Tue, 25 Aug 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 02 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
@@ -99,6 +99,15 @@
       
       <guid>/post/eleccion-binaria/</guid>
       <description>En esta entrada estudiaremos la versión más simple de modelos con variable de respuesta cualitativa. Estos son los modelos de elección binaria. Por ejemplo, la decisión de una persona de trabajar o no trabajar, ir a la escuela o no o viajar en autobús o en automovil.</description>
+    </item>
+    
+    <item>
+      <title>El modelo Tobit</title>
+      <link>/post/tobit/</link>
+      <pubDate>Wed, 02 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/tobit/</guid>
+      <description>El modelo Tobit, también conocido como modelo de regresión con datos censurados, está diseñado para estimar los coeficientes de un modelo lineal en el que la variable dependiente está censurada, es decir, limitada (por arriba, por debajo o por ambos lados). Si bien existe una población subyacente en la que sí existen observaciones fuera de los límites de censura, la población observada parece no contenerlas. Esto puede deberse, por ejemplo, a la incapacidad para detectarlas y/o seleccionarlas en el muestreo.</description>
     </item>
     
   </channel>
