@@ -111,6 +111,15 @@
     </item>
     
     <item>
+      <title>Modelo de selección de Heckam</title>
+      <link>/post/heckit/</link>
+      <pubDate>Fri, 04 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/heckit/</guid>
+      <description>En el modelo Tobit consideramos dos categorías de observaciones: 1) aquellas cuyo valor de la variable dependiente es positivo y 2) aquellas cuyo valor de la variable dependiente es igual a cero. En el modelo, las variables que intentan explicar el valor de la variable dependiente cuando esta es positiva y las razones por las cuales esta cae dentro de una categoría u otra son las mismas. Sin embargo, esto no tiene por qué ser así. Esta limitante del modelo Tobit es resuelta parcialmente por el modelo de selección de Heckman.</description>
+    </item>
+    
+    <item>
       <title>Sobre este sitio</title>
       <link>/about/</link>
       <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>

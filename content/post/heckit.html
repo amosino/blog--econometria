@@ -1,0 +1,178 @@
+---
+title: Modelo de selección de Heckam
+author: Alejandro Mosiño
+date: '2020-09-04'
+summary: 'En el modelo Tobit consideramos dos categorías de observaciones: 1) aquellas cuyo valor de la variable dependiente es positivo y 2) aquellas cuyo valor de la variable dependiente es igual a cero. En el modelo, las variables que intentan explicar el valor de la variable dependiente cuando esta es positiva y las razones por las cuales esta cae dentro de una categoría u otra son las mismas. Sin embargo, esto no tiene por qué ser así. Esta limitante del modelo Tobit es resuelta parcialmente por el modelo de selección de Heckman.'
+slug: Heckit
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 12
+math: true
+---
+
+
+
+<p>Recordemos que en el modelo Tobit existen dos categorías de observaciones: 1) aquellas cuyo valor de la variable dependiente es positivo y 2) aquellas cuyo valor de la variable dependiente está censurado y es, de hecho, igual a cero. Es decir:</p>
+<p><span class="math display">\[y=\begin{cases}
+y^* &amp; \ \text{si} \ y^*&gt;0 \\
+0 &amp; \ \text{si} \ y^*\leq 0\\
+\end{cases}\]</span></p>
+<p>En el modelo, el conjunto de variables (<span class="math inline">\(\mathbf{x}\)</span>) que intentan explicar el valor de la variable dependiente cuando esta es positiva y las razones por las cuales esta cae dentro de una categoría u otra (<span class="math inline">\(y=0\)</span> o <span class="math inline">\(y&gt;0\)</span>) son las mismas. Esto constituye una de las principales limitaciones del modelo Tobit. De hecho, esta es una de las principales razones por las cuales el modelo Tobit se utiliza raramente en la práctica.</p>
+<p>Para generalizar el modelo Tobit, en el modelo de selección de Heckman consideramos dos variables latentes en lugar de una. Sean estas <span class="math inline">\(w^*\)</span> y <span class="math inline">\(y^*\)</span>. La variable <span class="math inline">\(w^*\)</span> define el proceso de censura. Esto es:</p>
+<p><span class="math display">\[w_i=\begin{cases}
+1 &amp; \ \text{si} \ w_i^*&gt;0 \\
+0 &amp; \ \text{si} \ w_i^*\leq 0\\
+\end{cases}.\]</span></p>
+<p>La variable <span class="math inline">\(y^*\)</span> es equivalente a la variable latente en el modelo Tobit. Esto es:</p>
+<p><span class="math display">\[y_i=\begin{cases}
+y_i^* &amp; \ \text{si} \ w_i^*&gt;0 \\
+0 &amp; \ \text{si} \ w_i^*\leq 0\\
+\end{cases}.\]</span></p>
+<p>Finalmente:</p>
+<p><span class="math display">\[\begin{aligned}
+w_i^*&amp;= \mathbf{z}\boldsymbol{\gamma}+\boldsymbol{\varepsilon}\\
+y_i^*&amp;= \mathbf{x}\boldsymbol{\beta}+\mathbf{u}\\
+\end{aligned},\]</span></p>
+<p>donde <span class="math inline">\(\mathbf{z}\supseteq\mathbf{x}\)</span>, es decir, <span class="math inline">\(\mathbf{z}\)</span> puede incluir algunas variables no incluidas en <span class="math inline">\(\mathbf{x}\)</span> y <span class="math inline">\(\boldsymbol{\gamma}\)</span> y <span class="math inline">\(\boldsymbol{\beta}\)</span> son vectores de coeficientes a estimar. Si la distribución conjunta de <span class="math inline">\(\boldsymbol{\varepsilon}\)</span> y <span class="math inline">\(\mathbf{u}\)</span> es normal bivariada con parámetro de correlación <span class="math inline">\(\rho\)</span>, tenemos:</p>
+<p><span class="math display">\[\begin{bmatrix}\boldsymbol{\varepsilon}\\\mathbf{u}\end{bmatrix}\sim\mathcal{N}(0,\boldsymbol{\Sigma}); \  \boldsymbol{\Sigma}=\begin{bmatrix} 1 &amp; \rho\sigma \\ \rho\sigma &amp; 1 \end{bmatrix}\]</span>
+Aquí: <span class="math inline">\(\mathbb{E}(y_i^*|\mathbf{x})=\mathbf{x}\boldsymbol{\beta}\)</span> y, para la variable observada <span class="math inline">\(y_i\)</span>:</p>
+<p><span class="math display">\[\begin{aligned}
+\mathbb{E}(y_i|y_i&gt;0, \mathbf{x}) &amp;= \mathbf{x}\boldsymbol{\beta} + \rho\sigma\lambda(\mathbf{z}\boldsymbol{\gamma})\\
+\mathbb{E}(y_i|\mathbf{x}) &amp;= \Phi(\mathbf{z}\boldsymbol{\gamma}) \times \left(\mathbf{x}\boldsymbol{\beta}+\rho\sigma\lambda(\mathbf{z}\boldsymbol{\gamma})\right),
+\end{aligned}\]</span></p>
+<p>donde <span class="math inline">\(\lambda(\mathbf{z}\boldsymbol{\gamma})=\frac{\phi(\mathbf{z}\boldsymbol{\gamma})}{\Phi(\mathbf{z}\boldsymbol{\gamma})}\)</span> es la inversa del cociente de Mills, también conocido como razón de riesgo.</p>
+<div id="estimación-del-modelo" class="section level2">
+<h2>Estimación del modelo</h2>
+<p>Existen dos formas de estimar los coeficientes del modelo de selección. La primera es mediante máxima verosimilitud con información completa. La función de verosimilitud en este caso tiene tres elementos. El primero es la probabilidad de observar a la variable dependiente (es decir, la probabilidad de observar un <span class="math inline">\(y_i&gt;0\)</span>); el segundo es la probabilidad de no observar a la variable dependiente (es decir, la probabilidad de observar un <span class="math inline">\(y_i=0\)</span>); finalmente, el tercer elemento es la distribución que sigue <span class="math inline">\(y_i\)</span> cuando <span class="math inline">\(y_i&gt;0\)</span>. Suponiendo que el término de error sigue una distribución normal, tenemos que la función de verosimilitud es:</p>
+<p><span class="math display">\[L = \prod_{i=1}^{N}\left\{\Phi(-\mathbf{z}\boldsymbol{\gamma})\right\}^{1-w_i}\left\{\Phi\left(\frac{\mathbf{z}\boldsymbol{\gamma}+\left[y_i-\mathbf{x}\boldsymbol{\beta}\right]\frac{\rho}{\sigma}}{\sqrt{1-\rho^2}}\right)\right\}^{w_i}\left\{\frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2}\left(\frac{y_i-\mathbf{x}\boldsymbol{\beta}}{\sigma}\right)^2}\right\}^{w_i}\]</span>
+La segunda forma de estimar es computacionalmente más simple. La idea es tratar el problema de selección como si se tratase de un problema de variables omitidas (Heckman, 1979). En este caso maximizamos una función de verosimilitud con información limitada . El procedimiento se realiza en dos etapas. Primero se utiliza un modelo Probit para estimar la probabilidad de <span class="math inline">\(y_i=0\)</span> y de <span class="math inline">\(y_i&gt;0\)</span>. Con estas, se calcula la inversa del cociente de Mills, <span class="math inline">\(\widehat{\lambda}=\frac{\phi(\mathbf{z}\widehat{\boldsymbol{\gamma}})}{\Phi(\mathbf{z}\widehat{\boldsymbol{\gamma}})}\)</span>. En la segunda etapa se estima el modelo original por el método de los MCO, pero se agrega <span class="math inline">\(\widehat{\lambda}\)</span> como regresor (la variable “omitida”):</p>
+<p><span class="math display">\[\mathbb{E}(y_i|y_i&gt;0, \mathbf{x}) = \mathbf{x}\boldsymbol{\beta}+\rho\sigma\widehat{\boldsymbol{\lambda}}\]</span>
+Naturalmente, cuando <span class="math inline">\(\rho=0\)</span>, la inversa del cociente de Mills desaparece y, por lo tanto, el modelo de selección se hace innecesario.</p>
+</div>
+<div id="ejemplo" class="section level2">
+<h2>Ejemplo</h2>
+<p>Para estimar los coeficientes en un modelo de selección de Heckman utilizando R, necesitamos los siguientes paquetes:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;sampleSelection&quot;)
+
+# Leer paquetes
+library(sampleSelection)</code></pre>
+<pre><code>## Warning: package &#39;sampleSelection&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## Loading required package: maxLik</code></pre>
+<pre><code>## Warning: package &#39;maxLik&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## Loading required package: miscTools</code></pre>
+<pre><code>## Warning: package &#39;miscTools&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## 
+## Please cite the &#39;maxLik&#39; package as:
+## Henningsen, Arne and Toomet, Ott (2011). maxLik: A package for maximum likelihood estimation in R. Computational Statistics 26(3), 443-458. DOI 10.1007/s00180-010-0217-1.
+## 
+## If you have questions, suggestions, or comments regarding the &#39;maxLik&#39; package, please use a forum or &#39;tracker&#39; at maxLik&#39;s R-Forge site:
+## https://r-forge.r-project.org/projects/maxlik/</code></pre>
+<p>La base de datos Mroz87 está incluida en el paquete `sampleSelection e incluye los datos laborales de una muestra de mujeres casadas. El año del levantamiento de la información es 1975.</p>
+<pre class="r"><code>data(Mroz87)</code></pre>
+<p>Estimamos una ecuación para el logaritmo del salario. Este es función de la escolaridad (medida en años), la experiencia (medida en años), el cuadrado de la experiencia y una variable dummy que vale 1 si la observación i-ésima vivía en una ciudad considerada grande.</p>
+<p>El problema la estimación de los coeficientes en el modelo de Mroz es que solo observamos el salario de las mujeres que, en ese momento, estaban trabajando en el mercado formal. Una gran proporción de mujeres casadas en 1975 no formaban parte de la fuerza laboral (o, si lo estaban, no eran trabajadores formales). Entonces, en la muestra tenemos una gran cantidad de ceros. En la base de datos, la variable <code>lfp</code> es una variable dummy que vale 1 si la observación i-ésima participaba en el mercado formal de trabajo.</p>
+<p>Estimamos primero el modelo por el método de los MCO. Nota que restringimos la muestra a las mujeres participantes en el mercado laboral:</p>
+<pre class="r"><code>ols &lt;- lm(log(wage) ~ educ + exper + I( exper^2 ) + city, data=subset(Mroz87, lfp==1))
+summary(ols)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log(wage) ~ educ + exper + I(exper^2) + city, data = subset(Mroz87, 
+##     lfp == 1))
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -3.10084 -0.32453  0.05292  0.36261  2.34806 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -0.5308476  0.1990253  -2.667  0.00794 ** 
+## educ         0.1057097  0.0143280   7.378 8.58e-13 ***
+## exper        0.0410584  0.0131963   3.111  0.00199 ** 
+## I(exper^2)  -0.0007973  0.0003938  -2.025  0.04352 *  
+## city         0.0542225  0.0680903   0.796  0.42629    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.6667 on 423 degrees of freedom
+## Multiple R-squared:  0.1581, Adjusted R-squared:  0.1501 
+## F-statistic: 19.86 on 4 and 423 DF,  p-value: 5.389e-15</code></pre>
+<p>Ahora, estimamos el modelo utilizando el procedimiento de dos etapas de Heckman. Para esto utilizamos la función <code>heckit()</code> del paquete <code>sampleSelection</code>. Nota que la sintaxis de esta función es muy similar a la de la estimación por MCO, pero que ahora tenemos dos ecuaciones en lugar de una. En la primer ecuación establecemos los determinantes de <em>lfm</em>, que es la variable que indica si una mujer está o no en el mercado laboral. Esta es una variable binaria. (En un modelo de selección de Heckman siempre tiene que serlo.) La segunda ecuación es la del (logaritmo) del salario.</p>
+<pre class="r"><code>Mroz87$kids = ( Mroz87$kids5 + Mroz87$kids618 &gt; 0 )
+heckman = heckit( lfp ~ age + I( age^2 ) + kids + huswage + educ,
+                 log(wage) ~ educ + exper + I( exper^2 ) + city, data=Mroz87 )
+summary(heckman)</code></pre>
+<pre><code>## --------------------------------------------
+## Tobit 2 model (sample selection model)
+## 2-step Heckman / heckit estimation
+## 753 observations (325 censored and 428 observed)
+## 14 free parameters (df = 740)
+## Probit selection equation:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -4.6067983  1.4072534  -3.274 0.001111 ** 
+## age          0.2043835  0.0663822   3.079 0.002155 ** 
+## I(age^2)    -0.0026174  0.0007791  -3.359 0.000821 ***
+## kidsTRUE    -0.4270345  0.1309974  -3.260 0.001166 ** 
+## huswage     -0.0419745  0.0121387  -3.458 0.000576 ***
+## educ         0.1313128  0.0227687   5.767 1.18e-08 ***
+## Outcome equation:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -0.7524012  0.3926416  -1.916  0.05572 .  
+## educ         0.1152050  0.0204064   5.646 2.35e-08 ***
+## exper        0.0427268  0.0133502   3.200  0.00143 ** 
+## I(exper^2)  -0.0008469  0.0003984  -2.126  0.03383 *  
+## city         0.0446548  0.0692400   0.645  0.51917    
+## Multiple R-Squared:0.1589,   Adjusted R-Squared:0.149
+##    Error terms:
+##               Estimate Std. Error t value Pr(&gt;|t|)
+## invMillsRatio   0.1501     0.2293   0.655    0.513
+## sigma           0.6720         NA      NA       NA
+## rho             0.2234         NA      NA       NA
+## --------------------------------------------</code></pre>
+<p>Nota que la primera ecuación en el procedimiento de dos etapas de Heckman hemos incluido a todas las variables que podrían afectar el proceso de selección. En nuestro ejemplo tenemos a las variables que podrían explicar las razones por las cuales una mujer se encuentra o no en el mercado laboral. Es recomendable que en esta ecuación tengamos, al menos, una variable que actúe como instrumento, es decir que afecte la decisión de estar o no en el mercado laboral pero que no explique directamente al salario. Esta es la función de la variable <em>kids</em>, la cual es una dummy que vale uno si la observación i-ésima tiene hijos menores a 16 años. Una mujer con hijos podría decidir no trabajar, pero, una vez que trabaja, el tener hijos no tiene por qué afectar la paga (que, en este caso, se mide por horas).</p>
+<p>En cuanto a la segunda ecuación, la interpretación de los coeficientes es idéntica a la del modelo estimado por MCO. Por ejemplo, cada año de escolaridad adicional aumenta el salario en 11.5% (recuerda que la variable dependiente está medida en logaritmos).</p>
+<p>El paquete <code>sampleSelection</code> también nos permite estimar el modelo por máxima verosimilitud con información completa. Esto se hace utilizando la función <code>selection</code>. Esta estima ambas ecuaciones del modelo de selección simultáneamente (y no secuencialmente como en el caso del procedimiento en dos etapas de Heckman):</p>
+<pre class="r"><code>mselection &lt;- selection(lfp ~ age + I( age^2 ) + kids + huswage + educ, 
+                        log(wage) ~ educ + exper + I( exper^2 ) + city, data=Mroz87)
+summary(mselection)</code></pre>
+<pre><code>## --------------------------------------------
+## Tobit 2 model (sample selection model)
+## Maximum Likelihood estimation
+## Newton-Raphson maximisation, 4 iterations
+## Return code 1: gradient close to zero
+## Log-Likelihood: -916.2869 
+## 753 observations (325 censored and 428 observed)
+## 13 free parameters (df = 740)
+## Probit selection equation:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -4.5123815  1.4162713  -3.186 0.001503 ** 
+## age          0.1992498  0.0670579   2.971 0.003061 ** 
+## I(age^2)    -0.0025569  0.0007875  -3.247 0.001220 ** 
+## kidsTRUE    -0.4238143  0.1312568  -3.229 0.001298 ** 
+## huswage     -0.0428919  0.0121978  -3.516 0.000464 ***
+## educ         0.1325479  0.0229000   5.788 1.05e-08 ***
+## Outcome equation:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -0.6585505  0.2962345  -2.223  0.02651 *  
+## educ         0.1111762  0.0170956   6.503 1.45e-10 ***
+## exper        0.0420022  0.0132165   3.178  0.00154 ** 
+## I(exper^2)  -0.0008252  0.0003943  -2.093  0.03669 *  
+## city         0.0486690  0.0683836   0.712  0.47687    
+##    Error terms:
+##       Estimate Std. Error t value Pr(&gt;|t|)    
+## sigma  0.66590    0.02533  26.288   &lt;2e-16 ***
+## rho    0.13033    0.22289   0.585    0.559    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## --------------------------------------------</code></pre>
+<pre class="r"><code># Nota. La función `selection()` también nos permite estimar el modelo en dos etapas usando el procedimiento de Heckman. Basta con agregar a la función el argumento `2step`:
+
+# mselectionh &lt;- selection(lfp ~ age + I( age^2 ) + kids + huswage + educ, 
+#                         log(wage) ~ educ + exper + I( exper^2 ) + city, data=Mroz87, method=&quot;2step&quot;)
+# summary(mselectionh)</code></pre>
+<p>Como puede constatarse, la estimación del modelo de selección no tiene grandes efectos sobre los parámetros de interés.Los coeficientes estimados en todas las ecuaciones no son entre sí muy diferentes. Esto podría implicar que la estimación por MCO podría resultar, después de todo, en estimadores no tan sesgados. De hecho, esto resulta ser el caso, puesto que el valor de <span class="math inline">\(\rho\)</span> en la estimación del modelo de selección no es estadísticamente diferente de cero (valor p de 0.559).</p>
+<p><em>Última actualización: 07-09-2020.</em></p>
+</div>
