@@ -6,7 +6,7 @@
     <description>Recent content in Econometrics on Econometría &amp; Co.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es-mx</language>
-    <lastBuildDate>Fri, 04 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 29 Sep 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/econometrics/index.xml" rel="self" type="application/rss+xml" />
     
@@ -117,6 +117,15 @@
       
       <guid>/post/heckit/</guid>
       <description>En el modelo Tobit consideramos dos categorías de observaciones: 1) aquellas cuyo valor de la variable dependiente es positivo y 2) aquellas cuyo valor de la variable dependiente es igual a cero. En el modelo, las variables que intentan explicar el valor de la variable dependiente cuando esta es positiva y las razones por las cuales esta cae dentro de una categoría u otra son las mismas. Sin embargo, esto no tiene por qué ser así. Esta limitante del modelo Tobit es resuelta parcialmente por el modelo de selección de Heckman.</description>
+    </item>
+    
+    <item>
+      <title>Modelos en dos partes</title>
+      <link>/post/two-part/</link>
+      <pubDate>Tue, 29 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/two-part/</guid>
+      <description>En muchas ocasiones, la variable dependiente, $y_i$, puede pensarse como una mezcla de variables aleatorias continuas y discretas. Esto ocurre cuando $y_i \geq 0$, y, al mismo tiempo, el número de observaciones para las cuales $y_i=0$ es lo suficientemente grande tal que se justifique un trato especial. Para estos casos, tenemos a los modelos en dos partes. Como veremos, este tipo de modelos constituyen una extensión al modelo de Tobit y son, en muchos sentidos, más generales que el modelo de selección de Heckman.</description>
     </item>
     
   </channel>

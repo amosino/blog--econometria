@@ -1,0 +1,297 @@
+---
+title: Modelos en dos partes
+author: Alejandro Mosiño
+date: '2020-09-29'
+summary: 'En muchas ocasiones, la variable dependiente, $y_i$, puede pensarse como una mezcla de variables aleatorias continuas y discretas. Esto ocurre cuando $y_i \geq 0$, y, al mismo tiempo, el número de observaciones para las cuales $y_i=0$ es lo suficientemente grande tal que se justifique un trato especial. Para estos casos, tenemos a los modelos en dos partes. Como veremos, este tipo de modelos constituyen una extensión al modelo de Tobit y son, en muchos sentidos, más generales que el modelo de selección de Heckman.'
+slug: two-part
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 13
+math: true
+---
+
+
+
+<p>En muchas ocasiones, la variable dependiente, <span class="math inline">\(y_i\)</span>, puede pensarse como una mezcla de variables aleatorias continuas y discretas. Esto ocurre cuando <span class="math inline">\(y_i \geq 0\)</span>, y, al mismo tiempo, el número de observaciones para las cuales <span class="math inline">\(y_i=0\)</span> es lo suficientemente grande tal que se justifique un trato especial. A este fenómeno se le conoce como el de los datos censurados.</p>
+<p>Para hacer frente a un modelo con datos censurados, podemos suponer que la función de densidad de la variable dependiente es una mezcla de dos procesos: 1) el proceso que genera los ceros y 2) el proceso que genera los valores positivos. Sea <span class="math inline">\(f_0\)</span> la densidad de <span class="math inline">\(y_i\)</span> cuando <span class="math inline">\(y_i=0\)</span> y sea <span class="math inline">\(f_+\)</span> la densidad condicional de <span class="math inline">\(y_i\)</span> cuando <span class="math inline">\(y_i&gt;0\)</span>. Entonces, la función de densidad de <span class="math inline">\(y_i\)</span>, la cual llamaremos <span class="math inline">\(g(\cdot)\)</span>, puede escribirse como:</p>
+<p><span class="math display">\[
+g(y_i|\mathbf{x}_i)=\begin{cases}[1-\mathbb{P}(y_i&gt;0|\mathbf{x}_i)]\times f_0(0|y_i=0, \mathbf{x}_i) &amp; \text{si} \ y_i=0 \\
+\mathbb{P}(y_i&gt;0|\mathbf{x}_i)\times f_+(y_i|y_i&gt;0, \mathbf{x}_i) &amp; \text{si} \ y_i&gt;0 \end{cases}
+\]</span></p>
+<p>donde <span class="math inline">\(f_0(0|y_i=0, \mathbf{x}_i)=1\)</span>, debido a que esta define una densidad degenerada en <span class="math inline">\(y=0\)</span>. Nota que esta definición no implica ninguna relación particular entre <span class="math inline">\(\mathbb{P}(\cdot)\)</span> y <span class="math inline">\(f_+\)</span> (y <span class="math inline">\(f_0\)</span>). Esto es, no se requiere suponer independencia entre distribuciones.</p>
+<p>Cuando la función de densidad de la variable dependiente tiene estas características, podemos descomponer los coeficientes del modelo en dos partes: los parámetros del modelo para <span class="math inline">\(\mathbb{P}(y_i&gt;0|\mathbf{x}_i)\)</span> se estiman de forma separada de los coeficientes del modelo para <span class="math inline">\(f_+(y_i|y_i&gt;0, \mathbf{x}_i)\)</span>. Esta es la razón por la que a este modelo se lo conoce como modelo en dos partes. Por ejemplo, deseamos explicar los gastos hospitalarios de un individuo. En este caso, un modelo en dos partes nos permite explicar en primer lugar el porqué de la hospitalización y, en segundo lugar (y de forma separada), los gastos de este individuo una vez en el hospital.</p>
+<p>Lo anterior implica que es necesario hacer una elección sobre el modelo a utilizar en la primera y segunda partes de la estimación. Hay muchas posibles combinaciones, algunas de las cuales se pueden deducir de la siguiente tabla:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Primera parte</th>
+<th>Segunda parte</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Probit</td>
+<td>GLM Gaussiano</td>
+</tr>
+<tr class="even">
+<td>Logit</td>
+<td>GLM Poisson</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>GLM Gamma</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>GLM Gaussiana Inversa</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><span class="math inline">\(\ln(y)\)</span></td>
+</tr>
+<tr class="even">
+<td></td>
+<td><span class="math inline">\(\sqrt(y)\)</span></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><span class="math inline">\(y\)</span></td>
+</tr>
+</tbody>
+</table>
+<div id="ejemplos-de-estimación-con-modelos-en-dos-partes" class="section level2">
+<h2>Ejemplos de estimación con modelos en dos partes</h2>
+<p>Para los siguientes ejemplos, estaremos utilizando los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;tidyverse&quot;)
+
+# Leer paquetes
+library(tidyverse)</code></pre>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.1     ✓ dplyr   1.0.0
+## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<p>Consideremos una muestra del <em>Medical Expenditure Panel Survey 2004</em> de los Estados Unidos. Tómate un tiempo para analizar la base de datos, así como para realizar un análisis de estadística descriptiva.</p>
+<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/MEPSData.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   famidyr = col_character(),
+##   hieuidx = col_character(),
+##   female = col_character(),
+##   race_bl = col_character(),
+##   race_oth = col_character(),
+##   eth_hisp = col_character(),
+##   ed_hs = col_character(),
+##   ed_hsplus = col_character(),
+##   ed_col = col_character(),
+##   reg_midw = col_character(),
+##   reg_south = col_character(),
+##   reg_west = col_character(),
+##   anylim = col_character(),
+##   ins_mcare = col_character(),
+##   ins_mcaid = col_character(),
+##   ins_unins = col_character(),
+##   ins_dent = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>Deseamos modelar la dependencia que existe entre los gastos totales en salud (<code>exp_tot</code>), los cuales juegan el papel de la variable dependiente, en función de la edad de la persona (<code>age</code>) y de su género (<code>female</code>). Esta es una variable dummy que vale <code>Female</code> si la observación es una mujer y <code>Male</code>si es hombre. Aunque R no tiene ningún problema manejando variables dummy cuyas características estén codificadas como texto, podemos recodificar, si así lo deseamos, la variable <code>female</code>, tal que esta valga 1 si la observación es una mujer y 0 si es hombre.</p>
+<pre class="r"><code>db$female &lt;- as.factor(as.numeric(db$female==&quot;Female&quot;))</code></pre>
+<p>Un histograma de la variable dependiente revela que esta está muy sesgada hacia la izquierda, lo que indica que el método de los mínimos cuadrados ordinarios podría no ser el mejor método de estimación.</p>
+<pre class="r"><code>hist(db$exp_tot)</code></pre>
+<p><img src="/post/two-part_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>De hecho, podemos correr una regresión por el método de los MCO y recuperar sus residuales. ¿Te parece que estos cumplen con los supuestos de Gauss-Markov?</p>
+<pre class="r"><code>mod.lrm &lt;- lm(exp_tot~age+female, data=db, subset=(exp_tot&gt;0))
+smod.lrm &lt;- summary(mod.lrm)
+print(smod.lrm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = exp_tot ~ age + female, data = db, subset = (exp_tot &gt; 
+##     0))
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##  -9422  -3676  -1968     62 438341 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1819.043    256.984  -7.078 1.52e-12 ***
+## age           125.064      4.669  26.787  &lt; 2e-16 ***
+## female1       624.556    167.018   3.739 0.000185 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 10370 on 15943 degrees of freedom
+## Multiple R-squared:  0.04373,    Adjusted R-squared:  0.04361 
+## F-statistic: 364.5 on 2 and 15943 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>res2 &lt;- residuals(mod.lrm)^2
+hist(res2)</code></pre>
+<p><img src="/post/two-part_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Ahora, consideremos la estimación de los coeficientes considerando un modelo en dos partes.</p>
+<p>Como primer paso, creamos una variable dummy para la variable dependiente, <span class="math inline">\(exp_tot\)</span>. Esta tendrá un valor de 0 cuando <span class="math inline">\(exp_tot=0\)</span> y de 1 cuando <span class="math inline">\(exp_tot&gt;0\)</span>.</p>
+<pre class="r"><code>db$d_exp_tot &lt;- as.factor(as.numeric(db$exp_tot&gt;0))</code></pre>
+<p>Esta nueva variable nos permite estimar la primera parte del modelo. En este ejemplo utilizaremos un modelo tipo probit.</p>
+<pre class="r"><code>probit.fit &lt;- glm(d_exp_tot~age+female, data=db,
+                  family = binomial(link=&quot;probit&quot;))
+summary(probit.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = d_exp_tot ~ age + female, family = binomial(link = &quot;probit&quot;), 
+##     data = db)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -3.0455   0.2367   0.4689   0.6844   1.1509  
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) -0.4348369  0.0339372  -12.81   &lt;2e-16 ***
+## age          0.0263418  0.0007494   35.15   &lt;2e-16 ***
+## female1      0.5342665  0.0225372   23.71   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 18126  on 19385  degrees of freedom
+## Residual deviance: 16118  on 19383  degrees of freedom
+## AIC: 16124
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<p>Los resultados de la estimación nos indican, por ejemplo, que la probabilidad de realizar algún gasto en salud (sin importar el monto) se incrementa con la edad. Además, la probabilidad de realizar gastos en salud es mayor para las mujeres que para los hombres. Para calcular los valores exactos hacemos uso de la función <code>predict()</code>. Por ejemplo, las siguiente líneas de código nos permiten estimar la probabilidad de realizar gastos en salud para una mujer de 60 años. Como vemos, la probabilidad estimada es de 95%.</p>
+<pre class="r"><code>dbex &lt;-  data.frame(age=60, female=&quot;1&quot;)
+predict(probit.fit, newdata=dbex, type=&quot;response&quot;, se.fit=TRUE)</code></pre>
+<pre><code>## $fit
+##         1 
+## 0.9535154 
+## 
+## $se.fit
+##           1 
+## 0.002249526 
+## 
+## $residual.scale
+## [1] 1</code></pre>
+<p>Ahora estamos listos para estimar la segunda parte del modelo. Utilizaremos dos diferentes estimaciones: modelo con conexión logaritmica y distribución gamma y modelo con conexión lineal y distribución gaussiana (es decir, un modelo de regresión lineal). Naturalmente, para la estimación solo tomamos en cuenta las observaciones para las cuales <span class="math inline">\(exp_tot&gt;0\)</span>.</p>
+<p>Primero el modelo con conexión lineal y distribución gamma.</p>
+<pre class="r"><code>gamma.fit &lt;- glm(exp_tot~age+female,
+                 data=db, subset=(exp_tot&gt;0),
+                 family=Gamma(link=log))
+summary(gamma.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = exp_tot ~ age + female, family = Gamma(link = log), 
+##     data = db, subset = (exp_tot &gt; 0))
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -3.5466  -1.5229  -0.8463  -0.0129  19.3542  
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 6.835698   0.066017 103.544  &lt; 2e-16 ***
+## age         0.027951   0.001199  23.305  &lt; 2e-16 ***
+## female1     0.208600   0.042906   4.862 1.17e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for Gamma family taken to be 7.097201)
+## 
+##     Null deviance: 37405  on 15945  degrees of freedom
+## Residual deviance: 33478  on 15943  degrees of freedom
+## AIC: 292919
+## 
+## Number of Fisher Scoring iterations: 8</code></pre>
+<p>Los resultados indican que cada año adicional de vida incrementa la cantidad de gastos médicos en 2.79% en promedio. Así mismo, las mujeres gastan en servicios médicos 23% más que los hombres [0.23 = exp(0.208)-1]. Ambas variables son significativas con un nivel de significancia del 1%.</p>
+<p>Ahora estimamos un modelo con conexión lineal y distribución gaussiana.</p>
+<pre class="r"><code>ols.fit &lt;- glm(exp_tot~age+female,
+               data=db, subset=(exp_tot&gt;0))
+summary(ols.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = exp_tot ~ age + female, data = db, subset = (exp_tot &gt; 
+##     0))
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+##  -9422   -3676   -1968      62  438341  
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1819.043    256.984  -7.078 1.52e-12 ***
+## age           125.064      4.669  26.787  &lt; 2e-16 ***
+## female1       624.556    167.018   3.739 0.000185 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 107543722)
+## 
+##     Null deviance: 1.7930e+12  on 15945  degrees of freedom
+## Residual deviance: 1.7146e+12  on 15943  degrees of freedom
+## AIC: 340154
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<p>Ambas variables aun son significativas al 1%, aunque la lectura de los coeficientes estimados es diferente. En este caso tenemos que los gastos médicos se incrementan (en promedio) en 125.06 dólares con cada año adicional de vida. Además, las mujeres gastan (en promedio) 624.5 dólares más que los hombres.</p>
+<p>Una de las bondades de utilizar modelos lineales generalizados es que los resultados anteriores son directamente comparables. Para esto, podemos utilizar los criterios de información de Akaike (AIC) y Schwartz (BIC).</p>
+<pre class="r"><code>AIC.m1 &lt;- AIC(gamma.fit, k=2)
+BIC.m1 &lt;- BIC(gamma.fit)
+AIC.m2 &lt;- AIC(ols.fit, k=2)
+BIC.m2 &lt;- BIC(ols.fit)
+l.AIC &lt;- c(AIC.m1, AIC.m2)
+l.BIC &lt;- c(BIC.m1, BIC.m2)
+IC &lt;- data.frame(&quot;AIC&quot; = l.AIC, &quot;BIC&quot; = l.BIC)
+print(IC)</code></pre>
+<pre><code>##        AIC      BIC
+## 1 292919.2 292949.9
+## 2 340153.7 340184.4</code></pre>
+<p>Claramente, el mejor modelo es el de conexión logaritmica y distribución gamma. Esto debido a que tiene los valores de AIC y BIC más bajos.</p>
+<p>Nota que en la estimación de la primera y segunda partes del modelo hemos utilizado las mismas variables explicativas. Sin embargo, dado que se trata de modelos independientes esto no tiene porqué ser así.</p>
+<p>Ahora bien, ¿cómo podemos hacer predicciones utilizando las dos partes del modelo? Para esto, recordemos que la función <span class="math inline">\(g(\cdot)\)</span> depende de <span class="math inline">\(\mathbb{P}(y_i&gt;0|\mathbf{x}_i)\)</span>, la cual se obtiene de la estimación en la primera parte, y de <span class="math inline">\(f_+(y_i|y_i&gt;0, \mathbf{x}_i)\)</span>, la cual se obtiene de la estimación en la segunda parte. Desde un punto de vista práctico, para pronosticar los gastos en salud de una persona que ya se encuentra en el hospital necesitamos multiplicar las probabilidades estimadas por el modelo probit por los valores de <span class="math inline">\(y\)</span> predichos por el modelo lineal generalizado.</p>
+<p>Si en la primera parte usamos un modelo probit y en la segunda parte usamos una distribución gamma con conexión logaritmica tenemos:</p>
+<pre class="r"><code># Pronóstico primera parte
+fp &lt;- predict(probit.fit, db, type = &quot;response&quot;)
+# Pronóstico seguda parte
+sp_gamma &lt;- predict(gamma.fit, db, type = &quot;response&quot;)
+# Tabla
+probs.table &lt;- data.frame(exp_tot = db$exp_tot)
+probs.table$gamma &lt;- fp*sp_gamma
+print(head(probs.table))</code></pre>
+<pre><code>##   exp_tot    gamma
+## 1      80 2942.840
+## 2     145 3512.980
+## 3    7485 1857.790
+## 4       0 1922.679
+## 5    4154 1929.093
+## 6    8591 3753.140</code></pre>
+<p>Nota que en las últimas líneas del código hemos construido una tabla que en su primer columna contiene los valores verdaderos de <span class="math inline">\(exp_tot\)</span> y en la segunda los valores pronosticados por el modelo en dos partes. Al menos para las observaciones que se muestran, parece que el pronóstico no es muy bueno. Esto no es tan extraño tomando en cuenta lo limitado (en cuestión de la elección de las variables explicativas) de nuestro modelo.</p>
+<p>Hacemos el mismo ejercicio utilizando en la primera parte un modelo probit y en la segunda un modelo de regresión lineal clásico. Naturalmente, la primera parte en este ejemplo es idéntica a la primera parte del ejercicio anterior, por lo que no incluimos esta en el siguiente bloque de código:</p>
+<pre class="r"><code># Pronóstico seguda parte
+sp_ols &lt;- predict(ols.fit, db, type = &quot;response&quot;)
+# Tabla
+probs.table$ols &lt;- fp*sp_ols
+print(head(probs.table))</code></pre>
+<pre><code>##   exp_tot    gamma      ols
+## 1      80 2942.840 3464.417
+## 2     145 3512.980 3859.791
+## 3    7485 1857.790 1611.951
+## 4       0 1922.679 2095.485
+## 5    4154 1929.093 1726.634
+## 6    8591 3753.140 4125.852</code></pre>
+<p>Como puede verse en la tabla, ninguno de los dos modelos parece hacerlo demasiado bien. Sin embargo, sí podemos saber qué modelo lo hace mejor. Para esto calcularemos la raiz cuadrada del error cuadrático medio (RMSE):</p>
+<pre class="r"><code>RMSE &lt;- function(x, y)  sqrt(mean((y - x)^2, na.rm = TRUE))
+rmse &lt;- c(RMSE(probs.table$exp_tot, probs.table$gamma),
+          RMSE(probs.table$exp_tot, probs.table$ols))
+names(rmse) &lt;- c(&quot;Gamma&quot;, &quot;OLS&quot;)
+print(rmse)</code></pre>
+<pre><code>##    Gamma      OLS 
+## 9490.948 9486.684</code></pre>
+<p>Nota que ambos modelos tienen un error de predicción similar. De hecho, el modelo cuya segunda parte es un modelo de regresión lineal ajusta un poco mejor a los datos verdaderos (es decir, tiene un valor de RMSE más pequeño). Esto a pesar de que los errores del modelo parecen no seguir una distribución normal.</p>
+<p><em>Última actualización: 01-10-2020.</em></p>
+</div>

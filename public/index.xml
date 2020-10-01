@@ -120,6 +120,15 @@
     </item>
     
     <item>
+      <title>Modelos en dos partes</title>
+      <link>/post/two-part/</link>
+      <pubDate>Tue, 29 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/two-part/</guid>
+      <description>En muchas ocasiones, la variable dependiente, $y_i$, puede pensarse como una mezcla de variables aleatorias continuas y discretas. Esto ocurre cuando $y_i \geq 0$, y, al mismo tiempo, el número de observaciones para las cuales $y_i=0$ es lo suficientemente grande tal que se justifique un trato especial. Para estos casos, tenemos a los modelos en dos partes. Como veremos, este tipo de modelos constituyen una extensión al modelo de Tobit y son, en muchos sentidos, más generales que el modelo de selección de Heckman.</description>
+    </item>
+    
+    <item>
       <title>Sobre este sitio</title>
       <link>/about/</link>
       <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>
