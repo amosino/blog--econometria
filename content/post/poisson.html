@@ -1,0 +1,211 @@
+---
+title: Modelos de conteo
+author: Alejandro Mosiño
+date: '2020-10-06'
+summary: 'Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.'
+slug: poisson
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 14
+math: true
+---
+
+
+
+<p>Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Estas variables, además de tener una función de distribución con masa de probabilidad concentrada en los enteros positivos, suelen estar sesgadas, presentar heteroscedasticidad y tener varianzas que se incrementan con su valor promedio.</p>
+<p>Debido a esto, un modelo de regresión lineal no resulta apropiado (a menos que decidas ignorar tanto el sesgo como la naturaleza discreta de la variable dependiente). Otros procedimientos más apropiados son la regresión de Poisson y el modelo de regresión binomial negativa. Aquí analizaremos el primero.</p>
+<div id="regresión-de-poisson-teoría" class="section level2">
+<h2>Regresión de Poisson: teoría</h2>
+<p>Recuerda que, si una variable aleatoria <span class="math inline">\(y_i\)</span> sigue una distribución de Poisson con intensidad (o parámetro) <span class="math inline">\(\mu\)</span>, su función de densidad es:</p>
+<p><span class="math display">\[\mathbb{P}(y_i) = \frac{e^{-\mu} \mu^{y_i}}{y_i!}, \ y=0,1,\dots\]</span>
+Se puede demostrar que:</p>
+<p><span class="math display">\[\begin{aligned}
+\mathbb{E}(y_i) = \mu \\
+\mathbb{V}(y_i) = \mu 
+\end{aligned}\]</span></p>
+<p>Además, también puede demostrarse que, para una distribución de Poisson, el número de sucesos que ocurren en intervalos de tiempo disjuntos son variables aleatorias independientes.</p>
+<p>Para derivar el modelo de regresión de Poisson, permitimos que el parámetro de intensidad varíe entre observaciones (por lo que tenemos <span class="math inline">\(\mu_i\)</span> en lugar de la constante <span class="math inline">\(\mu\)</span>). Este se usa para parametrizar la relación entre la variable dependiente <span class="math inline">\(y_i\)</span> y el vector de regresores, <span class="math inline">\(mathbf{x}\)</span>. En particular, suponemos que:</p>
+<p><span class="math display">\[\mu_i=\exp\{\mathbf{x}\boldsymbol{\beta}\},\]</span>
+donde <span class="math inline">\(\boldsymbol{\beta}\)</span> es, como siempre, un vector de coeficientes de dimensión <span class="math inline">\(k\times 1\)</span>. Naturalmente, esta especificación implica que:</p>
+<p><span class="math display">\[\begin{aligned}
+\mathbb{E}(y_i|\mathbf{x}) = \mu_i = \exp\{\mathbf{x}\boldsymbol{\beta}\} \\
+\mathbb{V}(y_i|\mathbf{x}) = \mu_i = \exp\{\mathbf{x}\boldsymbol{\beta}\}.
+\end{aligned}\]</span></p>
+<p>Estas relaciones implican:</p>
+<ol style="list-style-type: decimal">
+<li>Los coeficientes del modelo de regresión de Poisson pueden interpretarse como semielasticidaddes. Más precisamente:</li>
+</ol>
+<p><span class="math display">\[\frac{\partial \ln \mathbb{E}(y_i|\mathbf{x})}{\partial x_j}=\beta_j\]</span>
+Entonces, un cambio de una unidad en la variable <span class="math inline">\(x_j\)</span> implica un cambio en <span class="math inline">\(y_i\)</span> de <span class="math inline">\(\beta_j \%\)</span>.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>El modelo de regresión de Poisson es intrínsecamente heteroscedástico.</li>
+</ol>
+<p>Los coeficientes de un modelo de regresión de Poisson se estiman utilizando el procedimiento de máxima verosimilitud. Para construir la función de verosimilitud usamos las relaciones anteriores, el supuesto de independencia entre observaciones y el hecho que la distribución de Poisson pertenece a la familia exponencial. Tenemos entonces que:</p>
+<p><span class="math display">\[\mathcal{L}(\boldsymbol{\beta})=\sum_{i=1}^{n}\left\{y_i \mathbf{x}\boldsymbol{\beta}-\exp(\mathbf{x}\boldsymbol{\beta})-\ln(y_i!)\right\}\]</span>
+Las condiciones de primer orden implican:</p>
+<p><span class="math display">\[\sum_{i=1}^{n}\left\{y_i-\exp(\mathbf{x}\boldsymbol{\beta})\right\}\mathbf{x}=0\]</span>
+## Regresión de Poisson: ejemplo</p>
+<p>Para el siguiente ejemplo, estaremos utilizando los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;tidyverse&quot;)
+# install.packages(&quot;margins&quot;)
+# install.packages(&quot;sandwich&quot;)
+# install.packages(&quot;countreg&quot;, repos=&quot;http://R-Forge.R-project.org&quot;)
+# install.packages(&quot;AER&quot;)
+
+# Leer paquetes
+library(tidyverse)</code></pre>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.1     ✓ dplyr   1.0.0
+## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(margins)</code></pre>
+<pre><code>## Warning: package &#39;margins&#39; was built under R version 4.0.2</code></pre>
+<pre class="r"><code>library(sandwich)
+library(countreg)</code></pre>
+<pre><code>## Loading required package: MASS</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre class="r"><code>library(AER)</code></pre>
+<pre><code>## Warning: package &#39;AER&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## Loading required package: car</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre><code>## 
+## Attaching package: &#39;car&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     recode</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     some</code></pre>
+<pre><code>## Loading required package: lmtest</code></pre>
+<pre><code>## Warning: package &#39;lmtest&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre><code>## Loading required package: survival</code></pre>
+<p>Consideremos una muestra del <em>Medical Expenditure Panel Survey 2004</em> de los Estados Unidos. Tómate un tiempo para analizar la base de datos, así como para realizar un análisis de estadística descriptiva.</p>
+<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/MEPSData.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   famidyr = col_character(),
+##   hieuidx = col_character(),
+##   female = col_character(),
+##   race_bl = col_character(),
+##   race_oth = col_character(),
+##   eth_hisp = col_character(),
+##   ed_hs = col_character(),
+##   ed_hsplus = col_character(),
+##   ed_col = col_character(),
+##   reg_midw = col_character(),
+##   reg_south = col_character(),
+##   reg_west = col_character(),
+##   anylim = col_character(),
+##   ins_mcare = col_character(),
+##   ins_mcaid = col_character(),
+##   ins_unins = col_character(),
+##   ins_dent = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>Deseamos modelar el número de visitas al consultorio médico (<code>use_off</code>), la cual juega el papel de la variable dependiente y es, claramente, una variable de conteo, en función de la edad de la persona (<code>age</code>) y de su género (<code>female</code>). Esta es una variable dummy que vale <code>Female</code> si la observación es una mujer y <code>Male</code>si es hombre. Aunque R no tiene ningún problema manejando variables dummy cuyas características estén codificadas como texto, podemos recodificar, si así lo deseamos, la variable <code>female</code>, tal que esta valga 1 si la observación es una mujer y 0 si es hombre.</p>
+<pre class="r"><code>db$female &lt;- as.factor(as.numeric(db$female==&quot;Female&quot;))</code></pre>
+<p>Un histograma de la variable dependiente revela que esta está muy sesgada hacia la izquierda. Esto, y el hecho de que la variable dependiente sea discreta, justifican la aplicación de un modelo de regresión de Poisson.</p>
+<pre class="r"><code>hist(db$use_off)</code></pre>
+<p><img src="/post/poisson_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+Dado que la distribución de Poisson pertenece a la familia de la exponencial, podemos estimar los coeficientes del modelo utilizando la función <code>glm()</code>.</p>
+<pre class="r"><code>poisson.fit &lt;- glm(use_off~ age + female, data=db, family = poisson)
+summary(poisson.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = use_off ~ age + female, family = poisson, data = db)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -5.6899  -2.5899  -1.5503   0.2515  29.3457  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) 0.3201797  0.0099091   32.31   &lt;2e-16 ***
+## age         0.0242174  0.0001637  147.97   &lt;2e-16 ***
+## female1     0.4055818  0.0062865   64.52   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 216333  on 19385  degrees of freedom
+## Residual deviance: 189439  on 19383  degrees of freedom
+## AIC: 235916
+## 
+## Number of Fisher Scoring iterations: 6</code></pre>
+<p>Nota que el número de visitas al médico aumenta en un 2.5% con cada año adicional de vida [<span class="math inline">\(100{\exp(0.0242)-1}\)</span>] y las mujeres visitan al médico 50% [<span class="math inline">\(100{\exp(0.4055)-1}\)</span>] más que los hombres.</p>
+<p>Aunque la interpretación de los coeficientes que acabamos de realizar es bastante intuitiva, en ocasiones resulta más interesante calcular los efectos marginales e incrementales con respecto a <span class="math inline">\(y_i\)</span> en lugar de los efectos marginales e incrementales con respecto a <span class="math inline">\(\ln(y_i)\)</span> (que es lo que acabamos de hacer). Los efectos marginales se calculan como:</p>
+<p><span class="math display">\[\frac{\partial \mathbb{E}(y_i|\mathbf{x})}{\partial x_j}=\beta_j \exp(\mathbb{x}\boldsymbol{\beta}),\]</span>
+y los efectos incrementales:</p>
+<p><span class="math display">\[\Delta(y_i|\mathbf{x}, x_j)= \exp(\mathbb{x}\boldsymbol{\beta}|x_j=1)-\exp(\mathbb{x}\boldsymbol{\beta}|x_j=0)\]</span></p>
+<p>Como podemos ver, ambos cálculos dependen del valor que tomen las variables explicativas del modelo. Los valores de las variables en <span class="math inline">\(\mathbb{x}\)</span> pueden elegirse en función de la pregunta específica que deseamos responder. La opción más simple consiste en calcular el efecto marginal promedio y el efecto incremental promedio. En estas, se calculan los efectos marginales (o incrementales) para todos los individuos en la población y luego se calculan los promedios. En R podemos utilizar la función <code>margins()</code> del paquete del mismo nombre para hacer los cálculos de forma automática.</p>
+<pre class="r"><code>summary(margins(poisson.fit))</code></pre>
+<pre><code>##   factor    AME     SE        z      p  lower  upper
+##      age 0.1405 0.0010 135.3803 0.0000 0.1385 0.1426
+##  female1 2.2673 0.0341  66.5309 0.0000 2.2005 2.3341</code></pre>
+<p>Así pues, el efecto marginal promedio para la variable <code>age</code> es 0.14. Es decir, en promedio, cada año adicional de vida implica visitar al médico 0.14 veces más. El efecto incremental de la variable <code>female</code> es 2.26. Esto quiere decir que las mujeres, en promedio, visitan al médico 2.26 veces más que los hombres.</p>
+<p>Otra opción es evaluar los efectos marginales e incrementales en los valores promedio de las variables. Para esto, basta con agregar el argumento <code>at</code> a la función <code>margins()</code>. El siguiente bloque de código calcula el efecto marginal evaluando en la edad promedio y fijando el valor de la variable dummy en 1.</p>
+<pre class="r"><code>summary(margins(poisson.fit, at=list(age=mean(db$age)), variables=&quot;female&quot;))</code></pre>
+<pre><code>##   factor     age    AME     SE       z      p  lower  upper
+##  female1 45.3609 2.0666 0.0313 65.9890 0.0000 2.0052 2.1280</code></pre>
+<p>Entonces, las mujeres de 45.36 años visitan al médico 2.066 veces en promedio.</p>
+</div>
+<div id="errores-estándar-robustos" class="section level2">
+<h2>Errores estándar robustos</h2>
+<p>Uno de los problemas a los que podríamos enfrentarnos al estimar un modelo de regresión de Poisson es que tanto la media como la varianza de <span class="math inline">\(y_i\)</span> son iguales a <span class="math inline">\(\mu\)</span>. Sin embargo, no es poco frecuente de que los datos presenten sobre dispersión, es decir, que la varianza sea superior a la media. Esto conduce a errores estándar subestimados y, como consecuencia, valores t sobre estimados. En R, podemos realizar un test formal de sobre dispersión si utilizamos la función <code>dispersiontest()</code> del paquete <code>AER</code>. En esta, la hipótesis nula es la de <em>equi dispersión</em>. La hipótesis alternativa es que existe ya sea sobre dispersión o sub dispersión. Para revisar si existe sobre dispersión simplemente tecleamos:</p>
+<pre class="r"><code>dispersiontest(poisson.fit)</code></pre>
+<pre><code>## 
+##  Overdispersion test
+## 
+## data:  poisson.fit
+## z = 16.757, p-value &lt; 2.2e-16
+## alternative hypothesis: true dispersion is greater than 1
+## sample estimates:
+## dispersion 
+##   18.62108</code></pre>
+<p>Dado que el valor p de la prueba es inferior a <span class="math inline">\(\alpha=1%\)</span>, rechazamos la hipótesis nula en favor de la alternativa. Es decir, en nuestro modelo tenemos un problema de sobre dispersión.</p>
+<p>Para enfrentar este problema, podemos calcular errores estándar robustos. Para esto, podemos utilizar la función <code>vcovHC()</code> que pertenece al paquete <code>sandwich</code>. El siguiente bloque de código hace los cálculos.</p>
+<pre class="r"><code>cov.m1 &lt;- vcovHC(poisson.fit, type=&quot;HC0&quot;)
+std.err &lt;- sqrt(diag(cov.m1))
+r.est &lt;- cbind(Estimate= coef(poisson.fit), &quot;Robust SE&quot; = std.err,
+               &quot;Pr(&gt;|z|)&quot; = 2 * pnorm(abs(coef(poisson.fit)/std.err), lower.tail=FALSE),
+               LL = coef(poisson.fit) - 1.96 * std.err,
+               UL = coef(poisson.fit) + 1.96 * std.err)
+r.est</code></pre>
+<pre><code>##               Estimate   Robust SE     Pr(&gt;|z|)         LL         UL
+## (Intercept) 0.32017973 0.038473351 8.640591e-17 0.24477197 0.39558750
+## age         0.02421735 0.000621169 0.000000e+00 0.02299986 0.02543484
+## female1     0.40558180 0.028079739 2.737731e-47 0.35054551 0.46061809</code></pre>
+<p>Nota que el objeto <code>r.est</code> tiene como único objetivo guardar y presentar el pantalla los resultados. En estos se presentan los estimadores originales justo con sus errores estándar robustos, el estadístico p de la prueba de significancia individual y los intervalos de confianza al 95% para los coeficientes estimados.</p>
+<p>Recuerda que la estimación con errores estándar robustos no resuelven el problema de la sobre dispersión, pero sí hacen que las pruebas de significancia sean confiables.</p>
+</div>
+<div id="grado-de-ajuste" class="section level2">
+<h2>Grado de ajuste</h2>
+<p>Finalmente, es importante destacar que, aun cuando los parámetros estimados mediante un modelo de regresión de Poisson son consistentes, las estimaciones de los efectos marginales e incrementales y las probabilidades podrían ser inconsistentes. Para analizar el grado de ajuste de un modelo de regresión de Poisson podemos trazar un rootograma. Este representa la raiz cuadrada tanto de las frecuencias pronosticadas por el modelo como de las frecuencias empíricas (observadas) Las primeras se representan por puntos conectados por segmentos de línea y las segundas como un gráfico de barras.</p>
+<p>Existen varias versiones de un rootograma tiene varias versiones. En su versión <em>colgante</em>, la barra cuelga de los puntos. Si la barra no llega al eje de las abscisas tenemos que la predicción de la frecuencia es superior a la frecuencia empírica. Por el contrario, si la barra corta el eje de las abscisas, el modelo predice una frecuencia inferior a la empírica. Naturalmente, el ajuste es mejor en tanto las barras justo toquen el eje de las abscisas.</p>
+<p>En R podemos utilizar la función <code>rootogram()</code> que pertenece al paquete <code>countreg</code>. El uso de esta función es muy simple como se muestra a continuación.</p>
+<pre class="r"><code>rootogram(poisson.fit)</code></pre>
+<p><img src="/post/poisson_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+Como vemos, algunas de las frecuencias son subestimadas por el modelo, especialmente las que corresponden al evento 0 y 1 (visitas al médico). En cambio, los eventos en el centro de la distribución están sobre estimados.</p>
+<p><em>Última actualización: 06-10-2020.</em></p>
+</div>

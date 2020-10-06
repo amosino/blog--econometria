@@ -1,0 +1,170 @@
+---
+title: Modelos de conteo
+author: Alejandro Mosiño
+date: '2020-10-06'
+summary: 'Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.'
+slug: poisson
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 14
+math: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Estas variables, además de tener una función de distribución con masa de probabilidad concentrada en los enteros positivos, suelen estar sesgadas, presentar heteroscedasticidad y tener varianzas que se incrementan con su valor promedio. 
+
+Debido a esto, un modelo de regresión lineal no resulta apropiado (a menos que decidas ignorar tanto el sesgo como la naturaleza discreta de la variable dependiente). Otros procedimientos más apropiados son la regresión de Poisson y el modelo de regresión binomial negativa. Aquí analizaremos el primero.
+
+## Regresión de Poisson: teoría
+
+Recuerda que, si una variable aleatoria $y_i$ sigue una distribución de Poisson con intensidad (o parámetro) $\mu$, su función de densidad es:
+
+$$\mathbb{P}(y_i) = \frac{e^{-\mu} \mu^{y_i}}{y_i!}, \ y=0,1,\dots$$
+Se puede demostrar que:
+
+$$\begin{aligned}
+\mathbb{E}(y_i) = \mu \\
+\mathbb{V}(y_i) = \mu 
+\end{aligned}$$
+
+Además, también puede demostrarse que, para una distribución de Poisson, el número de sucesos que ocurren en intervalos de tiempo disjuntos son variables aleatorias independientes.
+
+Para derivar el modelo de regresión de Poisson, permitimos que el parámetro de intensidad varíe entre observaciones (por lo que tenemos $\mu_i$ en lugar de la constante $\mu$). Este se usa para parametrizar la relación entre la variable dependiente $y_i$ y el vector de regresores, $mathbf{x}$. En particular, suponemos que:
+
+$$\mu_i=\exp\{\mathbf{x}\boldsymbol{\beta}\},$$
+donde $\boldsymbol{\beta}$ es, como siempre, un vector de coeficientes de dimensión $k\times 1$. Naturalmente, esta especificación implica que:
+
+$$\begin{aligned}
+\mathbb{E}(y_i|\mathbf{x}) = \mu_i = \exp\{\mathbf{x}\boldsymbol{\beta}\} \\
+\mathbb{V}(y_i|\mathbf{x}) = \mu_i = \exp\{\mathbf{x}\boldsymbol{\beta}\}.
+\end{aligned}$$
+
+Estas relaciones implican:
+
+1. Los coeficientes del modelo de regresión de Poisson pueden interpretarse como semielasticidaddes. Más precisamente:
+
+$$\frac{\partial \ln \mathbb{E}(y_i|\mathbf{x})}{\partial x_j}=\beta_j$$
+Entonces, un cambio de una unidad en la variable $x_j$ implica un cambio en $y_i$ de $\beta_j \%$.
+
+2. El modelo de regresión de Poisson es intrínsecamente heteroscedástico.
+
+Los coeficientes de un modelo de regresión de Poisson se estiman utilizando el procedimiento de máxima verosimilitud. Para construir la función de verosimilitud usamos las relaciones anteriores, el supuesto de independencia entre observaciones y el hecho que la distribución de Poisson pertenece a la familia exponencial. Tenemos entonces que:
+
+$$\mathcal{L}(\boldsymbol{\beta})=\sum_{i=1}^{n}\left\{y_i \mathbf{x}\boldsymbol{\beta}-\exp(\mathbf{x}\boldsymbol{\beta})-\ln(y_i!)\right\}$$
+Las condiciones de primer orden implican:
+
+$$\sum_{i=1}^{n}\left\{y_i-\exp(\mathbf{x}\boldsymbol{\beta})\right\}\mathbf{x}=0$$
+## Regresión de Poisson: ejemplo
+
+Para el siguiente ejemplo, estaremos utilizando los siguientes paquetes de R:
+
+```{r}
+# Instalar paquetes si es necesario
+# install.packages("tidyverse")
+# install.packages("margins")
+# install.packages("sandwich")
+# install.packages("countreg", repos="http://R-Forge.R-project.org")
+# install.packages("AER")
+
+# Leer paquetes
+library(tidyverse)
+library(margins)
+library(sandwich)
+library(countreg)
+library(AER)
+```
+
+Consideremos una muestra del _Medical Expenditure Panel Survey 2004_ de los Estados Unidos. Tómate un tiempo para analizar la base de datos, así como para realizar un análisis de estadística descriptiva.
+
+```{r}
+db <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/MEPSData.csv")
+```
+
+Deseamos modelar el número de visitas al consultorio médico (`use_off`), la cual juega el papel de la variable dependiente y es, claramente, una variable de conteo, en función de la edad de la persona (`age`) y de su género (`female`). Esta es una variable dummy que vale `Female` si la observación es una mujer y `Male`si es hombre. Aunque R no tiene ningún problema manejando variables dummy cuyas características estén codificadas como texto, podemos recodificar, si así lo deseamos, la variable `female`, tal que esta valga 1 si la observación es una mujer y 0 si es hombre.
+
+```{r}
+db$female <- as.factor(as.numeric(db$female=="Female"))
+```
+
+Un histograma de la variable dependiente revela que esta está muy sesgada hacia la izquierda. Esto, y el hecho de que la variable dependiente sea discreta, justifican la aplicación de un modelo de regresión de Poisson.
+
+```{r}
+hist(db$use_off)
+```
+Dado que la distribución de Poisson pertenece a la familia de la exponencial, podemos estimar los coeficientes del modelo utilizando la función `glm()`.
+
+```{r}
+
+poisson.fit <- glm(use_off~ age + female, data=db, family = poisson)
+summary(poisson.fit)
+```
+Nota que el número de visitas al médico aumenta en un 2.5% con cada año adicional de vida [$100{\exp(0.0242)-1}$] y las mujeres visitan al médico 50% [$100{\exp(0.4055)-1}$] más que los hombres. 
+
+Aunque la interpretación de los coeficientes que acabamos de realizar es bastante intuitiva, en ocasiones resulta más interesante calcular los efectos marginales e incrementales con respecto a $y_i$ en lugar de los efectos marginales e incrementales con respecto a $\ln(y_i)$ (que es lo que acabamos de hacer). Los efectos marginales se calculan como:
+
+$$\frac{\partial \mathbb{E}(y_i|\mathbf{x})}{\partial x_j}=\beta_j \exp(\mathbb{x}\boldsymbol{\beta}),$$
+y los efectos incrementales:
+
+$$\Delta(y_i|\mathbf{x}, x_j)= \exp(\mathbb{x}\boldsymbol{\beta}|x_j=1)-\exp(\mathbb{x}\boldsymbol{\beta}|x_j=0)$$
+
+Como podemos ver, ambos cálculos dependen del valor que tomen las variables explicativas del modelo. Los valores de las variables en $\mathbb{x}$ pueden elegirse en función de la pregunta específica que deseamos responder. La opción más simple consiste en calcular el efecto marginal promedio y el efecto incremental promedio. En estas, se calculan los efectos marginales (o incrementales) para todos los individuos en la población y luego se calculan los promedios. En R podemos utilizar la función `margins()` del paquete del mismo nombre para hacer los cálculos de forma automática.
+
+```{r}
+summary(margins(poisson.fit))
+```
+Así pues, el efecto marginal promedio para la variable `age` es 0.14. Es decir, en promedio, cada año adicional de vida implica visitar al médico 0.14 veces más. El efecto incremental de la variable `female` es 2.26. Esto quiere decir que las mujeres, en promedio, visitan al médico 2.26 veces más que los hombres.
+
+Otra opción es evaluar los efectos marginales e incrementales en los valores promedio de las variables. Para esto, basta con agregar el argumento `at` a la función `margins()`. El siguiente bloque de código calcula el efecto marginal evaluando en la edad promedio y fijando el valor de la variable dummy en 1.
+
+```{r}
+summary(margins(poisson.fit, at=list(age=mean(db$age)), variables="female"))
+
+```
+Entonces, las mujeres de 45.36 años visitan al médico 2.066 veces en promedio.
+
+## Errores estándar robustos
+
+Uno de los problemas a los que podríamos enfrentarnos al estimar un modelo de regresión de Poisson es que tanto la media como la varianza de $y_i$ son iguales a $\mu$. Sin embargo, no es poco frecuente de que los datos presenten sobre dispersión, es decir, que la varianza sea superior a la media. Esto conduce a errores estándar subestimados y, como consecuencia, valores t sobre estimados. En R, podemos realizar un test formal de sobre dispersión si utilizamos la función `dispersiontest()` del paquete `AER`. En esta, la hipótesis nula es la de _equi dispersión_. La hipótesis alternativa es que existe ya sea sobre dispersión o sub dispersión. Para revisar si existe sobre dispersión simplemente tecleamos:
+
+```{r}
+dispersiontest(poisson.fit)
+```
+Dado que el valor p de la prueba es inferior a $\alpha=1%$, rechazamos la hipótesis nula en favor de la alternativa. Es decir, en nuestro modelo tenemos un problema de sobre dispersión.
+
+Para enfrentar este problema, podemos calcular errores estándar robustos. Para esto, podemos utilizar la función `vcovHC()` que pertenece al paquete `sandwich`. El siguiente bloque de código hace los cálculos.
+
+
+```{r}
+cov.m1 <- vcovHC(poisson.fit, type="HC0")
+std.err <- sqrt(diag(cov.m1))
+r.est <- cbind(Estimate= coef(poisson.fit), "Robust SE" = std.err,
+               "Pr(>|z|)" = 2 * pnorm(abs(coef(poisson.fit)/std.err), lower.tail=FALSE),
+               LL = coef(poisson.fit) - 1.96 * std.err,
+               UL = coef(poisson.fit) + 1.96 * std.err)
+r.est
+```
+Nota que el objeto `r.est` tiene como único objetivo guardar y presentar el pantalla los resultados. En estos se presentan los estimadores originales justo con sus errores estándar robustos, el estadístico p de la prueba de significancia individual y los intervalos de confianza al 95% para los coeficientes estimados. 
+
+Recuerda que la estimación con errores estándar robustos no resuelven el problema de la sobre dispersión, pero sí hacen que las pruebas de significancia sean confiables.
+
+## Grado de ajuste
+
+Finalmente, es importante destacar que, aun cuando los parámetros estimados mediante un modelo de regresión de Poisson son consistentes, las estimaciones de los efectos marginales e incrementales y las probabilidades podrían ser inconsistentes. Para analizar el grado de ajuste de un modelo de regresión de Poisson podemos trazar un rootograma. Este representa la raiz cuadrada tanto de las frecuencias pronosticadas por el modelo como de las frecuencias empíricas (observadas) Las primeras se representan por puntos conectados por segmentos de línea y las segundas como un gráfico de barras. 
+
+Existen varias versiones de un rootograma  tiene varias versiones. En su versión _colgante_, la barra cuelga de los puntos. Si la barra no llega al eje de las abscisas tenemos que la predicción de la frecuencia es superior a la frecuencia empírica. Por el contrario, si la barra corta el eje de las abscisas, el modelo predice una frecuencia inferior a la empírica. Naturalmente, el ajuste es mejor en tanto las barras justo toquen el eje de las abscisas.
+
+En R podemos utilizar la función `rootogram()` que pertenece al paquete `countreg`. El uso de esta función es muy simple como se muestra a continuación.
+
+```{r}
+rootogram(poisson.fit)
+```
+Como vemos, algunas de las frecuencias son subestimadas por el modelo, especialmente las que corresponden al evento 0 y 1 (visitas al médico). En cambio, los eventos en el centro de la distribución están sobre estimados.
+
+*Última actualización: `r format(Sys.Date(), "%d-%m-%Y")`.*
+

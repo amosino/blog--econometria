@@ -6,7 +6,7 @@
     <description>Recent content in Econometrics on Econometría &amp; Co.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es-mx</language>
-    <lastBuildDate>Tue, 29 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 06 Oct 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/econometrics/index.xml" rel="self" type="application/rss+xml" />
     
@@ -126,6 +126,15 @@
       
       <guid>/post/two-part/</guid>
       <description>En muchas ocasiones, la variable dependiente, $y_i$, puede pensarse como una mezcla de variables aleatorias continuas y discretas. Esto ocurre cuando $y_i \geq 0$, y, al mismo tiempo, el número de observaciones para las cuales $y_i=0$ es lo suficientemente grande tal que se justifique un trato especial. Para estos casos, tenemos a los modelos en dos partes. Como veremos, este tipo de modelos constituyen una extensión al modelo de Tobit y son, en muchos sentidos, más generales que el modelo de selección de Heckman.</description>
+    </item>
+    
+    <item>
+      <title>Modelos de conteo</title>
+      <link>/post/poisson/</link>
+      <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/poisson/</guid>
+      <description>Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.</description>
     </item>
     
   </channel>

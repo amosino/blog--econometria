@@ -129,6 +129,15 @@
     </item>
     
     <item>
+      <title>Modelos de conteo</title>
+      <link>/post/poisson/</link>
+      <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/poisson/</guid>
+      <description>Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.</description>
+    </item>
+    
+    <item>
       <title>Sobre este sitio</title>
       <link>/about/</link>
       <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>
