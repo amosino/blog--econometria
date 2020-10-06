@@ -35,7 +35,7 @@ $$\begin{aligned}
 
 Además, también puede demostrarse que, para una distribución de Poisson, el número de sucesos que ocurren en intervalos de tiempo disjuntos son variables aleatorias independientes.
 
-Para derivar el modelo de regresión de Poisson, permitimos que el parámetro de intensidad varíe entre observaciones (por lo que tenemos $\mu_i$ en lugar de la constante $\mu$). Este se usa para parametrizar la relación entre la variable dependiente $y_i$ y el vector de regresores, $mathbf{x}$. En particular, suponemos que:
+Para derivar el modelo de regresión de Poisson, permitimos que el parámetro de intensidad varíe entre observaciones (por lo que tenemos $\mu_i$ en lugar de la constante $\mu$). Este se usa para parametrizar la relación entre la variable dependiente $y_i$ y el vector de regresores, $\mathbf{x}$. En particular, suponemos que:
 
 $$\mu_i=\exp\{\mathbf{x}\boldsymbol{\beta}\},$$
 donde $\boldsymbol{\beta}$ es, como siempre, un vector de coeficientes de dimensión $k\times 1$. Naturalmente, esta especificación implica que:
@@ -60,6 +60,9 @@ $$\mathcal{L}(\boldsymbol{\beta})=\sum_{i=1}^{n}\left\{y_i \mathbf{x}\boldsymbol
 Las condiciones de primer orden implican:
 
 $$\sum_{i=1}^{n}\left\{y_i-\exp(\mathbf{x}\boldsymbol{\beta})\right\}\mathbf{x}=0$$
+
+Estas serían las ecuaciones normales para el caso de una regresión de Poisson.
+
 ## Regresión de Poisson: ejemplo
 
 Para el siguiente ejemplo, estaremos utilizando los siguientes paquetes de R:

@@ -27,7 +27,7 @@ Se puede demostrar que:</p>
 \mathbb{V}(y_i) = \mu 
 \end{aligned}\]</span></p>
 <p>Además, también puede demostrarse que, para una distribución de Poisson, el número de sucesos que ocurren en intervalos de tiempo disjuntos son variables aleatorias independientes.</p>
-<p>Para derivar el modelo de regresión de Poisson, permitimos que el parámetro de intensidad varíe entre observaciones (por lo que tenemos <span class="math inline">\(\mu_i\)</span> en lugar de la constante <span class="math inline">\(\mu\)</span>). Este se usa para parametrizar la relación entre la variable dependiente <span class="math inline">\(y_i\)</span> y el vector de regresores, <span class="math inline">\(mathbf{x}\)</span>. En particular, suponemos que:</p>
+<p>Para derivar el modelo de regresión de Poisson, permitimos que el parámetro de intensidad varíe entre observaciones (por lo que tenemos <span class="math inline">\(\mu_i\)</span> en lugar de la constante <span class="math inline">\(\mu\)</span>). Este se usa para parametrizar la relación entre la variable dependiente <span class="math inline">\(y_i\)</span> y el vector de regresores, <span class="math inline">\(\mathbf{x}\)</span>. En particular, suponemos que:</p>
 <p><span class="math display">\[\mu_i=\exp\{\mathbf{x}\boldsymbol{\beta}\},\]</span>
 donde <span class="math inline">\(\boldsymbol{\beta}\)</span> es, como siempre, un vector de coeficientes de dimensión <span class="math inline">\(k\times 1\)</span>. Naturalmente, esta especificación implica que:</p>
 <p><span class="math display">\[\begin{aligned}
@@ -46,8 +46,11 @@ Entonces, un cambio de una unidad en la variable <span class="math inline">\(x_j
 <p>Los coeficientes de un modelo de regresión de Poisson se estiman utilizando el procedimiento de máxima verosimilitud. Para construir la función de verosimilitud usamos las relaciones anteriores, el supuesto de independencia entre observaciones y el hecho que la distribución de Poisson pertenece a la familia exponencial. Tenemos entonces que:</p>
 <p><span class="math display">\[\mathcal{L}(\boldsymbol{\beta})=\sum_{i=1}^{n}\left\{y_i \mathbf{x}\boldsymbol{\beta}-\exp(\mathbf{x}\boldsymbol{\beta})-\ln(y_i!)\right\}\]</span>
 Las condiciones de primer orden implican:</p>
-<p><span class="math display">\[\sum_{i=1}^{n}\left\{y_i-\exp(\mathbf{x}\boldsymbol{\beta})\right\}\mathbf{x}=0\]</span>
-## Regresión de Poisson: ejemplo</p>
+<p><span class="math display">\[\sum_{i=1}^{n}\left\{y_i-\exp(\mathbf{x}\boldsymbol{\beta})\right\}\mathbf{x}=0\]</span></p>
+<p>Estas serían las ecuaciones normales para el caso de una regresión de Poisson.</p>
+</div>
+<div id="regresión-de-poisson-ejemplo" class="section level2">
+<h2>Regresión de Poisson: ejemplo</h2>
 <p>Para el siguiente ejemplo, estaremos utilizando los siguientes paquetes de R:</p>
 <pre class="r"><code># Instalar paquetes si es necesario
 # install.packages(&quot;tidyverse&quot;)
