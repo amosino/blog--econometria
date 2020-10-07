@@ -1,5 +1,5 @@
 ---
-title: Modelo de selección de Heckam
+title: Modelo de selección de Heckman
 author: Alejandro Mosiño
 date: '2020-09-04'
 summary: 'En el modelo Tobit consideramos dos categorías de observaciones: 1) aquellas cuyo valor de la variable dependiente es positivo y 2) aquellas cuyo valor de la variable dependiente es igual a cero. En el modelo, las variables que intentan explicar el valor de la variable dependiente cuando esta es positiva y las razones por las cuales esta cae dentro de una categoría u otra son las mismas. Sin embargo, esto no tiene por qué ser así. Esta limitante del modelo Tobit es resuelta parcialmente por el modelo de selección de Heckman.'
@@ -174,5 +174,5 @@ summary(mselection)</code></pre>
 #                         log(wage) ~ educ + exper + I( exper^2 ) + city, data=Mroz87, method=&quot;2step&quot;)
 # summary(mselectionh)</code></pre>
 <p>Como puede constatarse, la estimación del modelo de selección no tiene grandes efectos sobre los parámetros de interés.Los coeficientes estimados en todas las ecuaciones no son entre sí muy diferentes. Esto podría implicar que la estimación por MCO podría resultar, después de todo, en estimadores no tan sesgados. De hecho, esto resulta ser el caso, puesto que el valor de <span class="math inline">\(\rho\)</span> en la estimación del modelo de selección no es estadísticamente diferente de cero (valor p de 0.559).</p>
-<p><em>Última actualización: 07-09-2020.</em></p>
+<p><em>Última actualización: 07-10-2020.</em></p>
 </div>
