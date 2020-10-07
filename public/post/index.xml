@@ -6,7 +6,7 @@
     <description>Recent content in Posts on Econometría &amp; Co.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es-mx</language>
-    <lastBuildDate>Tue, 06 Oct 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 07 Oct 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
@@ -134,7 +134,16 @@
       <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
       
       <guid>/post/poisson/</guid>
-      <description>Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.</description>
+      <description>En la regresión de Poisson se trata de ajustar un modelo para el recuento del número de veces que ha ocurrido cierto fenómeno. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.</description>
+    </item>
+    
+    <item>
+      <title>Modelo de regresión binomial negativa</title>
+      <link>/post/binomial-negativa/</link>
+      <pubDate>Wed, 07 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/binomial-negativa/</guid>
+      <description>Al igual que el modelo de regresión de Poisson, el modelo de regresión binomal negativa se utiliza para ajustar un modelo para el recuento del número de veces que ha ocurrido cierto fenómeno. Sin embargo, la regresión binomial negativa es más popular dado que esta toma mejor en cuenta el problema de la sobre dispersión.</description>
     </item>
     
   </channel>

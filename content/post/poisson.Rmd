@@ -2,7 +2,7 @@
 title: Modelo de regresión de Poisson
 author: Alejandro Mosiño
 date: '2020-10-06'
-summary: 'Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.'
+summary: 'En la regresión de Poisson se trata de ajustar un modelo para el recuento del número de veces que ha ocurrido cierto fenómeno. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.'
 slug: poisson
 categories:
   - Econometrics
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Estas variables, además de tener una función de distribución con masa de probabilidad concentrada en los enteros positivos, suelen estar sesgadas, presentar heteroscedasticidad y tener varianzas que se incrementan con su valor promedio. 
 
-Debido a esto, un modelo de regresión lineal no resulta apropiado (a menos que decidas ignorar tanto el sesgo como la naturaleza discreta de la variable dependiente). Otros procedimientos más apropiados son la regresión de Poisson y el modelo de regresión binomial negativa. Aquí analizaremos el primero.
+Debido a lo anterior, un modelo de regresión lineal no resulta apropiado (a menos que decidas ignorar tanto el sesgo como la naturaleza discreta de la variable dependiente). Otros procedimientos más apropiados son la regresión de Poisson y el modelo de regresión binomial negativa. Aquí analizaremos el primero.
 
 ## Regresión de Poisson: teoría
 

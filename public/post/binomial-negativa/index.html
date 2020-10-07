@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es-mx" data-theme="light"><head>
+    <title> Alejandro Mosiño | Modelo de regresión binomial negativa </title>
+    <meta charset="utf-8"><meta name="generator" content="Hugo 0.67.1" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="description" content="Un blog sobre Econometría, Manejo de datos, Programación y más.">
+    
+    <link rel="stylesheet" href="/css/style.min.67cd718c0a3c8009c771494d381fb7128246a454bd0518fed97cb65d257db948.css" integrity="sha256-Z81xjAo8gAnHcUlNOB&#43;3EoJGpFS9BRj&#43;2Xy2XSV9uUg=" crossorigin="anonymous" type="text/css"><link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    
+    <link rel="shortcut icon" href="/favicons/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="canonical" href="/post/binomial-negativa/">
+    
+    
+    <script type="text/javascript" src="/js/anatole-header.min.c275265a259296f3dd50e8236a77fcbcadb1dbb9597d3045c675dcc2c7c58a93.js" integrity="sha256-wnUmWiWSlvPdUOgjanf8vK2x27lZfTBFxnXcwsfFipM=" crossorigin="anonymous"></script>
+    <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/site-feature-image.png"/>
+
+<meta name="twitter:title" content="Modelo de regresión binomial negativa"/>
+<meta name="twitter:description" content="Al igual que el modelo de regresión de Poisson, el modelo de regresión binomal negativa se utiliza para ajustar un modelo para el recuento del número de veces que ha ocurrido cierto fenómeno. Sin embargo, la regresión binomial negativa es más popular dado que esta toma mejor en cuenta el problema de la sobre dispersión."/>
+
+</head><body><div class="sidebar animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src="/images/profile.jpg" alt="profile picture">
+        <h3 title=""><a href="/">Econometría &amp; Co.</a></h3>
+        <div class="description">
+          <p>Un blog sobre Econometría, Manejo de datos, Programación y más.</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links">
+        
+        <li>
+        <a href="https://github.com/amosino/courses--econometria" rel="me" aria-label="GitHub">
+          <i class="fa fa-2x fa-github" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+        <li>
+        <a href="" rel="me" aria-label="">
+          <i class="fa fa-2x " aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+        <li>
+        <a href="mailto:Alejandro.Mosino@gmail.com" rel="me" aria-label="e-mail">
+          <i class="fa fa-2x fa-envelope" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+    </ul>
+    <div class="footer">
+        <div class="by_farbox">&copy; Alejandro Mosiño 2020 </div>
+      </div>
+    </div>
+</div><div class="main">
+            <div class="page-top animated fadeInDown">
+    <ul class="nav">
+        
+        
+        
+        <li><a  href="/" title="">Home</a></li>
+        
+        
+        <li><a  href="/about/" title="">About</a></li>
+        
+        
+        <li><a  href="http://amosino.econgto.org" title="">amosino.net</a></li>
+        
+    </ul>
+    <div class="themeswitcher">
+        <a class="theme-switch" title="Switch Theme">
+            <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+
+            <div class="autopagerize_page_element">
+                <div class="content">
+<div class="post animated fadeInDown">
+    <div class="post-content">
+
+      <div class="post-title">
+        <h3>Modelo de regresión binomial negativa
+        </h3>
+        
+        <div class="info">
+          <i class="fa fa-sun-o"></i><span class="date">Wed, Oct 7, 2020</span>
+          <i class="fa fa-clock-o"></i><span class="reading-time">9-minute read</span>
+        </div>
+        
+        </div>
+
+    
+
+
+<p>Es muy común que la variable dependiente sea un número entero positivo o un conteo. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Estas variables, además de tener una función de distribución con masa de probabilidad concentrada en los enteros positivos, suelen estar sesgadas, presentar heteroscedasticidad y tener varianzas que se incrementan con su valor promedio.</p>
+<p>En la literatura existen algunos modelos que nos permiten considerar variables de conteo. Entre estos se encuentran la regresión de Poisson y el modelo de regresión binomial negativa. En la regresión de Poisson, se supone que la variable dependiente, <span class="math inline">\(y_i\)</span>, sigue una distribución de Poisson con intensidad <span class="math inline">\(\mu_i\)</span>, donde:</p>
+<p><span class="math display">\[\mu_i=\exp\{\mathbf{x}\boldsymbol{\beta}\},\]</span></p>
+<p>y <span class="math inline">\(\boldsymbol{\beta}\)</span> es, como siempre, un vector de coeficientes de dimensión <span class="math inline">\(k\times 1\)</span>. Dado que <span class="math inline">\(y_i\)</span> sigue una distribución de Poisson tenemos que:</p>
+<p><span class="math display">\[\begin{aligned}
+\mathbb{E}(y_i|\mathbf{x}) = \mu_i = \exp\{\mathbf{x}\boldsymbol{\beta}\} \\
+\mathbb{V}(y_i|\mathbf{x}) = \mu_i = \exp\{\mathbf{x}\boldsymbol{\beta}\}.
+\end{aligned}\]</span></p>
+<p>La limitación en la aplicabilidad del modelo de regresión de Poisson proviene de las restricciones impuestas por sus propios supuestos. La violación de tales supuestos implica la ausencia de equidispersión. A su vez, la violación del supuesto de equidispersión resulta en estimaciones ineficientes y en errores estándar sesgados.</p>
+<p>El modelo de regresión binomial negativa es una extensión al modelo de regresión de Poisson que nos permite incorporar explícitamente la posibilidad de overdispersión. Para esto, consideramos una variable aleatoria, <span class="math inline">\(\xi_i\)</span>, tal que ahora:</p>
+<p><span class="math display">\[\mu_i=\exp\{\mathbf{x}\boldsymbol{\beta} + \xi_i\}\]</span></p>
+<p>Este nuevo elemento se justifica por la heterogeneidad de las observaciones. Esta heterogeneidad, por lo regular, no se observa (por ejemplo, diferencias en gustos y preferencias). Pero, estadísticamente hablando, ¿de dónde proviene <span class="math inline">\(\xi_i\)</span>?</p>
+<div id="regresión-binomial-negativa-teoría" class="section level2">
+<h2>Regresión binomial negativa: teoría</h2>
+<p>Recuerda que, si una variable aleatoria <span class="math inline">\(y_i\)</span> sigue una distribución binomial negativa con parámetros <span class="math inline">\(\mu\)</span> y <span class="math inline">\(\alpha\)</span>, su función de densidad es:</p>
+<p><span class="math display">\[
+f(y_i;\mu, \alpha)=\frac{\Gamma(\alpha^{-1}+y_i)}{\Gamma(\alpha^{-1})\Gamma(y_i+1)}\left(\frac{\alpha^{-1}}{\alpha^{-1}+\mu}\right)^{\alpha^{-1}}\left(\frac{\mu}{\alpha^{-1}+\mu}\right)^{y_i}; \ \alpha&gt;0
+\]</span></p>
+<p>donde <span class="math inline">\(\Gamma(\cdot)\)</span> se refiere a la función gamma (la cual se simplifica al factorial en tanto su argumento sea un número entero). Con respecto a la distribución de Poisson, <span class="math inline">\(\alpha\)</span> es un parámetro adicional y <span class="math inline">\(\mu\)</span> tiene la misma interpretación.</p>
+<p>Se puede demostrar que:</p>
+<p><span class="math display">\[\begin{aligned}
+\mathbb{E}(y_i; \mu, \alpha) &amp;= \mu \\
+\mathbb{V}(y_i; \mu, \alpha) &amp;= \mu + \alpha\mu^2 
+\end{aligned}\]</span></p>
+<p>Nota que esta parametrización implica que la media condicional de una distribución binomial negativa es exactamente la misma que para una distribución de Poisson. Sin embargo, la varianza es más grande que la media (es decir, tenemos sobredispersión). Esto implica que la distribución binomial negativa introduce una mayor proporción de ceros y tiene una cola derecha más delgada.</p>
+<p>Al igual que en modelo de regresión de Poisson, para derivar el modelo de regresión binomial negativa permitimos que el parámetro de intensidad varíe entre observaciones (por lo que tenemos <span class="math inline">\(\mu_i\)</span> en lugar de la constante <span class="math inline">\(\mu\)</span>). Este se usa para parametrizar la relación entre la variable dependiente <span class="math inline">\(y_i\)</span> y el vector de regresores, <span class="math inline">\(\mathbf{x}\)</span>. En particular, suponemos que:</p>
+<p><span class="math display">\[\mu_i=\exp\{\mathbf{x}\boldsymbol{\beta}\},\]</span></p>
+<p>donde <span class="math inline">\(\boldsymbol{\beta}\)</span> es, como siempre, un vector de coeficientes de dimensión <span class="math inline">\(k\times 1\)</span>. La diferencia entre el modelo de regresión de Poisson y el modelo de regresión binomial negativa se encuentra en la especificación de la varianza condicional de <span class="math inline">\(y_i\)</span>. En el modelo de regresión binomial negativa suponemos que:</p>
+<p><span class="math display">\[
+\mathbb{V}(y_i; \mu, \alpha) = \mu_i + \alpha\mu_i^2
+\]</span>
+Existe una segunda opción (menos natural y, por lo tanto, menos común en la práctica). Esta consiste en suponer que la varianza condicional de <span class="math inline">\(y_i\)</span> no es una función <span class="math inline">\(\mu_i^2\)</span>, sino que estas guardan una relación lineal. Para esto, suponemos que <span class="math inline">\(\alpha=\delta/\mu_i\)</span>, por lo que:</p>
+<p><span class="math display">\[
+\mathbb{V}(y_i; \mu, \alpha) = \mu_i + \delta\mu_i
+\]</span>
+Esta especificación lineal se conoce en la literatura como NB1 (de <em>negative binomial</em> 1). En cambio, la especificación cuadrática se conoce como NB2 (de <em>negative binomial</em> 2).</p>
+<p>Para terminar esta sección teórica, es importante destacar que la distribución binomial negativa no es miembro de la familia exponencial, por lo que es muy sensible a los errores de especificación. Sin embargo, para valores fijos de <span class="math inline">\(\alpha\)</span> (o <span class="math inline">\(\delta\)</span>) es posible demostrar (Cameron y Trivedi, 2013) que los estimadores de un modelo de regresión binomial negativa son robustos a errores de especificación de momentos de orden mayor a 2.</p>
+</div>
+<div id="regresión-binomial-negativa-práctica" class="section level2">
+<h2>Regresión binomial negativa: práctica</h2>
+<p>Para el siguiente ejemplo, estaremos utilizando los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;tidyverse&quot;)
+# install.packages(&quot;MASS&quot;)
+# install.packages(&quot;margins&quot;)
+# install.packages(&quot;countreg&quot;, repos=&quot;http://R-Forge.R-project.org&quot;)
+
+# Leer paquetes
+library(tidyverse)</code></pre>
+<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 4.0.2</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.1     ✓ dplyr   1.0.0
+## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(MASS)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre class="r"><code>library(margins)</code></pre>
+<pre><code>## Warning: package &#39;margins&#39; was built under R version 4.0.2</code></pre>
+<pre class="r"><code>library(countreg)</code></pre>
+<p>Consideremos una muestra del <em>Medical Expenditure Panel Survey 2004</em> de los Estados Unidos. Tómate un tiempo para analizar la base de datos, así como para realizar un análisis de estadística descriptiva.</p>
+<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/MEPSData.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   famidyr = col_character(),
+##   hieuidx = col_character(),
+##   female = col_character(),
+##   race_bl = col_character(),
+##   race_oth = col_character(),
+##   eth_hisp = col_character(),
+##   ed_hs = col_character(),
+##   ed_hsplus = col_character(),
+##   ed_col = col_character(),
+##   reg_midw = col_character(),
+##   reg_south = col_character(),
+##   reg_west = col_character(),
+##   anylim = col_character(),
+##   ins_mcare = col_character(),
+##   ins_mcaid = col_character(),
+##   ins_unins = col_character(),
+##   ins_dent = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>Deseamos modelar el número de visitas al consultorio médico (<code>use_off</code>), la cual juega el papel de la variable dependiente y es, claramente, una variable de conteo, en función de la edad de la persona (<code>age</code>) y de su género (<code>female</code>). Esta es una variable dummy que vale <code>Female</code> si la observación es una mujer y <code>Male</code>si es hombre. Aunque R no tiene ningún problema manejando variables dummy cuyas características estén codificadas como texto, podemos recodificar, si así lo deseamos, la variable <code>female</code>, tal que esta valga 1 si la observación es una mujer y 0 si es hombre.</p>
+<pre class="r"><code>db$female &lt;- as.factor(as.numeric(db$female==&quot;Female&quot;))</code></pre>
+<p>Un histograma de la variable dependiente revela que esta está muy sesgada hacia la izquierda. Esto, y el hecho de que la variable dependiente sea discreta, justifican la aplicación de un modelo de conteo.</p>
+<pre class="r"><code>hist(db$use_off)</code></pre>
+<p><img src="/post/binomial-negativa_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Ajustamos un modelo de regresión binomial negativa. Esto se hace con la función <code>glm.nb()</code>, la cual pertenece al paquete <code>MASS</code>. Esta función nos permite estimar el modelo en su versión NB2. (Nota. El lector interesado puede investigar sobre las funciones <code>ml.b1()</code> y <code>ml.b2()</code> del paquete <code>COUNT</code>.)</p>
+<pre class="r"><code>nbm.fit &lt;- glm.nb(use_off~ age + female, data=db)
+summary(nbm.fit)</code></pre>
+<pre><code>## 
+## Call:
+## glm.nb(formula = use_off ~ age + female, data = db, init.theta = 0.5208532183, 
+##     link = log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.9452  -1.3161  -0.5186   0.0705   6.3859  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept) 0.0802363  0.0317258   2.529   0.0114 *  
+## age         0.0276920  0.0006026  45.952   &lt;2e-16 ***
+## female1     0.5192054  0.0212025  24.488   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for Negative Binomial(0.5209) family taken to be 1)
+## 
+##     Null deviance: 23622  on 19385  degrees of freedom
+## Residual deviance: 21108  on 19383  degrees of freedom
+## AIC: 102672
+## 
+## Number of Fisher Scoring iterations: 1
+## 
+## 
+##               Theta:  0.52085 
+##           Std. Err.:  0.00632 
+## 
+##  2 x log-likelihood:  -102664.19500</code></pre>
+<p>La lectura de los resultados es idéntica que en el modelo de Poisson; esto es, los coeficientes pueden interpretarse como semielasticidades. En particular, podemos ver que número de visitas al médico aumenta en un 2.8% con cada año adicional de vida [<span class="math inline">\(100{\exp(0.0277)-1}\)</span>] y las mujeres visitan al médico 52% [<span class="math inline">\(100{\exp(0.5192)-1}\)</span>] más que los hombres.</p>
+<p>También, resulta interesante calcular los efectos marginales e incrementales con respecto a <span class="math inline">\(y_i\)</span> en lugar de los efectos marginales e incrementales con respecto a <span class="math inline">\(\ln(y_i)\)</span> (que es lo que acabamos de hacer). Para esto, en R podemos utilizar la función <code>margins()</code> del paquete del mismo nombre.</p>
+<pre class="r"><code>summary(margins(nbm.fit))</code></pre>
+<pre><code>##   factor    AME     SE       z      p  lower  upper
+##      age 0.1645 0.0047 34.6647 0.0000 0.1552 0.1738
+##  female1 2.9253 0.1226 23.8694 0.0000 2.6851 3.1655</code></pre>
+<p>La tabla anterior nos indica que el efecto marginal promedio para la variable <code>age</code> es 0.16. Es decir, en promedio, cada año adicional de vida implica visitar al médico 0.16 veces más. El efecto incremental de la variable <code>female</code> es 2.92. Esto quiere decir que las mujeres, en promedio, visitan al médico 2.92 veces más que los hombres.</p>
+<p>También es posible evaluar los efectos marginales e incrementales en los valores promedio de las variables. Para esto, basta con agregar el argumento <code>at</code> a la función <code>margins()</code>. El siguiente bloque de código calcula el efecto marginal evaluando en la edad promedio y fijando el valor de la variable dummy en 1.</p>
+<pre class="r"><code>summary(margins(nbm.fit, at=list(age=mean(db$age)), variables=&quot;female&quot;))</code></pre>
+<pre><code>##   factor     age    AME     SE       z      p  lower  upper
+##  female1 45.3609 2.5902 0.1082 23.9431 0.0000 2.3781 2.8022</code></pre>
+<p>Entonces, las mujeres de 45.36 años visitan al médico 2.59 veces en promedio.</p>
+<p>Finalmente, nota que de la tabla de regresión de un modelo de regresión binomial negativo también podemos encontrar el valor del parámetro <span class="math inline">\(\alpha\)</span>. Este se calcula como <span class="math inline">\(\alpha= 1/\theta = 1/0.52085 = 1.9199\)</span>. (Nota. En muchos libros de texto, así como paquetes estadísticos, la <span class="math inline">\(\mathbb{V}(y_i; \mu, \theta)\)</span> se expresa en función de <span class="math inline">\(\theta\)</span> en lugar de <span class="math inline">\(\alpha\)</span>. Esto resulta intuitivo, puesto que queda claro que, conforme <span class="math inline">\(\theta \rightarrow \infty\)</span>, el modelo binomial negativo converge a uno de Poisson).</p>
+</div>
+<div id="grado-de-ajuste" class="section level2">
+<h2>Grado de ajuste</h2>
+<p>Finalmente, podemos analizar el grado de ajuste de un modelo de regresión binomial negativo mediante un rootograma. Este representa la raiz cuadrada tanto de las frecuencias pronosticadas por el modelo como de las frecuencias empíricas (observadas) Las primeras se representan por puntos conectados por segmentos de línea y las segundas como un gráfico de barras.</p>
+<p>Existen varias versiones de un rootograma tiene varias versiones. En su versión <em>colgante</em>, la barra cuelga de los puntos. Si la barra no llega al eje de las abscisas tenemos que la predicción de la frecuencia es superior a la frecuencia empírica. Por el contrario, si la barra corta el eje de las abscisas, el modelo predice una frecuencia inferior a la empírica. Naturalmente, el ajuste es mejor en tanto las barras justo toquen el eje de las abscisas.</p>
+<p>En R podemos utilizar la función <code>rootogram()</code> que pertenece al paquete <code>countreg</code>. El uso de esta función es muy simple como se muestra a continuación.</p>
+<pre class="r"><code>rootogram(nbm.fit)</code></pre>
+<p><img src="/post/binomial-negativa_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+Como vemos, el ajuste de las frecuencias es bastante bueno.</p>
+<p><em>Última actualización: 07-10-2020.</em></p>
+</div>
+
+    </div>
+    <div class="post-footer">
+      <div class="info">
+        
+<span class="separator"><a class="category" href="/categories/econometrics/">Econometrics</a></span>
+
+        
+    <span class="separator"><a class="tag" href="/tags/econometrics/">Econometrics</a><a class="tag" href="/tags/r/">R</a></span>
+
+      </div>
+    </div>
+
+    
+           
+    
+</div>
+
+
+                </div>
+            </div>
+        </div>
+</body>
+
+
+
+<script type="text/javascript" src="/js/jquery.min.86b1e8f819ee2d9099a783e50b49dff24282545fc40773861f9126b921532e4c.js" integrity="sha256-hrHo&#43;BnuLZCZp4PlC0nf8kKCVF/EB3OGH5EmuSFTLkw=" crossorigin="anonymous"></script>
+
+
+
+
+<script type="text/javascript" src="/js/bundle.min.0f9c74cb78f13d1f15f33daff4037c70354f98acfbb97a6f61708966675c3cae.js" integrity="sha256-D5x0y3jxPR8V8z2v9AN8cDVPmKz7uXpvYXCJZmdcPK4=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/js/medium-zoom.min.92f21c856129f84aeb719459b3e6ac621a3032fd7b180a18c04e1d12083f8aba.js" integrity="sha256-kvIchWEp&#43;ErrcZRZs&#43;asYhowMv17GAoYwE4dEgg/iro=" crossorigin="anonymous"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/&#43;DiW/UqRcLbRjq" crossorigin="anonymous"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l&#43;B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd&#43;qj&#43;o24G5ZU2zJz" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script></html></body>
+
+</html>
