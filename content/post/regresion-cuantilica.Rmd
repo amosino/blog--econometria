@@ -1,0 +1,137 @@
+---
+title: Regresión Cuantílica
+author: Alejandro Mosiño
+date: '2020-11-18'
+summary: 'La técnica de regresión cuantílica (Koenker y Basset en 1978), a diferencia de la de mínimos cuadrados ordinarios, en la que obtenemos estimaciones que se aproximan a la esperanza condicional de la variable de respuesta dados ciertos valores de las variables explicativas, tiene como objetivo estimar la mediana condicional u otros cuantiles de la variable de respuesta. Esta técnica se basa en la minimización de desviaciones absolutas ponderadas con pesos asimétricos que no se ven afectadas por datos extremos.'
+slug: Regresion-Cuantilica
+categories:
+  - Econometrics
+tags:
+  - Econometrics
+  - R
+weight: 16
+math: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+En un modelo de regresión lineal, así como en muchas de sus adaptaciones, el objetivo es el de estimar la relación promedio que existe entre una variable dependiente, $y$, y una o varias variables explicativas, $\mathbf{x}$, es decir, el de estimar $\mathbb{E}(y|\mathbf{x})$. Sin embargo, esto constituye solo una parte de la historia. Podemos obtener un panorama más general de la relación entre $y$ y $\mathbf{x}$ si analizamos diferentes puntos de la distribución de $y$. Este es el objetivo principal de una regresión cuantílica.
+
+## Cuantiles poblacionales
+
+
+Consideremos una variable aleatoria, $y$, con función de distribución acumulada $F_y$. El $\tau$-ésimo cuantil poblacional de $y$, es el valor $y_\tau$ tal que:
+
+$$ \tau = \mathbb{P}(y\leq y_\tau) = F_y(y_\tau)$$
+Por ejemplo, si $y_{0.75}=3$, entonces la probabilidad de que $y\leq 3=0.75$. De aquí obtenemos que:
+
+$$y_\tau = F_y^{-1}(\tau)$$
+Los cuantiles poblacionales más calculados en la práctica son: 1) la mediana, $\tau=0.5$, 2) el cuantil $\tau=0.75$ y 3) el cuantil $\tau=0.25$. Para la función de distribución normal estándar tenemos que $y_{0.5}=0$, $y_{0.95}=1.645$ y $y_{0.975}=1.960$.
+
+En una regresión cuantílica, deseamos estimar el $\tau$-ésimo cuantil de $y$ como una función lineal de un vector de variables explicativas. Esto es: $Q_\tau(y|\mathbf{x})=\mathbf{x}\boldsymbol{\beta} = F_{y|\mathbf{x}}^{-1}(\tau)$. Para ver cómo se obtiene esta, consideremos un modelo lineal con heteroscedasticidad multiplicativa:
+
+$$\begin{aligned}
+y&=\mathbf{x}\boldsymbol{\beta} + u \\
+u&=\mathbf{x}\boldsymbol{\alpha} \times \varepsilon \\
+\varepsilon &\sim iid(0,\sigma^2)
+\end{aligned}$$
+
+Aquí, suponemos que $\mathbf{x}\boldsymbol{\alpha}>0$. Entonces, el $\tau$-ésimo cuantil poblacional de $y$ condicional a $\mathbf{x}$ es una función $y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})$ tal que:
+
+$$\begin{aligned}
+\tau &= \mathbb{P}[y\leq y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})] \\
+&= \mathbb{P}[u \leq y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})-\mathbf{x}\boldsymbol{\beta} ] \\
+&= \mathbb{P}[\varepsilon \leq [y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})-\mathbf{x}\boldsymbol{\beta}] /\mathbf{x}\boldsymbol{\alpha}] \\
+&= F_\varepsilon\left([y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})-\mathbf{x}\boldsymbol{\beta}] /\mathbf{x}\boldsymbol{\alpha}\right)
+\end{aligned}$$
+
+En esta ecuación hemos utilizado el hecho que: $u=y-\mathbf{x}\boldsymbol{\beta}$, $\varepsilon = u/\mathbf{x}\boldsymbol{\alpha}$ y $F_\varepsilon$ es la función de densidad acumulada de $\varepsilon$. De aquí obtenemos que $y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})-\mathbf{x}\boldsymbol{\beta}] /\mathbf{x}\boldsymbol{\alpha} = F_\varepsilon^{-1}(\tau)$ tal que:
+
+$$\begin{aligned}
+y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha}) &= \mathbf{x}\boldsymbol{\beta} + \mathbf{x}\boldsymbol{\alpha} \times F_\varepsilon^{-1}(\tau) \\
+&=  \mathbf{x}(\boldsymbol{\beta} + \boldsymbol{\alpha}\times F_\varepsilon^{-1}(\tau) )
+\end{aligned}$$
+
+Entonces, para el modelo lineal con hetersocedasticidad multiplicativa de la forma $u=\mathbf{x}\boldsymbol{\alpha} \times \varepsilon$, los cuantiles condicionales son lineales en $\mathbf{x}$. En el caso especial de homoscedasticidad, $\mathbf{x}\boldsymbol{\alpha}$ es igual a una constante y todos los cuantiles condicionales tienen la misma pendiente, pero diferente intercepto.
+
+## Cuantiles muestrales
+
+Para calcular los cuantiles muestrales de una variable aleatoria $y$ tenemos dos opciones. La primera, la más común, consiste en ordenar los datos de menor a mayor. En este caso, el $q$-ésimo cuantil muestral, $\widehat{y}_\tau$, sería el $Nq$-ésimo valor más pequeño, donde $N$ es el tamaño de la muestra y $Nq$ se redondea al valor entero más cercano. Por ejemplo, si $N=97$, el cuantil $\tau=0.25$ sería la observación en la posición 25, ya que $97 \times 0.25=24.25$. La segunda opción es la de Koenker y Bassett (1978). Ellos mostraron que $\widehat{y}_\tau$ también puede encontrarse minimizando la siguiente expresión con respecto a $\beta$:
+
+$$ \sum_{i:y_i\geq\beta}^N \tau |y_i - \beta | +  \sum_{i:y_i < \beta}^N (1-\tau)|y_i - \beta| $$
+Esta segunda versión del cálculo de los cuantiles muestrales no es tan obvia. Sin embargo, es precisamente esta la que extender para el caso de una regresión lineal. En particular, los coeficientes estimados de una regresión para el $\tau$-ésimo cuantil, $\widehat{\boldsymbol{\beta}}_\tau$, es aquel que minimiza:
+
+$$Q_N(\boldsymbol{\beta_\tau}) = \sum_{i:y_i\geq \mathbf{x}\boldsymbol{\beta}}^N \tau |y_i - \mathbf{x}\boldsymbol{\beta}_\tau | +  \sum_{i:y_i < \mathbf{x}\boldsymbol{\beta}}^N (1-\tau)|y_i - \mathbf{x}\boldsymbol{\beta}_\tau| $$
+En esta ecuación, hemos utilizado $\boldsymbol{\beta}_\tau$ en lugar de $\boldsymbol{\beta}$ para dejar en claro que los valores estimados de $\boldsymbol{\beta}$ dependen de la elección del cuantil $\tau$. Un caso especial es cuando fijamos $\tau=0.5$, en cuyo caso tenemos la conocida regresión en la mediana o estimación de mínimas desviaciones absolutas. Esta es muy popular debido principalmente a que es más robusta con respecto a los valores atípicos (_outliers_) que una regresión por mínimos cuadrados ordinarios, la cual puede interpretarse como una regresión en la media. (Recuerda, media y mediana no son lo mismo.) Esto es porque la regresión cuantílica "penaliza" los errores de forma lineal, mientras que la regresión MCO, al elevar los errores al cuadrado, lo que hace es darle mayor importancia precisamente a dichos valores, "penalizándolos" de forma cuadrática.
+
+
+## Ejemplo
+
+Para el siguiente ejemplo, estaremos utilizando los siguientes paquetes de R:
+
+```{r, message=FALSE}
+# Instalar paquetes si es necesario
+# install.packages("tidyverse")
+
+# Leer paquetes
+library(tidyverse)
+library(quantreg)
+```
+
+Utilizaremos una regresión cuantílica para analizar el salario (`Salary`) de los jugadores de la MLB (liga de Beisbol en Estados Unidos) en diferentes cuentiles. Supondremos que este es una función de sus estadísticas, tales como: número de veces al bate (`AtBat`), número total de hits (`Hits`), el número de _home-runs_ (`HmRun`), el número de base por bolas (`Walks`), número de años en la la liga (`Years`) y el número de _put_outs_ (`PutOuts`).
+
+```{r, message=FALSE}
+db <- read_csv("https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/BaseballData.csv")
+```
+
+Primero, observemos la distribución del salario (en logaritmos):
+
+```{r}
+hist(log(db$Salary), prob=TRUE)
+lines(density(log(db$Salary)))
+```
+
+La gráfica que acabamos de obtener nos deja en claro que el comportamiento de los salarios podría ser diferente en cada uno de los cuantiles. Los cuantiles más utilizados pueden obtenerse mediante la función `summary()`:
+
+```{r}
+summary(log(db$Salary))
+```
+
+Entonces, el cuantil $\tau=0.25$, está determinado por el número 5.247. Esto implica que el primer 25% de los datos se encuentran debajo de este valor. La mediana ($\tau=0.5$), es el número que divide el conjunto de datos en dos partes: 50% de los datos se encuentran por debajo de 6.052 y el restante 50% se encuentran por encima.
+
+Antes de modelar los determinantes del (log) del salario en cada uno de estos cuantiles, estimamos primero los coeficientes del modeloutilizando el método de los mínimos cuadrados ordinarios:
+
+```{r}
+model.ols <- lm(log(Salary)~AtBat+Hits+HmRun+Walks+Years+PutOuts, data=db)
+summary(model.ols)
+```
+
+Los resultados nos indican, por ejemplo, que un _hit_ adicional incrementa el salario *promedio* en 1.3% y cada año adicional del experiencia lo hace en 9.3%. En los datos se muestra que el número de _home-runs_ parece no tener efecto en el salario *promedio*.
+
+Ahora hagamos los cálculos en diferentes cuantiles. PAra esto utilizamos la función `rq()` del paquete `quantreg`. Por ejemplo, para el cuantil $\tau=0.25$. Nota que la sintaxis de la función `rq()` es muy parecida a la de `lm()`, excepto que en la primera es necesario especificar el argumento `tau`. También, nota que en la función `summary()` hemos especificado que los errores estándar de la regresión serán calculados utilizando el método _bootstrap_.  
+
+```{r}
+model.qr1 <- rq(log(Salary)~AtBat+Hits+HmRun+Walks+Years+PutOuts, data=db, tau=0.25)
+summary(model.qr1, se = "boot")
+```
+Como podemos verun _hit_ adicional incrementa el salario del cuantil 0.25 en 1.5% y cada año adicional del experiencia lo hace en 10.3%. Este efecto parece ser mayor que en el caso del salario promedio. En el cuantil 0.25 el número de _home-runs_ tampoco parece tener efecto en el salario.
+
+Una de las ventajas de la función `qr()` es que nos permite introducir más de un valor de $\tau$ como argumento. Por ejemplo, estimamos los coeficientes para los cuantiles $\tau=0.5$ y $\tau=0.75$:
+
+```{r}
+model.qr2 <- rq(log(Salary)~AtBat+Hits+HmRun+Walks+Years+PutOuts, data=db, tau=c(0.5, 0.75))
+summary(model.qr2, se = "boot")
+```
+
+Un resultado interesante es que el número de _home-runs_ no es estadísticamente significativo para los cuantiles 0.25 y 0.5, pero sí lo es para el cuantil 0.75. En este punto, cada _home-run_ adicional incrementa el salario en 1.6%. Entonces, los _home-runs_ parecen tener importancia solo para los jugadores con salarios más altos.
+
+Naturalmente, observar las tablas para todos los cuantiles de una distribución parece ser demasiado tedioso. Imagína, por ejemplo, que deseas analizar el efecto de las variables explicativas para los cuantiles 0.1, 0.2, ..., 0.9. En este caso, las gráficas podrían ser más informativas que las tablas. Para esto, combinamos la función `plot()` con la función `summary()`:
+
+```{r}
+model.rq3<-rq(log(Salary)~AtBat+Hits+HmRun+Walks+Years+PutOuts, data=db, tau=seq(0.1, 0.9, by=0.1))
+plot(summary(model.rq3))
+```
+
+En cada una de las gráficas resultantes vemos varios elementos interesantes. La línea roja horizontal representa la estimación por MCO, y las líneas rojas punteadas son sus intervalos de confianza. Los puntos negros (conectados por pequeñas líneas) son las estimaciones mediante la regresión cuantílica y el área sombreada delimita sus intervalos de confianza. Comparando estos, podemos saber: 1) si existen diferencias estadísticas entre los coeficientes de la regresión cuantílica y los coeficientes de MCO. Si los intervalos de confianza de la regresión cuantílica caen dentro de los intervalos de confianza de MCO, entonces no hay razones para pensar que existen diferencias estadísticas suficientes que justifiquen la estimación por cuantiles. Esto parece ser el caso para nuestros datos. Algunas excepciones podrían ser el efecto de los _home-runs_ para los cuantiles más altos y el número de _put-outs_ para los cuantiles más bajos.

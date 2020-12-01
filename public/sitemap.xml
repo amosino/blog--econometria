@@ -3,142 +3,147 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/post/introduccion-r/</loc>
+    <loc>https://blog.amosino.net/post/introduccion-r/</loc>
     <lastmod>2020-07-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/estructuras-control/</loc>
+    <loc>https://blog.amosino.net/post/estructuras-control/</loc>
     <lastmod>2020-07-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/funciones/</loc>
+    <loc>https://blog.amosino.net/post/funciones/</loc>
     <lastmod>2020-07-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/bases-datos/</loc>
+    <loc>https://blog.amosino.net/post/bases-datos/</loc>
     <lastmod>2020-07-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/mrl/</loc>
+    <loc>https://blog.amosino.net/post/mrl/</loc>
     <lastmod>2020-07-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/efectos-tratamiento/</loc>
+    <loc>https://blog.amosino.net/post/efectos-tratamiento/</loc>
     <lastmod>2020-07-26T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/misspecification/</loc>
+    <loc>https://blog.amosino.net/post/misspecification/</loc>
     <lastmod>2020-07-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/glm/</loc>
+    <loc>https://blog.amosino.net/post/glm/</loc>
     <lastmod>2020-08-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/box-cox/</loc>
+    <loc>https://blog.amosino.net/post/box-cox/</loc>
     <lastmod>2020-08-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/eleccion-binaria/</loc>
+    <loc>https://blog.amosino.net/post/eleccion-binaria/</loc>
     <lastmod>2020-08-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/tobit/</loc>
+    <loc>https://blog.amosino.net/post/tobit/</loc>
     <lastmod>2020-09-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/heckit/</loc>
+    <loc>https://blog.amosino.net/post/heckit/</loc>
     <lastmod>2020-09-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/two-part/</loc>
+    <loc>https://blog.amosino.net/post/two-part/</loc>
     <lastmod>2020-09-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/poisson/</loc>
+    <loc>https://blog.amosino.net/post/poisson/</loc>
     <lastmod>2020-10-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/binomial-negativa/</loc>
+    <loc>https://blog.amosino.net/post/binomial-negativa/</loc>
     <lastmod>2020-10-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-10-07T00:00:00+00:00</lastmod>
+    <loc>https://blog.amosino.net/post/regresion-cuantilica/</loc>
+    <lastmod>2020-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/econometrics/</loc>
-    <lastmod>2020-10-07T00:00:00+00:00</lastmod>
+    <loc>https://blog.amosino.net/</loc>
+    <lastmod>2020-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/econometrics/</loc>
-    <lastmod>2020-10-07T00:00:00+00:00</lastmod>
+    <loc>https://blog.amosino.net/categories/</loc>
+    <lastmod>2020-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2020-10-07T00:00:00+00:00</lastmod>
+    <loc>https://blog.amosino.net/tags/econometrics/</loc>
+    <lastmod>2020-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/r/</loc>
-    <lastmod>2020-10-07T00:00:00+00:00</lastmod>
+    <loc>https://blog.amosino.net/categories/econometrics/</loc>
+    <lastmod>2020-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-10-07T00:00:00+00:00</lastmod>
+    <loc>https://blog.amosino.net/post/</loc>
+    <lastmod>2020-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/programming/</loc>
+    <loc>https://blog.amosino.net/tags/r/</loc>
+    <lastmod>2020-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.amosino.net/tags/</loc>
+    <lastmod>2020-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.amosino.net/categories/programming/</loc>
     <lastmod>2020-09-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/data-management/</loc>
+    <loc>https://blog.amosino.net/tags/data-management/</loc>
     <lastmod>2020-07-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/data-managment/</loc>
+    <loc>https://blog.amosino.net/categories/data-managment/</loc>
     <lastmod>2020-07-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/programming/</loc>
+    <loc>https://blog.amosino.net/tags/programming/</loc>
     <lastmod>2020-07-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/</loc>
+    <loc>https://blog.amosino.net/about/</loc>
     <lastmod>2020-07-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/about/</loc>
-    <lastmod>2020-07-20T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/archives/</loc>
+    <loc>https://blog.amosino.net/archives/</loc>
     <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url>
   

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es-mx" data-theme="light"><head>
+    <title> Alejandro Mosiño | Regresión Cuantílica </title>
+    <meta charset="utf-8"><meta name="generator" content="Hugo 0.78.2" /><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="description" content="Un blog sobre Econometría, Manejo de datos, Programación y más.">
+    
+    <link rel="stylesheet" href="https://blog.amosino.net/css/style.min.67cd718c0a3c8009c771494d381fb7128246a454bd0518fed97cb65d257db948.css" integrity="sha256-Z81xjAo8gAnHcUlNOB&#43;3EoJGpFS9BRj&#43;2Xy2XSV9uUg=" crossorigin="anonymous" type="text/css"><link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    
+    <link rel="shortcut icon" href="https://blog.amosino.net/favicons/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://blog.amosino.net/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://blog.amosino.net/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://blog.amosino.net/favicons/favicon-16x16.png">
+    <link rel="canonical" href="https://blog.amosino.net/post/regresion-cuantilica/">
+    
+    
+    <script type="text/javascript" src="https://blog.amosino.net/js/anatole-header.min.c275265a259296f3dd50e8236a77fcbcadb1dbb9597d3045c675dcc2c7c58a93.js" integrity="sha256-wnUmWiWSlvPdUOgjanf8vK2x27lZfTBFxnXcwsfFipM=" crossorigin="anonymous"></script>
+    <meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.amosino.net/images/site-feature-image.png"/>
+
+<meta name="twitter:title" content="Regresión Cuantílica"/>
+<meta name="twitter:description" content="La técnica de regresión cuantílica (Koenker y Basset en 1978), a diferencia de la de mínimos cuadrados ordinarios, en la que obtenemos estimaciones que se aproximan a la esperanza condicional de la variable de respuesta dados ciertos valores de las variables explicativas, tiene como objetivo estimar la mediana condicional u otros cuantiles de la variable de respuesta. Esta técnica se basa en la minimización de desviaciones absolutas ponderadas con pesos asimétricos que no se ven afectadas por datos extremos."/>
+
+</head><body><div class="sidebar animated fadeInDown">
+    <div class="logo-title">
+      <div class="title">
+        <img src="https://blog.amosino.net/images/profile.jpg" alt="profile picture">
+        <h3 title=""><a href="/">Econometría &amp; Co.</a></h3>
+        <div class="description">
+          <p>Un blog sobre Econometría, Manejo de datos, Programación y más.</p>
+        </div>
+      </div>
+    </div>
+    <ul class="social-links">
+        
+        <li>
+        <a href="https://github.com/amosino/courses--econometria" rel="me" aria-label="GitHub">
+          <i class="fa fa-2x fa-github" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+        <li>
+        <a href="" rel="me" aria-label="">
+          <i class="fa fa-2x " aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+        <li>
+        <a href="mailto:Alejandro.Mosino@gmail.com" rel="me" aria-label="e-mail">
+          <i class="fa fa-2x fa-envelope" aria-hidden="true"></i>
+        </a>          
+        </li>
+
+        
+    </ul>
+    <div class="footer">
+        <div class="by_farbox">&copy; Alejandro Mosiño 2020 </div>
+      </div>
+    </div>
+</div><div class="main">
+            <div class="page-top animated fadeInDown">
+    <ul class="nav">
+        
+        
+        
+        <li><a  href="/" title="">Home</a></li>
+        
+        
+        <li><a  href="/about/" title="">About</a></li>
+        
+        
+        <li><a  href="http://amosino.econgto.org" title="">amosino.net</a></li>
+        
+    </ul>
+    <div class="themeswitcher">
+        <a class="theme-switch" title="Switch Theme">
+            <i class="fa fa-adjust fa-fw" aria-hidden="true"></i>
+        </a>
+    </div>
+</div>
+
+            <div class="autopagerize_page_element">
+                <div class="content">
+<div class="post animated fadeInDown">
+    <div class="post-content">
+
+      <div class="post-title">
+        <h3>Regresión Cuantílica
+        </h3>
+        
+        <div class="info">
+          <i class="fa fa-sun-o"></i><span class="date">Wed, Nov 18, 2020</span>
+          <i class="fa fa-clock-o"></i><span class="reading-time">9-minute read</span>
+        </div>
+        
+        </div>
+
+    
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>En un modelo de regresión lineal, así como en muchas de sus adaptaciones, el objetivo es el de estimar la relación promedio que existe entre una variable dependiente, <span class="math inline">\(y\)</span>, y una o varias variables explicativas, <span class="math inline">\(\mathbf{x}\)</span>, es decir, el de estimar <span class="math inline">\(\mathbb{E}(y|\mathbf{x})\)</span>. Sin embargo, esto constituye solo una parte de la historia. Podemos obtener un panorama más general de la relación entre <span class="math inline">\(y\)</span> y <span class="math inline">\(\mathbf{x}\)</span> si analizamos diferentes puntos de la distribución de <span class="math inline">\(y\)</span>. Este es el objetivo principal de una regresión cuantílica.</p>
+<div id="cuantiles-poblacionales" class="section level2">
+<h2>Cuantiles poblacionales</h2>
+<p>Consideremos una variable aleatoria, <span class="math inline">\(y\)</span>, con función de distribución acumulada <span class="math inline">\(F_y\)</span>. El <span class="math inline">\(\tau\)</span>-ésimo cuantil poblacional de <span class="math inline">\(y\)</span>, es el valor <span class="math inline">\(y_\tau\)</span> tal que:</p>
+<p><span class="math display">\[ \tau = \mathbb{P}(y\leq y_\tau) = F_y(y_\tau)\]</span>
+Por ejemplo, si <span class="math inline">\(y_{0.75}=3\)</span>, entonces la probabilidad de que <span class="math inline">\(y\leq 3=0.75\)</span>. De aquí obtenemos que:</p>
+<p><span class="math display">\[y_\tau = F_y^{-1}(\tau)\]</span>
+Los cuantiles poblacionales más calculados en la práctica son: 1) la mediana, <span class="math inline">\(\tau=0.5\)</span>, 2) el cuantil <span class="math inline">\(\tau=0.75\)</span> y 3) el cuantil <span class="math inline">\(\tau=0.25\)</span>. Para la función de distribución normal estándar tenemos que <span class="math inline">\(y_{0.5}=0\)</span>, <span class="math inline">\(y_{0.95}=1.645\)</span> y <span class="math inline">\(y_{0.975}=1.960\)</span>.</p>
+<p>En una regresión cuantílica, deseamos estimar el <span class="math inline">\(\tau\)</span>-ésimo cuantil de <span class="math inline">\(y\)</span> como una función lineal de un vector de variables explicativas. Esto es: <span class="math inline">\(Q_\tau(y|\mathbf{x})=\mathbf{x}\boldsymbol{\beta} = F_{y|\mathbf{x}}^{-1}(\tau)\)</span>. Para ver cómo se obtiene esta, consideremos un modelo lineal con heteroscedasticidad multiplicativa:</p>
+<p><span class="math display">\[\begin{aligned}
+y&amp;=\mathbf{x}\boldsymbol{\beta} + u \\
+u&amp;=\mathbf{x}\boldsymbol{\alpha} \times \varepsilon \\
+\varepsilon &amp;\sim iid(0,\sigma^2)
+\end{aligned}\]</span></p>
+<p>Aquí, suponemos que <span class="math inline">\(\mathbf{x}\boldsymbol{\alpha}&gt;0\)</span>. Entonces, el <span class="math inline">\(\tau\)</span>-ésimo cuantil poblacional de <span class="math inline">\(y\)</span> condicional a <span class="math inline">\(\mathbf{x}\)</span> es una función <span class="math inline">\(y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})\)</span> tal que:</p>
+<p><span class="math display">\[\begin{aligned}
+\tau &amp;= \mathbb{P}[y\leq y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})] \\
+&amp;= \mathbb{P}[u \leq y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})-\mathbf{x}\boldsymbol{\beta} ] \\
+&amp;= \mathbb{P}[\varepsilon \leq [y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})-\mathbf{x}\boldsymbol{\beta}] /\mathbf{x}\boldsymbol{\alpha}] \\
+&amp;= F_\varepsilon\left([y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})-\mathbf{x}\boldsymbol{\beta}] /\mathbf{x}\boldsymbol{\alpha}\right)
+\end{aligned}\]</span></p>
+<p>En esta ecuación hemos utilizado el hecho que: <span class="math inline">\(u=y-\mathbf{x}\boldsymbol{\beta}\)</span>, <span class="math inline">\(\varepsilon = u/\mathbf{x}\boldsymbol{\alpha}\)</span> y <span class="math inline">\(F_\varepsilon\)</span> es la función de densidad acumulada de <span class="math inline">\(\varepsilon\)</span>. De aquí obtenemos que <span class="math inline">\(y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha})-\mathbf{x}\boldsymbol{\beta}] /\mathbf{x}\boldsymbol{\alpha} = F_\varepsilon^{-1}(\tau)\)</span> tal que:</p>
+<p><span class="math display">\[\begin{aligned}
+y_\tau(\mathbf{x}, \boldsymbol{\beta},\boldsymbol{\alpha}) &amp;= \mathbf{x}\boldsymbol{\beta} + \mathbf{x}\boldsymbol{\alpha} \times F_\varepsilon^{-1}(\tau) \\
+&amp;=  \mathbf{x}(\boldsymbol{\beta} + \boldsymbol{\alpha}\times F_\varepsilon^{-1}(\tau) )
+\end{aligned}\]</span></p>
+<p>Entonces, para el modelo lineal con hetersocedasticidad multiplicativa de la forma <span class="math inline">\(u=\mathbf{x}\boldsymbol{\alpha} \times \varepsilon\)</span>, los cuantiles condicionales son lineales en <span class="math inline">\(\mathbf{x}\)</span>. En el caso especial de homoscedasticidad, <span class="math inline">\(\mathbf{x}\boldsymbol{\alpha}\)</span> es igual a una constante y todos los cuantiles condicionales tienen la misma pendiente, pero diferente intercepto.</p>
+</div>
+<div id="cuantiles-muestrales" class="section level2">
+<h2>Cuantiles muestrales</h2>
+<p>Para calcular los cuantiles muestrales de una variable aleatoria <span class="math inline">\(y\)</span> tenemos dos opciones. La primera, la más común, consiste en ordenar los datos de menor a mayor. En este caso, el <span class="math inline">\(q\)</span>-ésimo cuantil muestral, <span class="math inline">\(\widehat{y}_\tau\)</span>, sería el <span class="math inline">\(Nq\)</span>-ésimo valor más pequeño, donde <span class="math inline">\(N\)</span> es el tamaño de la muestra y <span class="math inline">\(Nq\)</span> se redondea al valor entero más cercano. Por ejemplo, si <span class="math inline">\(N=97\)</span>, el cuantil <span class="math inline">\(\tau=0.25\)</span> sería la observación en la posición 25, ya que <span class="math inline">\(97 \times 0.25=24.25\)</span>. La segunda opción es la de Koenker y Bassett (1978). Ellos mostraron que <span class="math inline">\(\widehat{y}_\tau\)</span> también puede encontrarse minimizando la siguiente expresión con respecto a <span class="math inline">\(\beta\)</span>:</p>
+<p><span class="math display">\[ \sum_{i:y_i\geq\beta}^N \tau |y_i - \beta | +  \sum_{i:y_i &lt; \beta}^N (1-\tau)|y_i - \beta| \]</span>
+Esta segunda versión del cálculo de los cuantiles muestrales no es tan obvia. Sin embargo, es precisamente esta la que extender para el caso de una regresión lineal. En particular, los coeficientes estimados de una regresión para el <span class="math inline">\(\tau\)</span>-ésimo cuantil, <span class="math inline">\(\widehat{\boldsymbol{\beta}}_\tau\)</span>, es aquel que minimiza:</p>
+<p><span class="math display">\[Q_N(\boldsymbol{\beta_\tau}) = \sum_{i:y_i\geq \mathbf{x}\boldsymbol{\beta}}^N \tau |y_i - \mathbf{x}\boldsymbol{\beta}_\tau | +  \sum_{i:y_i &lt; \mathbf{x}\boldsymbol{\beta}}^N (1-\tau)|y_i - \mathbf{x}\boldsymbol{\beta}_\tau| \]</span>
+En esta ecuación, hemos utilizado <span class="math inline">\(\boldsymbol{\beta}_\tau\)</span> en lugar de <span class="math inline">\(\boldsymbol{\beta}\)</span> para dejar en claro que los valores estimados de <span class="math inline">\(\boldsymbol{\beta}\)</span> dependen de la elección del cuantil <span class="math inline">\(\tau\)</span>. Un caso especial es cuando fijamos <span class="math inline">\(\tau=0.5\)</span>, en cuyo caso tenemos la conocida regresión en la mediana o estimación de mínimas desviaciones absolutas. Esta es muy popular debido principalmente a que es más robusta con respecto a los valores atípicos (<em>outliers</em>) que una regresión por mínimos cuadrados ordinarios, la cual puede interpretarse como una regresión en la media. (Recuerda, media y mediana no son lo mismo.) Esto es porque la regresión cuantílica “penaliza” los errores de forma lineal, mientras que la regresión MCO, al elevar los errores al cuadrado, lo que hace es darle mayor importancia precisamente a dichos valores, “penalizándolos” de forma cuadrática.</p>
+</div>
+<div id="ejemplo" class="section level2">
+<h2>Ejemplo</h2>
+<p>Para el siguiente ejemplo, estaremos utilizando los siguientes paquetes de R:</p>
+<pre class="r"><code># Instalar paquetes si es necesario
+# install.packages(&quot;tidyverse&quot;)
+
+# Leer paquetes
+library(tidyverse)
+library(quantreg)</code></pre>
+<p>Utilizaremos una regresión cuantílica para analizar el salario (<code>Salary</code>) de los jugadores de la MLB (liga de Beisbol en Estados Unidos) en diferentes cuentiles. Supondremos que este es una función de sus estadísticas, tales como: número de veces al bate (<code>AtBat</code>), número total de hits (<code>Hits</code>), el número de <em>home-runs</em> (<code>HmRun</code>), el número de base por bolas (<code>Walks</code>), número de años en la la liga (<code>Years</code>) y el número de <em>put_outs</em> (<code>PutOuts</code>).</p>
+<pre class="r"><code>db &lt;- read_csv(&quot;https://raw.githubusercontent.com/amosino/courses--econometria/master/econometria_salud/econometria_salud--datos/BaseballData.csv&quot;)</code></pre>
+<p>Primero, observemos la distribución del salario (en logaritmos):</p>
+<pre class="r"><code>hist(log(db$Salary), prob=TRUE)
+lines(density(log(db$Salary)))</code></pre>
+<p><img src="/post/regresion-cuantilica_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>La gráfica que acabamos de obtener nos deja en claro que el comportamiento de los salarios podría ser diferente en cada uno de los cuantiles. Los cuantiles más utilizados pueden obtenerse mediante la función <code>summary()</code>:</p>
+<pre class="r"><code>summary(log(db$Salary))</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   4.212   5.247   6.052   5.927   6.620   7.808</code></pre>
+<p>Entonces, el cuantil <span class="math inline">\(\tau=0.25\)</span>, está determinado por el número 5.247. Esto implica que el primer 25% de los datos se encuentran debajo de este valor. La mediana (<span class="math inline">\(\tau=0.5\)</span>), es el número que divide el conjunto de datos en dos partes: 50% de los datos se encuentran por debajo de 6.052 y el restante 50% se encuentran por encima.</p>
+<p>Antes de modelar los determinantes del (log) del salario en cada uno de estos cuantiles, estimamos primero los coeficientes del modeloutilizando el método de los mínimos cuadrados ordinarios:</p>
+<pre class="r"><code>model.ols &lt;- lm(log(Salary)~AtBat+Hits+HmRun+Walks+Years+PutOuts, data=db)
+summary(model.ols)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log(Salary) ~ AtBat + Hits + HmRun + Walks + Years + 
+##     PutOuts, data = db)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.23228 -0.45066  0.05001  0.38638  3.12048 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.3694992  0.1334110  32.752  &lt; 2e-16 ***
+## AtBat       -0.0025781  0.0010372  -2.486  0.01357 *  
+## Hits         0.0136637  0.0032213   4.242  3.1e-05 ***
+## HmRun        0.0051472  0.0054003   0.953  0.34142    
+## Walks        0.0071448  0.0023422   3.050  0.00253 ** 
+## Years        0.0932264  0.0082137  11.350  &lt; 2e-16 ***
+## PutOuts      0.0003089  0.0001466   2.107  0.03605 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.6238 on 256 degrees of freedom
+## Multiple R-squared:  0.5191, Adjusted R-squared:  0.5078 
+## F-statistic: 46.06 on 6 and 256 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Los resultados nos indican, por ejemplo, que un <em>hit</em> adicional incrementa el salario <em>promedio</em> en 1.3% y cada año adicional del experiencia lo hace en 9.3%. En los datos se muestra que el número de <em>home-runs</em> parece no tener efecto en el salario <em>promedio</em>.</p>
+<p>Ahora hagamos los cálculos en diferentes cuantiles. PAra esto utilizamos la función <code>rq()</code> del paquete <code>quantreg</code>. Por ejemplo, para el cuantil <span class="math inline">\(\tau=0.25\)</span>. Nota que la sintaxis de la función <code>rq()</code> es muy parecida a la de <code>lm()</code>, excepto que en la primera es necesario especificar el argumento <code>tau</code>. También, nota que en la función <code>summary()</code> hemos especificado que los errores estándar de la regresión serán calculados utilizando el método <em>bootstrap</em>.</p>
+<pre class="r"><code>model.qr1 &lt;- rq(log(Salary)~AtBat+Hits+HmRun+Walks+Years+PutOuts, data=db, tau=0.25)
+summary(model.qr1, se = &quot;boot&quot;)</code></pre>
+<pre><code>## 
+## Call: rq(formula = log(Salary) ~ AtBat + Hits + HmRun + Walks + Years + 
+##     PutOuts, tau = 0.25, data = db)
+## 
+## tau: [1] 0.25
+## 
+## Coefficients:
+##             Value    Std. Error t value  Pr(&gt;|t|)
+## (Intercept)  3.71999  0.11194   33.23073  0.00000
+## AtBat       -0.00257  0.00118   -2.16761  0.03111
+## Hits         0.01576  0.00393    4.01022  0.00008
+## HmRun        0.00022  0.00593    0.03699  0.97052
+## Walks        0.00902  0.00294    3.07433  0.00234
+## Years        0.10389  0.00921   11.27772  0.00000
+## PutOuts     -0.00015  0.00026   -0.58492  0.55911</code></pre>
+<p>Como podemos verun <em>hit</em> adicional incrementa el salario del cuantil 0.25 en 1.5% y cada año adicional del experiencia lo hace en 10.3%. Este efecto parece ser mayor que en el caso del salario promedio. En el cuantil 0.25 el número de <em>home-runs</em> tampoco parece tener efecto en el salario.</p>
+<p>Una de las ventajas de la función <code>qr()</code> es que nos permite introducir más de un valor de <span class="math inline">\(\tau\)</span> como argumento. Por ejemplo, estimamos los coeficientes para los cuantiles <span class="math inline">\(\tau=0.5\)</span> y <span class="math inline">\(\tau=0.75\)</span>:</p>
+<pre class="r"><code>model.qr2 &lt;- rq(log(Salary)~AtBat+Hits+HmRun+Walks+Years+PutOuts, data=db, tau=c(0.5, 0.75))
+summary(model.qr2, se = &quot;boot&quot;)</code></pre>
+<pre><code>## 
+## Call: rq(formula = log(Salary) ~ AtBat + Hits + HmRun + Walks + Years + 
+##     PutOuts, tau = c(0.5, 0.75), data = db)
+## 
+## tau: [1] 0.5
+## 
+## Coefficients:
+##             Value    Std. Error t value  Pr(&gt;|t|)
+## (Intercept)  4.07795  0.27921   14.60555  0.00000
+## AtBat       -0.00254  0.00143   -1.77961  0.07633
+## Hits         0.01503  0.00420    3.57935  0.00041
+## HmRun        0.00244  0.00926    0.26388  0.79208
+## Walks        0.00777  0.00358    2.16777  0.03110
+## Years        0.10538  0.01618    6.51276  0.00000
+## PutOuts      0.00046  0.00026    1.76505  0.07875
+## 
+## Call: rq(formula = log(Salary) ~ AtBat + Hits + HmRun + Walks + Years + 
+##     PutOuts, tau = c(0.5, 0.75), data = db)
+## 
+## tau: [1] 0.75
+## 
+## Coefficients:
+##             Value    Std. Error t value  Pr(&gt;|t|)
+## (Intercept)  4.66319  0.15651   29.79537  0.00000
+## AtBat       -0.00174  0.00135   -1.28165  0.20112
+## Hits         0.01106  0.00402    2.75036  0.00638
+## HmRun        0.01687  0.00599    2.81673  0.00523
+## Walks        0.00616  0.00251    2.45259  0.01485
+## Years        0.08664  0.01363    6.35838  0.00000
+## PutOuts      0.00040  0.00020    2.01580  0.04487</code></pre>
+<p>Un resultado interesante es que el número de <em>home-runs</em> no es estadísticamente significativo para los cuantiles 0.25 y 0.5, pero sí lo es para el cuantil 0.75. En este punto, cada <em>home-run</em> adicional incrementa el salario en 1.6%. Entonces, los <em>home-runs</em> parecen tener importancia solo para los jugadores con salarios más altos.</p>
+<p>Naturalmente, observar las tablas para todos los cuantiles de una distribución parece ser demasiado tedioso. Imagína, por ejemplo, que deseas analizar el efecto de las variables explicativas para los cuantiles 0.1, 0.2, …, 0.9. En este caso, las gráficas podrían ser más informativas que las tablas. Para esto, combinamos la función <code>plot()</code> con la función <code>summary()</code>:</p>
+<pre class="r"><code>model.rq3&lt;-rq(log(Salary)~AtBat+Hits+HmRun+Walks+Years+PutOuts, data=db, tau=seq(0.1, 0.9, by=0.1))
+plot(summary(model.rq3))</code></pre>
+<p><img src="/post/regresion-cuantilica_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>En cada una de las gráficas resultantes vemos varios elementos interesantes. La línea roja horizontal representa la estimación por MCO, y las líneas rojas punteadas son sus intervalos de confianza. Los puntos negros (conectados por pequeñas líneas) son las estimaciones mediante la regresión cuantílica y el área sombreada delimita sus intervalos de confianza. Comparando estos, podemos saber: 1) si existen diferencias estadísticas entre los coeficientes de la regresión cuantílica y los coeficientes de MCO. Si los intervalos de confianza de la regresión cuantílica caen dentro de los intervalos de confianza de MCO, entonces no hay razones para pensar que existen diferencias estadísticas suficientes que justifiquen la estimación por cuantiles. Esto parece ser el caso para nuestros datos. Algunas excepciones podrían ser el efecto de los <em>home-runs</em> para los cuantiles más altos y el número de <em>put-outs</em> para los cuantiles más bajos.</p>
+</div>
+
+    </div>
+    <div class="post-footer">
+      <div class="info">
+        
+<span class="separator"><a class="category" href="/categories/econometrics/">Econometrics</a></span>
+
+        
+    <span class="separator"><a class="tag" href="/tags/econometrics/">Econometrics</a><a class="tag" href="/tags/r/">R</a></span>
+
+      </div>
+    </div>
+
+    
+           
+    
+</div>
+
+
+                </div>
+            </div>
+        </div>
+</body>
+
+
+
+<script type="text/javascript" src="https://blog.amosino.net/js/jquery.min.86b1e8f819ee2d9099a783e50b49dff24282545fc40773861f9126b921532e4c.js" integrity="sha256-hrHo&#43;BnuLZCZp4PlC0nf8kKCVF/EB3OGH5EmuSFTLkw=" crossorigin="anonymous"></script>
+
+
+
+
+<script type="text/javascript" src="https://blog.amosino.net/js/bundle.min.0f9c74cb78f13d1f15f33daff4037c70354f98acfbb97a6f61708966675c3cae.js" integrity="sha256-D5x0y3jxPR8V8z2v9AN8cDVPmKz7uXpvYXCJZmdcPK4=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="https://blog.amosino.net/js/medium-zoom.min.92f21c856129f84aeb719459b3e6ac621a3032fd7b180a18c04e1d12083f8aba.js" integrity="sha256-kvIchWEp&#43;ErrcZRZs&#43;asYhowMv17GAoYwE4dEgg/iro=" crossorigin="anonymous"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/&#43;DiW/UqRcLbRjq" crossorigin="anonymous"><script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l&#43;B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd&#43;qj&#43;o24G5ZU2zJz" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script></html></body>
+
+</html>

@@ -2,165 +2,170 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Econometría &amp; Co.</title>
-    <link>/</link>
+    <link>https://blog.amosino.net/</link>
     <description>Recent content on Econometría &amp; Co.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>es-mx</language>
-    <lastBuildDate>Mon, 20 Jul 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 18 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.amosino.net/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Introducción a R</title>
-      <link>/post/introduccion-r/</link>
+      <link>https://blog.amosino.net/post/introduccion-r/</link>
       <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/introduccion-r/</guid>
+      <guid>https://blog.amosino.net/post/introduccion-r/</guid>
       <description>R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. En este post daremos una muy breve introducción a R: tipos de variables, operaciones numéricas, clases de datos, entre otros.</description>
     </item>
     
     <item>
       <title>Estructuras de Control</title>
-      <link>/post/estructuras-control/</link>
+      <link>https://blog.amosino.net/post/estructuras-control/</link>
       <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/estructuras-control/</guid>
+      <guid>https://blog.amosino.net/post/estructuras-control/</guid>
       <description>En esta entrada conoceremos los fundamentos de programación en R. Para esto, conoceremos las principales estructuras de control: condicionales y ciclos. Este post es una adaptación del post sobre el tema en el blog de Mauricio Anderson (&lt;a href=&#34;https://mauricioanderson.com/curso-r-estructuras-control/&#34;&gt;https://mauricioanderson.com/curso-r-estructuras-control/&lt;/a&gt;) y de los tutoriales de programación en DataMentor (&lt;a href=&#34;https://www.datamentor.io/r-programming/)&#34;&gt;https://www.datamentor.io/r-programming/)&lt;/a&gt;.</description>
     </item>
     
     <item>
       <title>Funciones definidas por el usuario</title>
-      <link>/post/funciones/</link>
+      <link>https://blog.amosino.net/post/funciones/</link>
       <pubDate>Wed, 22 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/funciones/</guid>
+      <guid>https://blog.amosino.net/post/funciones/</guid>
       <description>Una función es un conjunto de líneas de código organizadas para realizar una tarea particular. Existen muchas funciones incorporadas a R; sin embargo, el usuario puede incorporar sus propias funciones. En este post veremos la estructura de una función definida por el usuario y algunos ejemplos.</description>
     </item>
     
     <item>
       <title>Limpieza y análisis de bases de datos</title>
-      <link>/post/bases-datos/</link>
+      <link>https://blog.amosino.net/post/bases-datos/</link>
       <pubDate>Thu, 23 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/bases-datos/</guid>
+      <guid>https://blog.amosino.net/post/bases-datos/</guid>
       <description>En este post realizaremos 1) un análisis exploratorio de la información y 2) una limpieza de la base de datos tal que sea posible hacer con la mayor precisión posible análisis estadísticos.</description>
     </item>
     
     <item>
       <title>El modelo de regresión lineal</title>
-      <link>/post/mrl/</link>
+      <link>https://blog.amosino.net/post/mrl/</link>
       <pubDate>Sat, 25 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/mrl/</guid>
+      <guid>https://blog.amosino.net/post/mrl/</guid>
       <description>Una de las herramientas principales en econometría es el modelo de regresión lineal. A diferencia de un análisis de correlación, cuyo objetivo es medir el grado de asociación entre dos variables, el modelo de regresión lineal nos permite aproximar el valor promedio de una variable con base en los valores fijos de otras. En este post veremos cómo se estima y cómo se analiza un modelo de regresión linea utilizando R.</description>
     </item>
     
     <item>
       <title>Efectos de Tratamiento</title>
-      <link>/post/efectos-tratamiento/</link>
+      <link>https://blog.amosino.net/post/efectos-tratamiento/</link>
       <pubDate>Sun, 26 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/efectos-tratamiento/</guid>
+      <guid>https://blog.amosino.net/post/efectos-tratamiento/</guid>
       <description>Cuando evaluamos una política pública, nos hacemos preguntas tales como: ¿cuál es el efecto de los apoyos gubernamentales para emprender nuevos negocios? ¿Cuál es el efecto de las medidas gubernamentales para combatir la informalidad? ¿Cuál es el impacto de las becas en el rendimiento académico? ¿Influye el tamaño de la clase en el desempeño de los alumnos y, en caso afirmativo, en qué medida? En este post veremos cómo responder a este tipo de preguntas utilizando el conocido modelo de los efectos de tratamiento.</description>
     </item>
     
     <item>
       <title>Consecuencias de una especificación errónea</title>
-      <link>/post/misspecification/</link>
+      <link>https://blog.amosino.net/post/misspecification/</link>
       <pubDate>Wed, 29 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/misspecification/</guid>
+      <guid>https://blog.amosino.net/post/misspecification/</guid>
       <description>En este post realizamos algunos ejercicios de simulación para mostrar los efectos de una especificación incorrecta del modelo. Una simulación Monte Carlo revela que si el modelo está mal especificado obtendremos estimadores inconsistentes. Además, mostramos que los residuales de los modelos mal especificado no tienen el comportamiento esperado.</description>
     </item>
     
     <item>
       <title>Modelos lineales generalizados</title>
-      <link>/post/glm/</link>
+      <link>https://blog.amosino.net/post/glm/</link>
       <pubDate>Tue, 18 Aug 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/glm/</guid>
+      <guid>https://blog.amosino.net/post/glm/</guid>
       <description>Como sabemos, el procedimiento de mínimos cuadrados ordinarios resulta en estimadores que son insesgados, eficientes y consistentes, siempre y cuando se cumplan los supuestos del modelo de regresión lineal y, específicamente, los supuestos de Gauss Markov sobre el error. Sin embargo, en la práctica, es muy común que algunos de estos supuestos no se satisfagan. Por ejemplo, cuando la variable dependiente está sesgada o es binaria, un modelo de regresión lineal podría resultar en predicciones incoherentes, así como en residuales heteroscedásticos. Como veremos, una solución a estos problemas es considerar otra clase de modelos más generales que el modelo de regresión lineal. Estos son los modelos lineales generalizados (Nelder - Wedderburn, 1972), los cuales nos permiten ampliar la gama de distribuciones de la variable de respuesta (la variable dependiente) a todas aquellas que pertenezcan a la familia exponencial.</description>
     </item>
     
     <item>
       <title>Transformaciones de Box-Cox</title>
-      <link>/post/box-cox/</link>
+      <link>https://blog.amosino.net/post/box-cox/</link>
       <pubDate>Thu, 20 Aug 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/box-cox/</guid>
+      <guid>https://blog.amosino.net/post/box-cox/</guid>
       <description>En esta entrada conoceremos qué son y para qué nos sirven las transformaciones de Box-Cox. Como veremos, estas resultan útiles para modelos en los cuales no se satisfacen todos los supuestos de Gauss-Markov sobre el error.</description>
     </item>
     
     <item>
       <title>Modelos de elección binaria</title>
-      <link>/post/eleccion-binaria/</link>
+      <link>https://blog.amosino.net/post/eleccion-binaria/</link>
       <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/eleccion-binaria/</guid>
+      <guid>https://blog.amosino.net/post/eleccion-binaria/</guid>
       <description>En esta entrada estudiaremos la versión más simple de modelos con variable de respuesta cualitativa. Estos son los modelos de elección binaria. Por ejemplo, la decisión de una persona de trabajar o no trabajar, ir a la escuela o no o viajar en autobús o en automovil.</description>
     </item>
     
     <item>
       <title>El modelo Tobit</title>
-      <link>/post/tobit/</link>
+      <link>https://blog.amosino.net/post/tobit/</link>
       <pubDate>Wed, 02 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/tobit/</guid>
+      <guid>https://blog.amosino.net/post/tobit/</guid>
       <description>El modelo Tobit, también conocido como modelo de regresión con datos censurados, está diseñado para estimar los coeficientes de un modelo lineal en el que la variable dependiente está censurada, es decir, limitada (por arriba, por debajo o por ambos lados). Si bien existe una población subyacente en la que sí existen observaciones fuera de los límites de censura, la población observada parece no contenerlas. Esto puede deberse, por ejemplo, a la incapacidad para detectarlas y/o seleccionarlas en el muestreo.</description>
     </item>
     
     <item>
       <title>Modelo de selección de Heckman</title>
-      <link>/post/heckit/</link>
+      <link>https://blog.amosino.net/post/heckit/</link>
       <pubDate>Fri, 04 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/heckit/</guid>
+      <guid>https://blog.amosino.net/post/heckit/</guid>
       <description>En el modelo Tobit consideramos dos categorías de observaciones: 1) aquellas cuyo valor de la variable dependiente es positivo y 2) aquellas cuyo valor de la variable dependiente es igual a cero. En el modelo, las variables que intentan explicar el valor de la variable dependiente cuando esta es positiva y las razones por las cuales esta cae dentro de una categoría u otra son las mismas. Sin embargo, esto no tiene por qué ser así. Esta limitante del modelo Tobit es resuelta parcialmente por el modelo de selección de Heckman.</description>
     </item>
     
     <item>
       <title>Modelos en dos partes</title>
-      <link>/post/two-part/</link>
+      <link>https://blog.amosino.net/post/two-part/</link>
       <pubDate>Tue, 29 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/two-part/</guid>
+      <guid>https://blog.amosino.net/post/two-part/</guid>
       <description>En muchas ocasiones, la variable dependiente, $y_i$, puede pensarse como una mezcla de variables aleatorias continuas y discretas. Esto ocurre cuando $y_i \geq 0$, y, al mismo tiempo, el número de observaciones para las cuales $y_i=0$ es lo suficientemente grande tal que se justifique un trato especial. Para estos casos, tenemos a los modelos en dos partes. Como veremos, este tipo de modelos constituyen una extensión al modelo de Tobit y son, en muchos sentidos, más generales que el modelo de selección de Heckman.</description>
     </item>
     
     <item>
       <title>Modelo de regresión de Poisson</title>
-      <link>/post/poisson/</link>
+      <link>https://blog.amosino.net/post/poisson/</link>
       <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/poisson/</guid>
+      <guid>https://blog.amosino.net/post/poisson/</guid>
       <description>En la regresión de Poisson se trata de ajustar un modelo para el recuento del número de veces que ha ocurrido cierto fenómeno. Por ejemplo, el número de visitas al médico, el número de personas que tienen un infarto, el número fumado de cigarrillos, o el número de veces que asistes a tus clases virtuales. Por sus propias características (estadísticas), estas variables no pueden modelarse utilizando un análisis de regresión lineal. En su lugar, utilizamos otro tipo de modelos diseñados para capturar explícitamente la naturaleza discreta de estas variables. Aquí veremos el modelo de regresión de Poisson.</description>
     </item>
     
     <item>
       <title>Modelo de regresión binomial negativa</title>
-      <link>/post/binomial-negativa/</link>
+      <link>https://blog.amosino.net/post/binomial-negativa/</link>
       <pubDate>Wed, 07 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/binomial-negativa/</guid>
+      <guid>https://blog.amosino.net/post/binomial-negativa/</guid>
       <description>Al igual que el modelo de regresión de Poisson, el modelo de regresión binomal negativa se utiliza para ajustar un modelo para el recuento del número de veces que ha ocurrido cierto fenómeno. Sin embargo, la regresión binomial negativa es más popular dado que esta toma mejor en cuenta el problema de la sobre dispersión.</description>
     </item>
     
     <item>
+      <title>Regresión Cuantílica</title>
+      <link>https://blog.amosino.net/post/regresion-cuantilica/</link>
+      <pubDate>Wed, 18 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.amosino.net/post/regresion-cuantilica/</guid>
+      <description>La técnica de regresión cuantílica (Koenker y Basset en 1978), a diferencia de la de mínimos cuadrados ordinarios, en la que obtenemos estimaciones que se aproximan a la esperanza condicional de la variable de respuesta dados ciertos valores de las variables explicativas, tiene como objetivo estimar la mediana condicional u otros cuantiles de la variable de respuesta. Esta técnica se basa en la minimización de desviaciones absolutas ponderadas con pesos asimétricos que no se ven afectadas por datos extremos.</description>
+    </item>
+    
+    <item>
       <title>Sobre este sitio</title>
-      <link>/about/</link>
+      <link>https://blog.amosino.net/about/</link>
       <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>
       
-      <guid>/about/</guid>
+      <guid>https://blog.amosino.net/about/</guid>
       <description>Este sitio sirve como complemento a los diferentes cursos de econometría que imparto en la Universidad de Guanajuato. Aquí encontrarás temas de econometría, microeconometría y macroeconometría, así como elementos de programación, manejo de datos entre otros.</description>
     </item>
     
     <item>
       <title></title>
-      <link>/archives/</link>
+      <link>https://blog.amosino.net/archives/</link>
       <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
       
-      <guid>/archives/</guid>
+      <guid>https://blog.amosino.net/archives/</guid>
       <description></description>
     </item>
     
