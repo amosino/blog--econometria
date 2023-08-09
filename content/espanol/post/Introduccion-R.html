@@ -1,0 +1,276 @@
+---
+title: "Introducción a R"
+author: "Alejandro Mosiño"
+date: '2020-07-20'
+slug: Introduccion R
+summary: 'R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. En este post daremos una muy breve introducción a R: tipos de variables, operaciones numéricas, clases de datos, entre otros.'
+tags:
+- Data Management
+- Econometrics
+- Programming
+- R
+categories:
+- Data Managment
+- Econometrics
+- Programming
+weight: 1
+math: true
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/leaflet/leaflet.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/leaflet/leaflet.js"></script>
+<link href="/rmarkdown-libs/leafletfix/leafletfix.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/proj4/proj4.min.js"></script>
+<script src="/rmarkdown-libs/Proj4Leaflet/proj4leaflet.js"></script>
+<link href="/rmarkdown-libs/rstudio_leaflet/rstudio_leaflet.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/leaflet-binding/leaflet.js"></script>
+
+
+<p>R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. Entre otras características dispone de: 1) almacenamiento y manipulación efectiva de datos, 2) operadores para cálculo sobre variables indexadas, en particular matrices, 3) una amplia, coherente e integrada colección de herramientas para análisis de datos, 4) posibilidades gráficas para análisis de datos que funcionan directamente sobre pantalla o impresora, y 5) un lenguaje de programación bien desarrollado, simple y efectivo, que incluye condicionales, ciclos, funciones recursivas y posibilidad de entradas y salidas.</p>
+<div id="variables-operaciones-operadores-lógicos-y-clases-de-datos" class="section level2">
+<h2>Variables, operaciones, operadores lógicos y clases de datos</h2>
+<div id="tipos-de-variables" class="section level3">
+<h3>Tipos de variables</h3>
+<p>Primero asignemos un valor a una variable <span class="math inline">\(x\)</span>. Este valor puede ser un número, pero también puede ser un conjunto de caracteres, variables categóricas (o factores), booleanas (lógicas: verdadero o falso) y fechas. Esto puede verse en los siguientes ejemplos:</p>
+<pre class="r"><code># Números
+x &lt;- 10
+print(x)</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code># Caracteres
+x &lt;- &quot;Economia&quot;
+print(x)</code></pre>
+<pre><code>## [1] &quot;Economia&quot;</code></pre>
+<pre class="r"><code># Categóricas
+x &lt;- factor(c(10,11))
+print(x)</code></pre>
+<pre><code>## [1] 10 11
+## Levels: 10 11</code></pre>
+<pre class="r"><code># Booleanas
+x &lt;- FALSE
+print(x)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># Fechas
+x &lt;- as.Date(&quot;08/08/2018&quot;, &quot;%m/%d/%Y&quot;)
+print(x)</code></pre>
+<pre><code>## [1] &quot;2018-08-08&quot;</code></pre>
+<p>Nota que la asignación de valores se expresa mediante el símbolo <code>&lt;-</code>, aunque el signo = también funciona. Nota, además, que hemos usado el comando <code>print(x)</code> para ver si el código funciona correctamente.</p>
+<p>Las variales en R también pueden tener más de un valor. Por ejemplo, construimos un vector llamado <code>votantes</code> que se conforma de una secuencia de números <em>del mismo tipo</em>:</p>
+<pre class="r"><code>votantes &lt;- c(134, 542, 324, 102, 402, 383, 853)
+print(votantes)</code></pre>
+<pre><code>## [1] 134 542 324 102 402 383 853</code></pre>
+<p>Supongamos que cada elemento del vector <code>votantes</code> representa el número de votantes en una casilla electoral. Deseamos, por ejemplo: 1) calcular el número total de votantes en la elección, 2) el número de casillas electorales, 3) imprimir un mensaje que resuma la información obtenida. Lo anterior podemos lograrlo con las funciones: <code>sum()</code>, <code>length()</code> y <code>paste()</code>, respectivamente.</p>
+<pre class="r"><code>no_votantes &lt;- sum(votantes)
+no_casillas &lt;- length(votantes)
+texto1 &lt;- &quot;El número total de votantes es:&quot;
+texto2 &lt;- &quot;en un total de:&quot;
+texto3 &lt;- &quot;casillas electorales&quot;
+mensaje &lt;- paste(texto1, no_votantes, texto2, no_casillas, texto3)
+print(mensaje)</code></pre>
+<pre><code>## [1] &quot;El número total de votantes es: 2740 en un total de: 7 casillas electorales&quot;</code></pre>
+</div>
+<div id="operaciones-con-números" class="section level3">
+<h3>Operaciones con números</h3>
+<p>R puede utilizarse al estilo de una calculadora. Es decir, los valores numéricos pueden moficarse o manipularse mediante los operadores aritméticos clásicos: suma (<code>+</code>), resta (<code>-</code>), multiplicación (<code>*</code>), división (<code>/</code>), potencia (<code>**</code>) y módulo (<code>%%</code>).</p>
+<pre class="r"><code>x &lt;- 10
+
+# Suma
+x &lt;- x+5
+print(x)</code></pre>
+<pre><code>## [1] 15</code></pre>
+<pre class="r"><code># Resta
+x &lt;- x-8
+print(x)</code></pre>
+<pre><code>## [1] 7</code></pre>
+<pre class="r"><code># Multiplicación
+x &lt;- x*4
+print(x)</code></pre>
+<pre><code>## [1] 28</code></pre>
+<pre class="r"><code># División
+x &lt;- x/14
+print(x)</code></pre>
+<pre><code>## [1] 2</code></pre>
+<pre class="r"><code># Potencia
+x &lt;- x**2
+print(x)</code></pre>
+<pre><code>## [1] 4</code></pre>
+<pre class="r"><code># Módulo
+mod1 &lt;- 10%%10
+mod2 &lt;- 20%%10
+mod3 &lt;- 10%%20
+mod4 &lt;- 2%%8
+print(c(mod1,mod2, mod3, mod4))</code></pre>
+<pre><code>## [1]  0  0 10  2</code></pre>
+<p>Estas operaciones también se aplican a los vectores. Si, por ejemplo, multiplicamos por 2 el vector <code>votantes</code>, cada elemento de este vector se multiplicará por 2.</p>
+<pre class="r"><code># Multiplicación
+votantes_doble &lt;- votantes*2
+print(votantes_doble)</code></pre>
+<pre><code>## [1]  268 1084  648  204  804  766 1706</code></pre>
+<pre class="r"><code># División
+votantes_mitad &lt;- votantes/2
+print(votantes_mitad)</code></pre>
+<pre><code>## [1]  67.0 271.0 162.0  51.0 201.0 191.5 426.5</code></pre>
+</div>
+<div id="operadores-lógicos" class="section level3">
+<h3>Operadores lógicos</h3>
+<p>Los valores lógicos son particularmente útiles para clasificar datos de acuerdo a valores o umbrales específicos. El resultado de una operación lógica es un valor booleano. Las operaciones pueden aplicarse también a vectores.</p>
+<pre class="r"><code>x &lt;- 10
+y &lt;- 2
+
+# Desigualdad estricta
+resultado &lt;- x &gt; y
+print(resultado)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># Desigualdad
+resultado &lt;- x &gt;= y
+print(resultado)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># Igualdad
+resultado &lt;- x == y
+print(resultado)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># Negación
+resultado &lt;- x != y
+print(resultado)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>casillas_200 &lt;- votantes&gt;200
+table(casillas_200)</code></pre>
+<pre><code>## casillas_200
+## FALSE  TRUE 
+##     2     5</code></pre>
+<p>Nota que en la última operación hemos utilizado el comando <code>table()</code> para el número de registros verdaderos y el número de falsos. Este comando sirve para dar el número de registros diferentes en un vector o matriz de datos.</p>
+</div>
+<div id="clases-de-datos" class="section level3">
+<h3>Clases de datos</h3>
+<p>Los vectores que hemos visto antes son solo una de las clases de datos que admite R. Pero existen otras clases. Las clases más importantes son, aparte de los vectores, las matrices, las listas y los <em>data frames</em>.</p>
+<p>Las matrices pueden construirse a partir de vectores. Recuerda que los vectores son secuencias de números del mismo tipo. Considera el siguiente ejemplo, en el que un vector contiene caracteres y dos contienen números. La matriz en la última línea se construye utilizando el comando <code>cbind()</code>.</p>
+<pre class="r"><code>cities &lt;- c(&quot;Guadalajara&quot;,&quot;León&quot;,&quot;Aguascalientes&quot;,&quot;San Luis Potosí&quot;,&quot;Irapuato&quot;, &quot;San Miguel de Allende&quot;)
+pop &lt;- c(1600940, 1278087, 723043, 730950, 463103, 139297)
+area &lt;- c(187.9, 1219.67, 385, 385, 845.2, 1559)
+mat &lt;- cbind(cities, pop, area)
+print(mat)</code></pre>
+<pre><code>##      cities                  pop       area     
+## [1,] &quot;Guadalajara&quot;           &quot;1600940&quot; &quot;187.9&quot;  
+## [2,] &quot;León&quot;                  &quot;1278087&quot; &quot;1219.67&quot;
+## [3,] &quot;Aguascalientes&quot;        &quot;723043&quot;  &quot;385&quot;    
+## [4,] &quot;San Luis Potosí&quot;       &quot;730950&quot;  &quot;385&quot;    
+## [5,] &quot;Irapuato&quot;              &quot;463103&quot;  &quot;845.2&quot;  
+## [6,] &quot;San Miguel de Allende&quot; &quot;139297&quot;  &quot;1559&quot;</code></pre>
+<p>Todos los vectores y matrices están indizados, por lo que podemos buscar elementos dentro de estos. Algunos ejemplos son los siguientes:</p>
+<pre class="r"><code># Primer elemento del vector cities
+cities1 &lt;- cities[1]
+print(cities1)</code></pre>
+<pre><code>## [1] &quot;Guadalajara&quot;</code></pre>
+<pre class="r"><code># Elementos 1 y 4 del vector cities
+cities2 &lt;- cities[c(1,4)]
+print(cities2)</code></pre>
+<pre><code>## [1] &quot;Guadalajara&quot;     &quot;San Luis Potosí&quot;</code></pre>
+<pre class="r"><code># Elementos del 1 al 3 del vector cities
+cities3 &lt;- cities[1:3]
+print(cities3)</code></pre>
+<pre><code>## [1] &quot;Guadalajara&quot;    &quot;León&quot;           &quot;Aguascalientes&quot;</code></pre>
+<pre class="r"><code># Elemento (2,1) de la matriz mat
+mat1 &lt;- mat[2,1]
+print(mat1)</code></pre>
+<pre><code>## cities 
+## &quot;León&quot;</code></pre>
+<pre class="r"><code># 2 y 3 filas y 1 y 3 columnas de la matriz mat
+mat2 &lt;- mat[2:3, c(1,3)]
+print(mat2)</code></pre>
+<pre><code>##      cities           area     
+## [1,] &quot;León&quot;           &quot;1219.67&quot;
+## [2,] &quot;Aguascalientes&quot; &quot;385&quot;</code></pre>
+<pre class="r"><code># Primera columna de la matriz mat
+mat3 &lt;- mat[,1]
+print(mat3)</code></pre>
+<pre><code>## [1] &quot;Guadalajara&quot;           &quot;León&quot;                  &quot;Aguascalientes&quot;       
+## [4] &quot;San Luis Potosí&quot;       &quot;Irapuato&quot;              &quot;San Miguel de Allende&quot;</code></pre>
+<pre class="r"><code># Tercera fila de la matriz mat
+mat4 &lt;- mat[3,]
+print(mat4)</code></pre>
+<pre><code>##           cities              pop             area 
+## &quot;Aguascalientes&quot;         &quot;723043&quot;            &quot;385&quot;</code></pre>
+<p>Los vectores (y matrices) pueden ser transformados en <em>data frames</em>. Estos resultan muy útiles dado que permiten fijar y modificar los nombres de las variables que los conforman. Esta característica no está disponible para las matrices. Por ejemplo, el <em>data frame</em> de abajo se crea a partir de los vectores <code>cities</code>, <code>pop</code> y <code>area</code>, a la vez que modificamos los nombres de las variables:</p>
+<pre class="r"><code>df &lt;- data.frame(city=cities, population = pop, area=area)
+print(df)</code></pre>
+<pre><code>##                    city population    area
+## 1           Guadalajara    1600940  187.90
+## 2                  León    1278087 1219.67
+## 3        Aguascalientes     723043  385.00
+## 4       San Luis Potosí     730950  385.00
+## 5              Irapuato     463103  845.20
+## 6 San Miguel de Allende     139297 1559.00</code></pre>
+<p>Si deseamos modificar nuevamente los nombres de las variables, no es necesario volver a crear el <em>data frame</em> <code>df</code>. Podemos obtener el nombre de las variables mediante el comando <code>colnames()</code>. Dado que los nombres no son más que elementos de un vector, basta con modificar el valor de sus elementos. Por ejemplo:</p>
+<pre class="r"><code>colnames(df) &lt;- c(&quot;Ciudad&quot;, &quot;Poblacion&quot;, &quot;Área&quot;)
+print(df)</code></pre>
+<pre><code>##                  Ciudad Poblacion    Área
+## 1           Guadalajara   1600940  187.90
+## 2                  León   1278087 1219.67
+## 3        Aguascalientes    723043  385.00
+## 4       San Luis Potosí    730950  385.00
+## 5              Irapuato    463103  845.20
+## 6 San Miguel de Allende    139297 1559.00</code></pre>
+<p>Con los <em>data frames</em>, es posible obtener las columnas utilizando el operador <code>$</code>. Por ejemplo, la columna correspondiente a las ciudades se obtiene:</p>
+<pre class="r"><code>df$Ciudad</code></pre>
+<pre><code>## [1] &quot;Guadalajara&quot;           &quot;León&quot;                  &quot;Aguascalientes&quot;       
+## [4] &quot;San Luis Potosí&quot;       &quot;Irapuato&quot;              &quot;San Miguel de Allende&quot;</code></pre>
+<p>El operador <code>$</code> también nos permite agregar columnas al <em>data frame</em>. Por ejemplo, deseamos construir una nueva variable booleana que indique cuáles son las ciudades con una población mayor a 2500000. Esta nueva variable, que llamaremos <code>CiudadGrande</code> será agregada al <em>data_frame</em> `df:</p>
+<pre class="r"><code>df$CiudadGrande &lt;- df$Poblacion &gt; 1000000
+print(df)</code></pre>
+<pre><code>##                  Ciudad Poblacion    Área CiudadGrande
+## 1           Guadalajara   1600940  187.90         TRUE
+## 2                  León   1278087 1219.67         TRUE
+## 3        Aguascalientes    723043  385.00        FALSE
+## 4       San Luis Potosí    730950  385.00        FALSE
+## 5              Irapuato    463103  845.20        FALSE
+## 6 San Miguel de Allende    139297 1559.00        FALSE</code></pre>
+</div>
+</div>
+<div id="librerías" class="section level2">
+<h2>Librerías</h2>
+<p>R viene precargado con varios paquetes que nos permiten realizar varias funciones relativamente simples como las descritas arriba. Sin embargo, existen muchos más paquetes que pueden ser descargados y utilizados para aumentar la potencia y simplificar muchas tareas. Estos paquetes pueden instalarse usando el comando <code>install.packages()</code>. Una vez instalados los paquetes (que se hace solo una vez y para siempre), tenemos que indicarle a R que deseamos usarlos durante la sesión activa. Para esto utilizamos el comando <code>library()</code>.</p>
+<p>Para hacer una demostración de lo anterior, aquí instalaremos y utilizaremos los paquetes <code>stargazer</code>, <code>ggplot2</code> y <code>leaflet</code>. El primero es una librería que nos permite hacer tablas en diferentes formatos: texto, html y Latex. El segundo nos permite aumentar las capacidades gráficas de R. El tercero nos permite hacer mapas interactivos. Utilizaremos la base de datos anterior sobre las ciudades de México, pero agregaremos información sobre sus coordenadas geográficas.</p>
+<pre class="r"><code># install.packages(&quot;stargazer&quot;)
+# install.packages(&quot;ggplot2&quot;)
+# install.packages(&quot;leaflet&quot;)
+library(stargazer)</code></pre>
+<pre><code>## 
+## Please cite as:</code></pre>
+<pre><code>##  Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables.</code></pre>
+<pre><code>##  R package version 5.2.3. https://CRAN.R-project.org/package=stargazer</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(leaflet)
+
+df$Latitud &lt;- c(20.6736, 21.1236, 21.8818, 22.2021, 20.6833, 20.9)
+df$Longitud &lt;- c(-103.34420,-101.6821, -102.291, -101.0542, -101.35,-101.4833)
+print(df)</code></pre>
+<pre><code>##                  Ciudad Poblacion    Área CiudadGrande Latitud  Longitud
+## 1           Guadalajara   1600940  187.90         TRUE 20.6736 -103.3442
+## 2                  León   1278087 1219.67         TRUE 21.1236 -101.6821
+## 3        Aguascalientes    723043  385.00        FALSE 21.8818 -102.2910
+## 4       San Luis Potosí    730950  385.00        FALSE 22.2021 -101.0542
+## 5              Irapuato    463103  845.20        FALSE 20.6833 -101.3500
+## 6 San Miguel de Allende    139297 1559.00        FALSE 20.9000 -101.4833</code></pre>
+<p>Ahora haremos unta tabla que muestre un resumen de la información. El formato de salida será de texto para efectos de este ejemplo, pero recuerda que podemos elegir otros formatos. Intenta, por tu cuenta, cambiar la opción <em>text</em> por la opción <em>latex</em>.</p>
+<pre class="r"><code>stargazer(df, type=&quot;text&quot;)</code></pre>
+<pre><code>## 
+## =========================================================
+## Statistic    N    Mean      St. Dev.     Min       Max   
+## ---------------------------------------------------------
+## Poblacion    6 822,570.000 534,365.800 139,297  1,600,940
+## Área         6   763.628     541.373   187.900  1,559.000
+## CiudadGrande 6    0.333       0.516       0         1    
+## Latitud      6   21.244       0.648     20.674   22.202  
+## Longitud     6  -101.867      0.833    -103.344 -101.054 
+## ---------------------------------------------------------</code></pre>
+<p>Ahora crearemos un mapa interactivo que nos mostrará la posición geográfica de las ciudades que hemos elegido. La posición será indicada con un círculo, cuyo tamaño dependerá del número de habitantes. Dado que este no es un curso de <code>ggplot2</code> ni de <code>leaflet</code>, no debes preocuparte si no comprendes todo el código.</p>
+<pre class="r"><code>leaflet(df) %&gt;%
+  addTiles() %&gt;%
+  addCircles(lng=~Longitud, lat=~Latitud, weight=1,
+             radius =~sqrt(Poblacion)*30, popup=~Ciudad)</code></pre>
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircles","args":[[20.6736,21.1236,21.8818,22.2021,20.6833,20.9],[-103.3442,-101.6821,-102.291,-101.0542,-101.35,-101.4833],[37958.4773140336,33915.7529770459,25509.5805531961,25648.684176776,20415.5014633489,11196.7539939038],null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":1,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},["Guadalajara","León","Aguascalientes","San Luis Potosí","Irapuato","San Miguel de Allende"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]}],"limits":{"lat":[20.6736,22.2021],"lng":[-103.3442,-101.0542]}},"evals":[],"jsHooks":[]}</script>
+<p>Dado que este mapa es interactivo, puedes acercar o alejar el mapa según lo desees.</p>
+<p><em>Última actualización: 09-08-2023.</em></p>
+</div>
