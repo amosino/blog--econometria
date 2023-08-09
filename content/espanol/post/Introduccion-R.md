@@ -1,9 +1,15 @@
 ---
 title: "Introducción a R"
 author: "Alejandro Mosiño"
+<<<<<<< HEAD
 date: '2023-08-01'
 slug: Introduccion R
 summary: 'R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. En este post daremos una breve introducción a R: tipos de variables, operaciones numéricas, clases de datos, entre otros.'
+=======
+date: '2020-07-20'
+slug: Introduccion R
+summary: 'R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. En este post daremos una muy breve introducción a R: tipos de variables, operaciones numéricas, clases de datos, entre otros.'
+>>>>>>> 214c0ae948ee9931e30630b2e07f646e37896ca4
 tags:
 - Data Management
 - Econometrics
@@ -27,11 +33,16 @@ math: true
 <link href="/rmarkdown-libs/rstudio_leaflet/rstudio_leaflet.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/leaflet-binding/leaflet.js"></script>
 
+<<<<<<< HEAD
 R es un conjunto integrado de programas para la manipulación de datos, cálculo y gráficos. Entre otras características, dispone de: 1) almacenamiento y manipulación efectiva de datos, 2) operadores para cálculo sobre variables indexadas, en particular matrices, 3) una amplia, coherente e integrada colección de herramientas para el análisis de datos, 4) posibilidades gráficas para el análisis de datos que funcionan directamente en pantalla o impresora, y 5) un lenguaje de programación bien desarrollado, simple y efectivo, que incluye condicionales, ciclos, funciones recursivas y posibilidad de entradas y salidas.
+=======
+R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. Entre otras características dispone de: 1) almacenamiento y manipulación efectiva de datos, 2) operadores para cálculo sobre variables indexadas, en particular matrices, 3) una amplia, coherente e integrada colección de herramientas para análisis de datos, 4) posibilidades gráficas para análisis de datos que funcionan directamente sobre pantalla o impresora, y 5) un lenguaje de programación bien desarrollado, simple y efectivo, que incluye condicionales, ciclos, funciones recursivas y posibilidad de entradas y salidas.
+>>>>>>> 214c0ae948ee9931e30630b2e07f646e37896ca4
 
 ## Variables, operaciones, operadores lógicos y clases de datos
 
 ### Tipos de variables
+
 
 Primero asignemos un valor a una variable `\(x\)`. Este valor puede ser un número, pero también puede ser un conjunto de caracteres, variables categóricas (o factores), booleanas (lógicas: verdadero o falso) y fechas. Esto se puede ver en los siguientes ejemplos:
 
@@ -87,6 +98,7 @@ print(votantes)
 
     ## [1] 134 542 324 102 402 383 853
 
+
 Supongamos que cada elemento del vector `votantes` representa el número de votantes en una casilla electoral. Deseamos, por ejemplo: 1) calcular el número total de votantes en la elección, 2) el número de casillas electorales y 3) imprimir un mensaje que resuma la información obtenida. Esto se puede lograr con las funciones: `sum()`, `length()` y `paste()`, respectivamente.
 
 ``` r
@@ -102,6 +114,7 @@ print(mensaje)
     ## [1] "El número total de votantes es: 2740 en un total de: 7 casillas electorales"
 
 ### Operaciones con números
+
 
 R se puede utilizar como calculadora. Es decir, los valores numéricos se pueden modificar o manipular mediante los operadores aritméticos clásicos: suma (`+`), resta (`-`), multiplicación (`*`), división (`/`), potencia (`**`) y módulo (`%%`).
 
@@ -158,6 +171,7 @@ print(c(mod1,mod2, mod3, mod4))
 
     ## [1]  0  0 10  2
 
+
 Estas operaciones también se aplican a los vectores. Por ejemplo, si multiplicamos por 2 el vector `votantes`, cada elemento de este vector se multiplicará por 2.
 
 ``` r
@@ -177,6 +191,7 @@ print(votantes_mitad)
     ## [1]  67.0 271.0 162.0  51.0 201.0 191.5 426.5
 
 ### Operadores lógicos
+
 
 Los valores lógicos son particularmente útiles para clasificar datos de acuerdo a valores o umbrales específicos. El resultado de una operación lógica es un valor booleano. Las operaciones también pueden aplicarse a vectores.
 
@@ -224,6 +239,7 @@ table(casillas_200)
     ## FALSE  TRUE 
     ##     2     5
 
+
 Nota que en la última operación hemos utilizado el comando `table()` para obtener el número de registros verdaderos y el número de falsos. Este comando sirve para dar el número de registros diferentes en un vector o matriz de datos.
 
 ### Clases de datos
@@ -247,6 +263,7 @@ print(mat)
     ## [4,] "San Luis Potosí"       "730950"  "385"    
     ## [5,] "Irapuato"              "463103"  "845.2"  
     ## [6,] "San Miguel de Allende" "139297"  "1559"
+
 
 Todos los vectores y matrices están indizados, por lo que podemos buscar elementos dentro de ellos. Algunos ejemplos son los siguientes:
 
@@ -311,6 +328,7 @@ print(mat4)
     ##           cities              pop             area 
     ## "Aguascalientes"         "723043"            "385"
 
+
 Los vectores (y matrices) se pueden transformar en *data frames*. Estos resultan muy útiles dado que permiten fijar y modificar los nombres de las variables que los conforman. Esta característica no está disponible para las matrices. Por ejemplo, el *data frame* a continuación se crea a partir de los vectores `cities`, `pop` y `area`, a la vez que modificamos los nombres de las variables:
 
 ``` r
@@ -367,6 +385,7 @@ print(df)
 
 ## Librerías
 
+
 R viene precargado con varios paquetes que nos permiten realizar varias funciones relativamente simples como las descritas arriba. Sin embargo, existen muchos más paquetes que pueden ser descargados y utilizados para aumentar la potencia y simplificar muchas tareas. Estos paquetes se pueden instalar usando el comando `install.packages()`. Una vez instalados los paquetes (lo cual se hace solo una vez y para siempre), tenemos que indicarle a R que deseamos usarlos durante la sesión activa. Para esto utilizamos el comando `library()`.
 
 Para hacer una demostración de lo anterior, aquí instalaremos y utilizaremos los paquetes `stargazer`, `ggplot2` y `leaflet`. El primero es una librería que nos permite hacer tablas en diferentes formatos: texto, HTML y LaTeX. El segundo nos permite aumentar las capacidades gráficas de R. El tercero nos permite hacer mapas interactivos. Utilizaremos la base de datos anterior sobre las ciudades de México, pero agregaremos información sobre sus coordenadas geográficas.
@@ -402,6 +421,7 @@ print(df)
     ## 5              Irapuato    463103  845.20        FALSE 20.6833 -101.3500
     ## 6 San Miguel de Allende    139297 1559.00        FALSE 20.9000 -101.4833
 
+
 Ahora haremos una tabla que muestre un resumen de la información. El formato de salida será de texto para efectos de este ejemplo, pero recuerda que podemos elegir otros formatos. Intenta, por tu cuenta, cambiar la opción *text* por la opción *latex*.
 
 ``` r
@@ -430,6 +450,7 @@ leaflet(df) %>%
 
 <div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1" style="width:672px;height:480px;"></div>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircles","args":[[20.6736,21.1236,21.8818,22.2021,20.6833,20.9],[-103.3442,-101.6821,-102.291,-101.0542,-101.35,-101.4833],[37958.4773140336,33915.7529770459,25509.5805531961,25648.684176776,20415.5014633489,11196.7539939038],null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":1,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},["Guadalajara","León","Aguascalientes","San Luis Potosí","Irapuato","San Miguel de Allende"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]}],"limits":{"lat":[20.6736,22.2021],"lng":[-103.3442,-101.0542]}},"evals":[],"jsHooks":[]}</script>
+
 
 Dado que este mapa es interactivo, puedes acercar o alejar el mapa con tu mouse. ¡Inténtalo!
 
