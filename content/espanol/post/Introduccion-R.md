@@ -1,7 +1,7 @@
 ---
 title: "Introducción a R"
 author: "Alejandro Mosiño"
-date: '2023-08-01'
+date: '2020-07-20'
 slug: Introduccion R
 summary: 'R es un conjunto integrado de programas para manipulación de datos, cálculo y gráficos. En este post daremos una breve introducción a R: tipos de variables, operaciones numéricas, clases de datos, entre otros.'
 tags:
@@ -433,4 +433,4 @@ leaflet(df) %>%
 
 Dado que este mapa es interactivo, puedes acercar o alejar el mapa con tu mouse. ¡Inténtalo!
 
-*Última actualización: 09-08-2023.*
+*Última actualización: 11-08-2023.*
